@@ -90,10 +90,17 @@ The script finds your `_forever_` folder (or asks for it), creates `Interface\Ad
 In game:
 
 - `/encore` lists the commands.
+<<<<<<< HEAD
 - `/encore info` shows the addon version and the game's Interface number. If it reports a mismatch, change `## Interface:` in all three `.toc` files to the number shown, then **fully restart the game** (`/reload` does not re-read `.toc` files).
 - `/encore db` opens the Encore-DB window.
 - `/encore stonks` opens the Encore-Stonks browser.
 - The Encore crest button sits on the minimap ring just below the day/night indicator, at the same size, and keeps that size at any resolution or UI scale. Left-click it to open the **Encore Essentials window** in the middle of the screen, which lists the modules. Right-click it for options: addon info, the login-message setting and *Hide minimap button*. `/encore minimap` shows or hides it. The game's addon list button on the minimap (Addon Compartment) also opens the window.
+=======
+- `/encore info` shows the addon version and the game's Interface number. If it reports a mismatch, change `## Interface:` in both `.toc` files to the number shown, then **fully restart the game** (`/reload` does not re-read `.toc` files).
+- `/encore db` loads Encore-DB and prints its placeholder message.
+- The Encore crest button sits on the minimap ring just below the day/night indicator, at the same size, and keeps that size at any resolution or UI scale. Left-click it to open the **Encore Essentials window** in the middle of the screen, which lists the modules (for now Encore-DB). Right-click it for options: addon info, the login-message setting and *Hide minimap button*. `/encore minimap` shows or hides it. The game's addon list button on the minimap (Addon Compartment) also opens the window.
+- Right-click the button and choose *Unlock button* to drag it anywhere on screen, or *Use large square button* for a larger rounded-square version. Then right-click again to *Lock button position*, switch between round and square, or *Reattach to minimap*. These settings are saved account-wide.
+>>>>>>> b1a36e5 (Minimap button: unlock and drag anywhere, larger square style, lock, reattach to minimap)
 - The button is not a LibDBIcon button and is not attached to the minimap frame, so minimap button collectors (EnhanceQoL's button sink, MinimapButtonBag) do not pick it up.
 
 After changing Lua files, `/reload` is enough. After changing `.toc` files, restart the game.

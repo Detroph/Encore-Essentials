@@ -28,7 +28,11 @@ local DEFAULTS = {
     settings = {
         showLoginMessage = true,
         minimap = {
-            hide = false, -- the button sits below the day/night indicator, so no position is saved
+            hide = false,
+            detached = false, -- false: on the minimap below the day/night indicator; true: free on screen
+            locked = false,   -- detached only: can't be dragged
+            square = false,   -- detached only: larger rounded-square button
+            -- point = { "CENTER", "BOTTOMLEFT", x, y }, saved when a detached button is dropped
         },
     },
     stats = {

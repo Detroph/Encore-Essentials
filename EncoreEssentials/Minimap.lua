@@ -9,6 +9,10 @@
 -- So the button is parented to UIParent, has no LibDBIcon10_ name and no "Minimap" in its name, and is only
 -- anchored to the indicator. Because a UIParent child does not inherit the minimap's scale, its scale is set
 -- from the indicator's effective scale, so it keeps the same size at any resolution, UI scale or minimap scale.
+--
+-- From the right-click menu the button can also be detached ("Unlock button"): it can then be dragged anywhere,
+-- locked in place, and drawn as a larger rounded square instead. "Reattach to minimap" puts it back below the sun.
+-- Saved account-wide in EncoreEssentialsDB.settings.minimap: detached, locked, square, point.
 local _, ns = ...
 local L = ns.L
 local Encore = ns.Encore
@@ -22,6 +26,13 @@ local FRAME_SIZE = 31
 local ART_SIZE = 33
 local ICON_OFFSET_X, ICON_OFFSET_Y = 1.5, 0.5 -- ring centre (17, -15 from the top-left) minus frame centre
 local STEP = 1.1 -- distance from the indicator's centre to the button's, in indicator widths
+local SQUARE_SIZE = 40 -- the detached square button, in UI units (follows the UI scale like any other window)
+local SQUARE_BACKDROP = {
+    bgFile = "Interface\\Buttons\\WHITE8X8",
+    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+    edgeSize = 14,
+    insets = { left = 3, right = 3, top = 3, bottom = 3 },
+}
 
 local button
 
@@ -37,6 +48,20 @@ function Encore:OpenMenu(owner)
     MenuUtil.CreateContextMenu(owner or UIParent, function(_, root)
         root:CreateTitle("|cffeb9339Encore|r Essentials")
         root:CreateButton(L.MENU_HUB, function() Encore:ToggleHub() end)
+        root:CreateDivider()
+        local settings = Encore.db.settings.minimap
+        if settings.detached then
+            root:CreateCheckbox(L.MENU_LOCK_BUTTON,
+                function() return Encore.db.settings.minimap.locked end,
+                function() Encore:SetMinimapButtonLocked(not Encore.db.settings.minimap.locked) end)
+            root:CreateCheckbox(L.MENU_SQUARE_BUTTON,
+                function() return Encore.db.settings.minimap.square end,
+                function() Encore:SetMinimapButtonSquare(not Encore.db.settings.minimap.square) end)
+            root:CreateButton(L.MENU_REATTACH, function() Encore:ReattachMinimapButton() end)
+        else
+            root:CreateButton(L.MENU_UNLOCK_BUTTON, function() Encore:DetachMinimapButton(false) end)
+            root:CreateButton(L.MENU_SQUARE_BUTTON_DETACH, function() Encore:DetachMinimapButton(true) end)
+        end
         root:CreateDivider()
         root:CreateButton(L.MENU_INFO, function() Encore:ShowInfo() end)
         root:CreateCheckbox(L.MENU_LOGIN_MESSAGE,
@@ -107,8 +132,31 @@ local function setLayout(key, scale, point, relativeTo, relativePoint, x, y)
     button:SetPoint(point, relativeTo, relativePoint, x, y)
 end
 
+local applyStyle
+
+-- Detached: a plain UIParent child at UI scale, at its saved spot.
+local function layoutFree()
+    local settings = Encore.db.settings.minimap
+    local p = settings.point
+    local key = ("free:%s:%s:%s:%s:%s"):format(tostring(settings.square), p and p[1] or "", p and p[2] or "",
+        p and p[3] or "", p and p[4] or "")
+    if key == lastKey then return end
+    lastKey = key
+    applyStyle(settings.square)
+    button:SetScale(1)
+    button:ClearAllPoints()
+    if type(p) == "table" and p[1] then
+        button:SetPoint(p[1], UIParent, p[2] or p[1], tonumber(p[3]) or 0, tonumber(p[4]) or 0)
+    else
+        button:SetPoint("CENTER")
+    end
+end
+
 local function layout()
     if not button then return end
+    if button.moving then return end
+    if Encore.db.settings.minimap.detached then return layoutFree() end
+    applyStyle(false)
     local uiScale = UIParent:GetEffectiveScale()
     local gt = indicator()
     local mmX, mmY = Minimap:GetCenter()
@@ -178,7 +226,7 @@ local function hookSources()
         relayout()
     end)
     Minimap:HookScript("OnHide", function()
-        if button then button:Hide() end
+        if button and not Encore.db.settings.minimap.detached then button:Hide() end
     end)
 
     local events = CreateFrame("Frame")
@@ -193,14 +241,16 @@ end
 ---------------------------------------------------------------------------
 local function createButton()
     -- Parent UIParent and a name without "Minimap"/"LibDBIcon": see the top of this file.
-    button = CreateFrame("Button", "EncoreEssentialsCrestButton", UIParent)
+    button = CreateFrame("Button", "EncoreEssentialsCrestButton", UIParent, "BackdropTemplate")
     button:SetSize(FRAME_SIZE, FRAME_SIZE)
     button:SetFrameStrata("MEDIUM")
     button:SetFrameLevel(8)
     button:SetClampedToScreen(true)
     button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-    button:SetHighlightTexture(136477) -- Interface\Minimap\UI-Minimap-ZoomButton-Highlight
+    button:RegisterForDrag("LeftButton")
+    button:SetMovable(true)
 
+    -- Round style: the classic minimap button art
     local background = button:CreateTexture(nil, "BACKGROUND")
     background:SetTexture(136467) -- Interface\Minimap\UI-Minimap-Background
     background:SetSize(20, 20)
@@ -222,8 +272,21 @@ local function createButton()
     border:SetTexture(136430) -- Interface\Minimap\MiniMap-TrackingBorder
     border:SetSize(53, 53)
     border:SetPoint("TOPLEFT")
+    button.round = { background, icon, border }
+
+    -- Square style: the whole crest in a rounded, gold-edged square
+    local squareIcon = button:CreateTexture(nil, "ARTWORK")
+    squareIcon:SetTexture(ICON)
+    squareIcon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+    squareIcon:SetPoint("TOPLEFT", 4, -4)
+    squareIcon:SetPoint("BOTTOMRIGHT", -4, 4)
+    button.squareIcon = squareIcon
 
     button:SetScript("OnClick", function(self, mouseButton)
+        if self.justDragged then
+            self.justDragged = nil
+            return
+        end
         if mouseButton == "RightButton" then
             Encore:OpenMenu(self)
         else
@@ -233,15 +296,37 @@ local function createButton()
     end)
     button:SetScript("OnMouseDown", function(self)
         self.icon:SetPoint("TOPLEFT", 8, -6)
+        self.squareIcon:SetPoint("TOPLEFT", 5, -5)
+        self.squareIcon:SetPoint("BOTTOMRIGHT", -3, 3)
     end)
     button:SetScript("OnMouseUp", function(self)
         self.icon:SetPoint("TOPLEFT", 7, -5)
+        self.squareIcon:SetPoint("TOPLEFT", 4, -4)
+        self.squareIcon:SetPoint("BOTTOMRIGHT", -4, 4)
+    end)
+    -- Dragging: only when detached and unlocked
+    button:SetScript("OnDragStart", function(self)
+        local settings = Encore.db.settings.minimap
+        if not settings.detached or settings.locked then return end
+        GameTooltip:Hide()
+        self.moving = true
+        self:StartMoving()
+    end)
+    button:SetScript("OnDragStop", function(self)
+        if not self.moving then return end
+        self:StopMovingOrSizing()
+        self.moving = nil
+        self.justDragged = true
+        C_Timer.After(0, function() self.justDragged = nil end)
+        Encore:SaveMinimapButtonPosition()
     end)
     button:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
         GameTooltip:SetText("|cffeb9339Encore|r Essentials")
         GameTooltip:AddLine(L.MINIMAP_TIP_CLICK, 1, 1, 1)
         GameTooltip:AddLine(L.MINIMAP_TIP_RIGHTCLICK, 1, 1, 1)
+        local settings = Encore.db.settings.minimap
+        if settings.detached and not settings.locked then GameTooltip:AddLine(L.MINIMAP_TIP_DRAG, 0, 1, 0) end
         GameTooltip:Show()
     end)
     button:SetScript("OnLeave", function()
@@ -260,6 +345,34 @@ local function createButton()
     hookSources()
 end
 
+-- Switches the button between the round minimap look and the larger rounded square.
+local currentStyle
+function applyStyle(square)
+    square = square and true or false
+    if currentStyle == square then return end
+    currentStyle = square
+    for _, region in ipairs(button.round) do region:SetShown(not square) end
+    button.squareIcon:SetShown(square)
+    if square then
+        button:SetSize(SQUARE_SIZE, SQUARE_SIZE)
+        button:SetBackdrop(SQUARE_BACKDROP)
+        button:SetBackdropColor(0.07, 0.03, 0.02, 0.9)
+        button:SetBackdropBorderColor(0.92, 0.58, 0.2, 1) -- Encore gold
+        button:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+        local hl = button:GetHighlightTexture()
+        hl:ClearAllPoints()
+        hl:SetPoint("TOPLEFT", 3, -3)
+        hl:SetPoint("BOTTOMRIGHT", -3, 3)
+    else
+        button:SetSize(FRAME_SIZE, FRAME_SIZE)
+        button:SetBackdrop(nil)
+        button:SetHighlightTexture(136477) -- Interface\Minimap\UI-Minimap-ZoomButton-Highlight
+        local hl = button:GetHighlightTexture()
+        hl:ClearAllPoints()
+        hl:SetAllPoints()
+    end
+end
+
 -- Creates, places and shows or hides the button from the saved settings. Safe to call again after a reset.
 function Encore:RefreshMinimapButton()
     local settings = self.db.settings.minimap
@@ -269,7 +382,50 @@ function Encore:RefreshMinimapButton()
     end
     if not button then createButton() end
     relayout()
-    button:SetShown(Minimap:IsShown())
+    button:SetShown(settings.detached or Minimap:IsShown())
+end
+
+-- Saves where a detached button was dropped, as an offset of its centre from the screen's bottom-left.
+function Encore:SaveMinimapButtonPosition()
+    if not button then return end
+    local x, y = button:GetCenter()
+    if not x then return end
+    local ratio = button:GetEffectiveScale() / UIParent:GetEffectiveScale()
+    local p = { "CENTER", "BOTTOMLEFT", math.floor(x * ratio + 0.5), math.floor(y * ratio + 0.5) }
+    self.db.settings.minimap.point = p
+    button:SetUserPlaced(false) -- our own saved spot, not the game's layout cache
+    relayout()
+end
+
+-- Detaches the button where it is now (optionally as the square), unlocked so it can be dragged straight away.
+function Encore:DetachMinimapButton(square)
+    local settings = self.db.settings.minimap
+    if not button then createButton() end
+    settings.detached = true
+    settings.locked = false
+    settings.square = square and true or false
+    self:SaveMinimapButtonPosition()
+    self:RefreshMinimapButton()
+    self:Print(L.MINIMAP_UNLOCKED)
+end
+
+function Encore:SetMinimapButtonLocked(locked)
+    self.db.settings.minimap.locked = locked and true or false
+    self:Print(locked and L.MINIMAP_LOCKED or L.MINIMAP_UNLOCKED)
+end
+
+function Encore:SetMinimapButtonSquare(square)
+    self.db.settings.minimap.square = square and true or false
+    relayout()
+end
+
+-- Back below the sun/moon on the minimap, round again.
+function Encore:ReattachMinimapButton()
+    local settings = self.db.settings.minimap
+    settings.detached = false
+    settings.locked = false
+    settings.square = false
+    self:RefreshMinimapButton()
 end
 
 function Encore:SetMinimapButtonShown(shown)
