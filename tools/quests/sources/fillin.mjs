@@ -12,7 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const id = 'wowhead';
+export const id = 'fillin'; // ships as Data\Quests-fillin.lua
 export const priority = 0; // fills blanks below QuestieDB
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');

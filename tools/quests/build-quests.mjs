@@ -1,5 +1,5 @@
 // Builds EncoreEssentials_DB/Data/Quests-<source>.lua: each instance's quests and the quest chains they belong to.
-// Usage: node tools/quests/build-quests.mjs [--source questie,wowhead]
+// Usage: node tools/quests/build-quests.mjs [--source questie,fillin]
 //
 // The data comes from quest sources in tools/quests/sources/. Each source turns one database into the same
 // source-neutral model (see tools/quests/README.md), and this file writes that model as Lua, one file per source.
@@ -16,7 +16,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '.
 const DATA = path.join(ROOT, 'EncoreEssentials_DB', 'Data');
 
 const arg = (name, def) => { const i = process.argv.indexOf(name); return i > 0 ? process.argv[i + 1] : def; };
-const sourceIds = arg('--source', 'questie,wowhead').split(',').map((x) => x.trim()).filter(Boolean);
+const sourceIds = arg('--source', 'questie,fillin').split(',').map((x) => x.trim()).filter(Boolean);
 for (const id of sourceIds) if (!/^[a-z0-9-]+$/.test(id)) throw new Error(`bad source name: ${id}`);
 
 const qn = (s) => (s == null ? 'nil' : q(s));

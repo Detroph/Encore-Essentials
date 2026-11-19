@@ -11,7 +11,7 @@ git clone --depth 1 https://github.com/Questie/QuestieDB tools/cache/questiedb  
 node tools/quests/build-quests.mjs          # QuestieDB -> Data/Quests-questie.lua, and tools/out/quest-ids.json
 #   then collect the Wowhead Forever quest pages for those IDs (the Wowhead step of tools/refresh.mjs,
 #   a browser script) into tools/out/wowhead-drops.json, and run build-quests again:
-node tools/quests/build-quests.mjs          # -> Data/Quests-questie.lua and Data/Quests-wowhead.lua
+node tools/quests/build-quests.mjs          # -> Data/Quests-questie.lua and Data/Quests-fillin.lua
 ```
 
 `node tools/refresh.mjs quests` runs the same steps. Commit the changed `Data/Quests-*.lua`; nothing else changes.
@@ -22,7 +22,7 @@ The QuestieDB step runs `tools/quests/sources/questie-extract.lua` with Lua 5.1:
 ## Sources
 
 A source is `tools/quests/sources/<id>.mjs`, exporting `id`, `priority` and `load(ctx)`, which returns the model
-below. `build-quests.mjs --source a,b` runs them in order (default `questie,wowhead`); each writes its own
+below. `build-quests.mjs --source a,b` runs them in order (default `questie,fillin`); each writes its own
 `Data/Quests-<id>.lua`, which must be listed in `EncoreEssentials_DB.toc`. In the game, the higher `priority`
 wins field by field, so a lower one only fills blanks. `ctx.questIds` holds the quest IDs earlier sources found.
 
@@ -31,7 +31,7 @@ wins field by field, so a lower one only fills blanks. `ctx.questIds` holds the 
   Forever and hand-written Forever fixes. Quests go to an instance by their QuestieDB category (the instance's
   area); quests new in Forever with no category go by the instance name in their title or objective (listed in the
   report). `QUESTIE_SCOPE=forever` keeps only quests new in Forever, from the Forever layers.
-- `wowhead.mjs` (priority 0): Wowhead Forever's quest pages, collected in a browser into
+- `fillin.mjs` (priority 0, writes `Quests-fillin.lua`): Wowhead Forever's quest pages, collected in a browser into
   `tools/out/wowhead-drops.json` (`quests[<id>]`): descriptions, rewards, money, XP and anything QuestieDB lacks.
 - `foreverdb.mjs`: ForeverDB.net's files (only the fields it labels as Forever data). Not in the default order
   any more; `--source foreverdb` still builds it.
