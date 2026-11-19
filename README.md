@@ -1,14 +1,57 @@
 # Encore Essentials
 
-Encore's addon toolkit for **World of Warcraft: Forever**.
+**A loot, quest and recipe database plus hourly auction price graphs with guild sharing, built for World of Warcraft: Forever.**
+
+Encore Essentials is the addon suite of **Encore**, a Horde guild on the EU PvP realms. Three addons ship together:
 
 | Folder | In-game name | What it does |
 |---|---|---|
-| `EncoreEssentials/` | Encore Essentials | Core: saved settings, the `/encore` command, the minimap button, the Encore Essentials window, shared art. Always loaded. |
-| `EncoreEssentials_DB/` | Encore-DB | Loot and recipe database. Loads only when opened with `/encore db`. *Window not built yet.* |
-| `EncoreEssentials_Stonks/` | Encore-Stonks | Auction price graphs (over time, by weekday, by hour of day) from Auctionator scans. Loads with the game so it can record every scan; open it with `/encore stonks` or from the Encore Essentials window; at the auction house its graph docks beside the auction house. |
+| `EncoreEssentials/` | Encore Essentials | Core: settings, the `/encore` command, the minimap crest button and the Encore Essentials window that opens the modules. Always loaded. |
+| `EncoreEssentials_DB/` | Encore-DB | Dungeon loot, dungeon quests, world epics and rares, recipes, PvP and reputation vendors. Loads only when you open it. |
+| `EncoreEssentials_Stonks/` | Encore-Stonks | Auction price history by date, weekday and hour from Auctionator scans, shared with your guild. |
 
-Status: **0.1.0, skeleton.** The core loads and answers `/encore`; Encore-DB loads on demand and prints a placeholder message. The planned Encore-DB window is the clickable mock-up in [`docs/mockup/encore-db-mockup.html`](docs/mockup/encore-db-mockup.html).
+Open everything from the Encore crest on the minimap, the game's addon list button, or `/encore`.
+
+## Highlights
+
+### Encore-DB
+- **Loot from WoW Forever itself.** Drops, drop rates, vendors and recipe sources are the ones players saw in Forever. Classic and emulator data is left out.
+- **28 dungeons**, Forever's new ones included (The Hall of Thanes, Ruins of Lordaeron, City of Dalaran, Drowned City, Krol'dok Stronghold, Alcaz Prison, Blackmaw Hold, Shaper's Terrace and others), grouped by level range. Blackrock Spire can be split into Lower and Upper.
+- **Boss portraits with level badges** coloured like the target frame against your level, a skull for boss-level mobs, and the **silver dragon frame for rare spawns**.
+- **Drop rates per looted kill**, a fold-out list of each boss's random drops, and trash loot.
+- **Dungeon quests and quest chains**, read top to bottom with the steps out in the world, marked *done* or *in your log*, with *Hide finished*, a faction filter and a map pin to where each quest starts and ends.
+- **Open World:** World Epics and World Rares by required level (1-10 up to 51-60).
+- **Professions:** every recipe by skill bracket with difficulty colours; click one for reagents, trainer cost, vendors (with a map pin), drops, quests and the reputation it needs.
+- **PvP and reputation vendors** seen in Forever, with the standing or PvP rank and price of every item.
+- **Highlight Forever changes** marks what is new or changed in Forever, with teal counters per dungeon and boss; **Forever only** hides the rest.
+- Search across all loot and recipes, quality and slot filters, three icon sizes, a resizable window, click-to-sort columns, coin-icon prices and tooltips that follow the cursor.
+
+### Encore-Stonks
+- **Hourly price history.** Auctionator keeps one price per item per day; Stonks records every scan by the hour.
+- **Trend, By weekday, By hour and Whole market** charts, with 3, 7 and 14-day moving averages and bars labelled with their % above or below normal.
+- **Docks beside the auction house** and follows your selection in the Browse, Bids and Auctions tabs, the sell slot and Auctionator's Shopping and Selling tabs.
+- **Auction-house-style browser** with categories and your Auctionator shopping lists.
+- **Item tooltips** with the 3, 7 and 14-day averages.
+- **Guild price sharing:** one claimed scan per hour, a login summary of what changed while you were away (AFK players send first), and *Share item* / *Share scan* chat links that guildmates import only after clicking and confirming. At most 400 bytes a second, nothing in combat or instances, only item, price, quantity and hour leave your client. See [`docs/stonks-guild-sharing.md`](docs/stonks-guild-sharing.md).
+
+### Minimap button
+The Encore crest sits under the day and night indicator at the same size at any resolution or UI scale, and minimap button collectors (EnhanceQoL's button sink, MinimapButtonBag) leave it alone.
+
+## Install
+
+From CurseForge: install **Encore Essentials** with the CurseForge app, or download the zip and unzip it into your WoW Forever folder's `Interface\AddOns`, so that `Interface\AddOns\EncoreEssentials`, `EncoreEssentials_DB` and `EncoreEssentials_Stonks` exist. Encore-Stonks needs [Auctionator](https://www.curseforge.com/wow/addons/auctionator) for scanning.
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `/encore` | List the commands |
+| `/encore db` | Open Encore-DB |
+| `/encore stonks` | Open Encore-Stonks |
+| `/encore minimap` | Show or hide the minimap button |
+| `/encore info` | Addon version, game build and saved-data details |
+| `/encore reset` | Restore default settings |
+| `/stonksync` | Guild price sharing: `share`, `receive`, `off`, `status`, `perf`, `lowend`, `mute`, `link` |
 
 ## Install for development (Windows)
 
@@ -23,7 +66,7 @@ git clone https://github.com/Detroph/Encore-Essentials.git C:\dev\Encore-Essenti
 powershell -ExecutionPolicy Bypass -File C:\dev\Encore-Essentials\tools\setup-dev.ps1
 ```
 
-The script finds your `_forever_` folder (or asks for it), creates `Interface\AddOns` if needed and links both addon folders. It never replaces an existing addon folder. Run it again any time; it also pulls the latest version.
+The script finds your `_forever_` folder (or asks for it), creates `Interface\AddOns` if needed and links all three addon folders. It never replaces an existing addon folder. Run it again any time; it also pulls the latest version.
 
 ### Manual setup
 
@@ -40,16 +83,17 @@ The script finds your `_forever_` folder (or asks for it), creates `Interface\Ad
    mklink /J "<FOREVER>\Interface\AddOns\EncoreEssentials_Stonks" "C:\dev\Encore-Essentials\EncoreEssentials_Stonks"
    ```
    If `Interface\AddOns` does not exist yet, create it first. Junctions (`/J`) need no administrator rights.
-4. Start the game. On the character screen, open **AddOns** and check that *Encore Essentials* and *Encore-DB* are listed and enabled.
+4. Start the game. On the character screen, open **AddOns** and check that *Encore Essentials*, *Encore-DB* and *Encore-Stonks* are listed and enabled.
 
 ### Check that it works
 
 In game:
 
 - `/encore` lists the commands.
-- `/encore info` shows the addon version and the game's Interface number. If it reports a mismatch, change `## Interface:` in both `.toc` files to the number shown, then **fully restart the game** (`/reload` does not re-read `.toc` files).
-- `/encore db` loads Encore-DB and prints its placeholder message.
-- The Encore crest button sits on the minimap ring just below the day/night indicator, at the same size, and keeps that size at any resolution or UI scale. Left-click it to open the **Encore Essentials window** in the middle of the screen, which lists the modules (for now Encore-DB). Right-click it for options: addon info, the login-message setting and *Hide minimap button*. `/encore minimap` shows or hides it. The game's addon list button on the minimap (Addon Compartment) also opens the window.
+- `/encore info` shows the addon version and the game's Interface number. If it reports a mismatch, change `## Interface:` in all three `.toc` files to the number shown, then **fully restart the game** (`/reload` does not re-read `.toc` files).
+- `/encore db` opens the Encore-DB window.
+- `/encore stonks` opens the Encore-Stonks browser.
+- The Encore crest button sits on the minimap ring just below the day/night indicator, at the same size, and keeps that size at any resolution or UI scale. Left-click it to open the **Encore Essentials window** in the middle of the screen, which lists the modules. Right-click it for options: addon info, the login-message setting and *Hide minimap button*. `/encore minimap` shows or hides it. The game's addon list button on the minimap (Addon Compartment) also opens the window.
 - The button is not a LibDBIcon button and is not attached to the minimap frame, so minimap button collectors (EnhanceQoL's button sink, MinimapButtonBag) do not pick it up.
 
 After changing Lua files, `/reload` is enough. After changing `.toc` files, restart the game.
@@ -82,7 +126,7 @@ Weekdays and hours use the computer's time zone. Only hours you actually scan in
 EncoreEssentials/        core addon (TOC, Lua, Media/*.tga textures)
 EncoreEssentials_DB/     Encore-DB module (load on demand)
 EncoreEssentials_Stonks/ Encore-Stonks module (auction price graphs, records Auctionator scans)
-docs/mockup/             interactive HTML mock-up of the Encore-DB window
+docs/                    guild sharing design notes and the Encore-DB window mock-up
 assets/                  Encore crest and icons (SVG sources and PNG exports)
 tools/                   data-extraction scripts for the Encore-DB database
 ```
