@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Encore-DB icon: the Encore Essentials frame (stars, gold and teal rings, red field) around a treasure chest -->
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff0c4"/><stop offset=".22" stop-color="#f4b866"/><stop offset=".5" stop-color="#c47a2c"/>
+      <stop offset=".72" stop-color="#f2ad5c"/><stop offset="1" stop-color="#7a4313"/>
+    </linearGradient>
+    <linearGradient id="goldText" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff3cf"/><stop offset=".45" stop-color="#f6bd6c"/><stop offset=".55" stop-color="#d98a36"/><stop offset="1" stop-color="#9a571c"/>
+    </linearGradient>
+    <radialGradient id="field" cx=".5" cy=".38" r=".7">
+      <stop offset="0" stop-color="#d3170f"/><stop offset=".5" stop-color="#8f0805"/><stop offset="1" stop-color="#3c0100"/>
+    </radialGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a8fbf8"/><stop offset=".45" stop-color="#16cbcb"/><stop offset="1" stop-color="#046f70"/>
+    </linearGradient>
+    <radialGradient id="gem" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#e6ffff"/><stop offset=".4" stop-color="#22d6d6"/><stop offset="1" stop-color="#035c5d"/>
+    </radialGradient>
+    <filter id="drop" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity=".6"/></filter>
+        <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7a3410"/><stop offset=".55" stop-color="#4a1c07"/><stop offset="1" stop-color="#260b02"/>
+    </linearGradient>
+    <linearGradient id="lidWood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9a4716"/><stop offset="1" stop-color="#4d1d07"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#a8fbf8" stop-opacity=".95"/><stop offset=".45" stop-color="#16cbcb" stop-opacity=".55"/><stop offset="1" stop-color="#16cbcb" stop-opacity="0"/>
+    </radialGradient>
+    <symbol id="star" viewBox="-40 -40 80 80">
+      <path d="M0-38L11-11 38 0 11 11 0 38-11 11-38 0-11-11Z" fill="url(#gold)" stroke="#2a1404" stroke-width="3"/>
+      <path d="M0-15L7 0 0 15-7 0Z" fill="url(#gem)" stroke="#2a1404" stroke-width="1.5"/>
+    </symbol>
+    <symbol id="spark" viewBox="-20 -20 40 40">
+      <path d="M0-19L4-4 19 0 4 4 0 19-4 4-19 0-4-4Z" fill="#d8ffff" stroke="#046f70" stroke-width="1.5"/>
+    </symbol>
+    <clipPath id="fieldClip"><circle cx="256" cy="256" r="183"/></clipPath>
+  </defs>
+  <g filter="url(#drop)">
+    <use href="#star" x="216" y="6" width="80" height="80"/>
+    <use href="#star" x="216" y="426" width="80" height="80"/>
+    <use href="#star" x="6" y="216" width="80" height="80"/>
+    <use href="#star" x="426" y="216" width="80" height="80"/>
+    <circle cx="256" cy="256" r="214" fill="url(#gold)" stroke="#2a1404" stroke-width="5"/>
+    <circle cx="256" cy="256" r="196" fill="#1b0a03"/>
+    <circle cx="256" cy="256" r="190" fill="none" stroke="url(#teal)" stroke-width="5"/>
+    <circle cx="256" cy="256" r="183" fill="url(#field)"/>
+  </g>
+  <g clip-path="url(#fieldClip)">
+    <path d="M256 110L274 238 400 256 274 274 256 402 238 274 112 256 238 238Z" fill="#000" fill-opacity=".18"/>
+    <!-- teal glow from the treasure inside -->
+    <ellipse cx="256" cy="196" rx="150" ry="92" fill="url(#glow)"/>
+    <!-- ground shadow -->
+    <ellipse cx="256" cy="372" rx="138" ry="16" fill="#000" fill-opacity=".45"/>
+  </g>
+  <g stroke="#1d0802" stroke-linejoin="round" filter="url(#drop)">
+    <!-- lid, slightly open -->
+    <path d="M138 216C138 166 182 140 256 140C330 140 374 166 374 216Z" fill="url(#lidWood)" stroke-width="7"/>
+    <path d="M150 206C156 172 196 154 256 154C316 154 356 172 362 206" fill="none" stroke="#c47a2c" stroke-opacity=".35" stroke-width="4"/>
+    <path d="M172 151V216H200V143ZM312 143V216H340V151Z" fill="url(#gold)" stroke-width="5"/>
+    <path d="M132 210H380V228H132Z" fill="url(#gold)" stroke-width="5"/>
+    <!-- treasure light between lid and body -->
+    <path d="M140 230H372L366 244H146Z" fill="#a8fbf8" stroke="#046f70" stroke-width="3"/>
+    <!-- body -->
+    <path d="M138 244H374V362H138Z" fill="url(#wood)" stroke-width="7"/>
+    <path d="M150 290H362M150 330H362" fill="none" stroke="#1d0802" stroke-opacity=".5" stroke-width="3"/>
+    <path d="M172 244V362H200V244ZM312 244V362H340V244Z" fill="url(#gold)" stroke-width="5"/>
+    <path d="M132 240H380V258H132ZM132 350H380V368H132Z" fill="url(#gold)" stroke-width="5"/>
+    <!-- lock plate with a teal gem -->
+    <path d="M226 236H286V292L256 316L226 292Z" fill="url(#gold)" stroke-width="6"/>
+    <circle cx="256" cy="268" r="15" fill="url(#gem)" stroke-width="4"/>
+    <!-- rivets -->
+    <g fill="#fff0c4" stroke="none">
+      <circle cx="186" cy="304" r="5"/><circle cx="326" cy="304" r="5"/>
+      <circle cx="186" cy="182" r="5"/><circle cx="326" cy="182" r="5"/>
+    </g>
+  </g>
+  <!-- sparkles -->
+  <use href="#spark" x="140" y="108" width="44" height="44"/>
+  <use href="#spark" x="336" y="96" width="34" height="34"/>
+  <use href="#spark" x="236" y="88" width="26" height="26"/>
+</svg>

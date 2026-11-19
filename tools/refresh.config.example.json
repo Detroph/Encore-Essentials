@@ -1,0 +1,6 @@
+{
+  "dungeonJournal": "<your WoW Forever folder>/Interface/AddOns/ForeverDungeonJournal",
+  "lootSources": ["dungeon-journal-check", "foreverdb", "foreverchanges", "wowhead"],
+  "wowheadPauseSeconds": 8,
+  "questieDB": "tools/cache/questiedb"
+}

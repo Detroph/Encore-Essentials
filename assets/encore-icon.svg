@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff0c4"/><stop offset=".22" stop-color="#f4b866"/><stop offset=".5" stop-color="#c47a2c"/>
+      <stop offset=".72" stop-color="#f2ad5c"/><stop offset="1" stop-color="#7a4313"/>
+    </linearGradient>
+    <linearGradient id="goldText" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff3cf"/><stop offset=".45" stop-color="#f6bd6c"/><stop offset=".55" stop-color="#d98a36"/><stop offset="1" stop-color="#9a571c"/>
+    </linearGradient>
+    <radialGradient id="field" cx=".5" cy=".38" r=".7">
+      <stop offset="0" stop-color="#d3170f"/><stop offset=".5" stop-color="#8f0805"/><stop offset="1" stop-color="#3c0100"/>
+    </radialGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a8fbf8"/><stop offset=".45" stop-color="#16cbcb"/><stop offset="1" stop-color="#046f70"/>
+    </linearGradient>
+    <radialGradient id="gem" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#e6ffff"/><stop offset=".4" stop-color="#22d6d6"/><stop offset="1" stop-color="#035c5d"/>
+    </radialGradient>
+    <filter id="drop" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity=".6"/></filter>
+    <symbol id="star" viewBox="-40 -40 80 80">
+      <path d="M0-38L11-11 38 0 11 11 0 38-11 11-38 0-11-11Z" fill="url(#gold)" stroke="#2a1404" stroke-width="3"/>
+      <path d="M0-15L7 0 0 15-7 0Z" fill="url(#gem)" stroke="#2a1404" stroke-width="1.5"/>
+    </symbol>
+    <path id="inf" d="M256 222C292 160 404 160 404 222C404 284 292 284 256 222C220 160 108 160 108 222C108 284 220 284 256 222Z"/>
+    <path id="over" d="M306 182C284 192 268 206 256 222C244 238 228 252 206 262"/>
+  </defs>
+  <g filter="url(#drop)">
+    <use href="#star" x="216" y="6" width="80" height="80"/>
+    <use href="#star" x="216" y="426" width="80" height="80"/>
+    <use href="#star" x="6" y="216" width="80" height="80"/>
+    <use href="#star" x="426" y="216" width="80" height="80"/>
+    <circle cx="256" cy="256" r="214" fill="url(#gold)" stroke="#2a1404" stroke-width="5"/>
+    <circle cx="256" cy="256" r="196" fill="#1b0a03"/>
+    <circle cx="256" cy="256" r="190" fill="none" stroke="url(#teal)" stroke-width="5"/>
+    <circle cx="256" cy="256" r="183" fill="url(#field)"/>
+  </g>
+  <path d="M256 110L274 238 400 256 274 274 256 402 238 274 112 256 238 238Z" fill="#000" fill-opacity=".18"/>
+  <!-- infinity ribbon: dark edge, gold, teal core, highlight; then the over-crossing redrawn -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(256 256) scale(1.12) translate(-256 -222)">
+    <use href="#inf" stroke="#1d0802" stroke-width="38"/>
+    <use href="#inf" stroke="url(#gold)" stroke-width="32"/>
+    <use href="#inf" stroke="url(#teal)" stroke-width="18"/>
+    <use href="#inf" stroke="#d8ffff" stroke-opacity=".45" stroke-width="3" transform="translate(0 -4)"/>
+    <use href="#over" stroke-linecap="butt" stroke="#1d0802" stroke-width="38"/>
+    <use href="#over" stroke-linecap="butt" stroke="url(#gold)" stroke-width="32"/>
+    <use href="#over" stroke-linecap="butt" stroke="url(#teal)" stroke-width="18"/>
+    <use href="#over" stroke-linecap="butt" stroke="#d8ffff" stroke-opacity=".45" stroke-width="3" transform="translate(0 -4)"/>
+  </g>
+</svg>

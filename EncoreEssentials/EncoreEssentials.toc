@@ -1,0 +1,14 @@
+## Interface: 16001
+## Title: |cffeb9339Encore|r Essentials
+## Notes: Encore's toolkit for WoW Forever. Type /encore for commands.
+## Author: Encore
+## X-License: GPL-3.0
+## Version: 0.1.0
+## IconTexture: Interface\AddOns\EncoreEssentials\Media\encore-icon
+## SavedVariables: EncoreEssentialsDB
+## AddonCompartmentFunc: EncoreEssentials_OnAddonCompartmentClick
+
+Locales\enUS.lua
+Core.lua
+Hub.lua
+Minimap.lua

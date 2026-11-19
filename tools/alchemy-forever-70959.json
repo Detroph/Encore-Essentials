@@ -1,0 +1,8604 @@
+[
+ {
+  "spell": 2330,
+  "name": "?",
+  "min": 1,
+  "yellow": 55,
+  "grey": 95,
+  "acquire": 3,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "changed",
+  "createsNew": false
+ },
+ {
+  "spell": 2337,
+  "name": "?",
+  "min": 1,
+  "yellow": 85,
+  "grey": 125,
+  "acquire": 3,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "changed",
+  "createsNew": false
+ },
+ {
+  "spell": 3447,
+  "name": "?",
+  "min": 1,
+  "yellow": 135,
+  "grey": 175,
+  "acquire": 3,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "changed",
+  "createsNew": false
+ },
+ {
+  "spell": 6619,
+  "name": "?",
+  "min": 1,
+  "yellow": 150,
+  "grey": 190,
+  "acquire": 3,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "changed",
+  "createsNew": false
+ },
+ {
+  "spell": 7181,
+  "name": "?",
+  "min": 1,
+  "yellow": 175,
+  "grey": 215,
+  "acquire": 3,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "changed",
+  "createsNew": false
+ },
+ {
+  "spell": 11457,
+  "name": "?",
+  "min": 1,
+  "yellow": 230,
+  "grey": 270,
+  "acquire": 3,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "changed",
+  "createsNew": false
+ },
+ {
+  "spell": 17556,
+  "name": "?",
+  "min": 1,
+  "yellow": 290,
+  "grey": 330,
+  "acquire": 3,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [
+   {
+    "id": 13480,
+    "name": "?",
+    "q": 1
+   }
+  ],
+  "status": "changed",
+  "createsNew": false
+ },
+ {
+  "spell": 1277779,
+  "name": "?",
+  "min": 1,
+  "yellow": 315,
+  "grey": 315,
+  "acquire": 0,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": false
+ },
+ {
+  "spell": 17632,
+  "name": "Alchemist's Stone",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 13503,
+   "name": "Alchemist's Stone",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 7078,
+    "n": 8,
+    "name": "Essence of Fire",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 7076,
+    "n": 8,
+    "name": "Essence of Earth",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 7082,
+    "n": 8,
+    "name": "Essence of Air",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 7080,
+    "n": 8,
+    "name": "Essence of Water",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 12803,
+    "n": 8,
+    "name": "Living Essence",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 9262,
+    "n": 2,
+    "name": "Black Vitriol",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13468,
+    "n": 4,
+    "name": "Black Lotus",
+    "q": 2,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13517,
+    "name": "Recipe: Alchemist's Stone",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 2259,
+  "name": "Alchemy",
+  "min": 1,
+  "yellow": 0,
+  "grey": 0,
+  "acquire": 0,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 3101,
+  "name": "Alchemy",
+  "min": 1,
+  "yellow": 0,
+  "grey": 0,
+  "acquire": 0,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 3464,
+  "name": "Alchemy",
+  "min": 1,
+  "yellow": 0,
+  "grey": 0,
+  "acquire": 0,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11611,
+  "name": "Alchemy",
+  "min": 1,
+  "yellow": 0,
+  "grey": 0,
+  "acquire": 0,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1240943,
+  "name": "Alchemy",
+  "min": 1,
+  "yellow": 0,
+  "grey": 0,
+  "acquire": 0,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": false
+ },
+ {
+  "spell": 1240954,
+  "name": "Alchemy",
+  "min": 1,
+  "yellow": 0,
+  "grey": 0,
+  "acquire": 0,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": false
+ },
+ {
+  "spell": 1240965,
+  "name": "Alchemy",
+  "min": 1,
+  "yellow": 0,
+  "grey": 0,
+  "acquire": 0,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": false
+ },
+ {
+  "spell": 1240977,
+  "name": "Alchemy",
+  "min": 1,
+  "yellow": 0,
+  "grey": 0,
+  "acquire": 0,
+  "creates": null,
+  "reagents": [],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": false
+ },
+ {
+  "spell": 1263078,
+  "name": "Alchemy Laboratory",
+  "min": 1,
+  "yellow": 300,
+  "grey": 300,
+  "acquire": 0,
+  "creates": {
+   "id": 279990,
+   "name": "Alchemy Laboratory",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 273125,
+    "n": 1,
+    "name": "Lich's Index Finger",
+    "q": 2,
+    "new": true
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13463,
+    "n": 2,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 273112,
+    "name": "Blueprint: Alchemy Laboratory",
+    "q": 2
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 11461,
+  "name": "Arcane Elixir",
+  "min": 1,
+  "yellow": 250,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 9155,
+   "name": "Arcane Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8839,
+    "n": 1,
+    "name": "Blindweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3821,
+    "n": 1,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 7836,
+  "name": "Blackmouth Oil",
+  "min": 1,
+  "yellow": 80,
+  "grey": 100,
+  "acquire": 0,
+  "creates": {
+   "id": 6370,
+   "name": "Blackmouth Oil",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 6358,
+    "n": 2,
+    "name": "Oily Blackmouth",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 12609,
+  "name": "Catseye Draught",
+  "min": 1,
+  "yellow": 220,
+  "grey": 260,
+  "acquire": 0,
+  "creates": {
+   "id": 10592,
+   "name": "Catseye Draught",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3821,
+    "n": 1,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3818,
+    "n": 1,
+    "name": "Fadeleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1251749,
+  "name": "Caustic Smog Potion",
+  "min": 1,
+  "yellow": 270,
+  "grey": 275,
+  "acquire": 0,
+  "creates": {
+   "id": 250951,
+   "name": "Caustic Smog Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8845,
+    "n": 2,
+    "name": "Ghost Mushroom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3369,
+    "n": 2,
+    "name": "Grave Moss",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250995,
+    "name": "Recipe: Caustic Smog Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1249630,
+  "name": "Cerulean Dye",
+  "min": 1,
+  "yellow": 50,
+  "grey": 90,
+  "acquire": 0,
+  "creates": {
+   "id": 249409,
+   "name": "Cerulean Dye",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 249399,
+    "n": 2,
+    "name": "Frilled Lichen",
+    "q": 2,
+    "new": true
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1250781,
+  "name": "Cleric's Elixir",
+  "min": 1,
+  "yellow": 150,
+  "grey": 155,
+  "acquire": 0,
+  "creates": {
+   "id": 250332,
+   "name": "Cleric's Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3819,
+    "n": 2,
+    "name": "Wintersbite",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 4625,
+    "n": 2,
+    "name": "Firebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250368,
+    "name": "Recipe: Cleric's Elixir",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1244646,
+  "name": "Discolored Healing Potion",
+  "min": 1,
+  "yellow": 135,
+  "grey": 175,
+  "acquire": 0,
+  "creates": {
+   "id": 247240,
+   "name": "Discolored Healing Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2453,
+    "n": 1,
+    "name": "Bruiseweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 730,
+    "n": 1,
+    "name": "Murloc Eye",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1244421,
+  "name": "Distilled Firewater",
+  "min": 1,
+  "yellow": 260,
+  "grey": 270,
+  "acquire": 0,
+  "creates": {
+   "id": 246948,
+   "name": "Distilled Firewater",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3819,
+    "n": 4,
+    "name": "Wintersbite",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8846,
+    "n": 2,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 236754,
+    "name": "Recipe: Distilled Firewater",
+    "q": 2
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1251751,
+  "name": "Dragonfire Potion",
+  "min": 1,
+  "yellow": 250,
+  "grey": 255,
+  "acquire": 0,
+  "creates": {
+   "id": 250953,
+   "name": "Dragonfire Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13465,
+    "n": 2,
+    "name": "Mountain Silversage",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 4625,
+    "n": 2,
+    "name": "Firebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250997,
+    "name": "Recipe: Dragonfire Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 11478,
+  "name": "Draught of Detect Demon",
+  "min": 1,
+  "yellow": 265,
+  "grey": 305,
+  "acquire": 0,
+  "creates": {
+   "id": 9233,
+   "name": "Draught of Detect Demon",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8846,
+    "n": 2,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 3453,
+  "name": "Draught of Detect Lesser Invisibility",
+  "min": 1,
+  "yellow": 215,
+  "grey": 255,
+  "acquire": 0,
+  "creates": {
+   "id": 3828,
+   "name": "Draught of Detect Lesser Invisibility",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3358,
+    "n": 1,
+    "name": "Khadgar's Whisker",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3818,
+    "n": 1,
+    "name": "Fadeleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 3832,
+    "name": "Recipe: Elixir of Detect Lesser Invisibility",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11460,
+  "name": "Draught of Detect Undead",
+  "min": 1,
+  "yellow": 245,
+  "grey": 285,
+  "acquire": 0,
+  "creates": {
+   "id": 9154,
+   "name": "Draught of Detect Undead",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8836,
+    "n": 1,
+    "name": "Arthas' Tears",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11468,
+  "name": "Draught of Dream Vision",
+  "min": 1,
+  "yellow": 255,
+  "grey": 295,
+  "acquire": 0,
+  "creates": {
+   "id": 9197,
+   "name": "Draught of Dream Vision",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8831,
+    "n": 3,
+    "name": "Purple Lotus",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 9297,
+    "name": "Recipe: Draught of Dream Vision",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 22808,
+  "name": "Draught of Greater Water Breathing",
+  "min": 1,
+  "yellow": 230,
+  "grey": 270,
+  "acquire": 0,
+  "creates": {
+   "id": 18294,
+   "name": "Draught of Greater Water Breathing",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 7972,
+    "n": 1,
+    "name": "Ichor of Undeath",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8831,
+    "n": 2,
+    "name": "Purple Lotus",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 2365,
+  "name": "Draught of Tongues",
+  "min": 1,
+  "yellow": 100,
+  "grey": 140,
+  "acquire": 0,
+  "creates": {
+   "id": 2460,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2449,
+    "n": 2,
+    "name": "Earthroot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 785,
+    "n": 2,
+    "name": "Mageroyal",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 2556,
+    "name": "?",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": false
+ },
+ {
+  "spell": 7179,
+  "name": "Draught of Water Breathing",
+  "min": 1,
+  "yellow": 120,
+  "grey": 160,
+  "acquire": 0,
+  "creates": {
+   "id": 5996,
+   "name": "Draught of Water Breathing",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3820,
+    "n": 1,
+    "name": "Stranglekelp",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 6370,
+    "n": 2,
+    "name": "Blackmouth Oil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11447,
+  "name": "Draught of Water Walking",
+  "min": 1,
+  "yellow": 190,
+  "grey": 230,
+  "acquire": 0,
+  "creates": {
+   "id": 8827,
+   "name": "Draught of Water Walking",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 6370,
+    "n": 1,
+    "name": "Blackmouth Oil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3357,
+    "n": 1,
+    "name": "Liferoot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 288206,
+    "name": "?",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 15833,
+  "name": "Dreamless Sleep Potion",
+  "min": 1,
+  "yellow": 245,
+  "grey": 285,
+  "acquire": 0,
+  "creates": {
+   "id": 12190,
+   "name": "Dreamless Sleep Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8831,
+    "n": 3,
+    "name": "Purple Lotus",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11449,
+  "name": "Elixir of Agility",
+  "min": 1,
+  "yellow": 205,
+  "grey": 245,
+  "acquire": 0,
+  "creates": {
+   "id": 8949,
+   "name": "Elixir of Agility",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3820,
+    "n": 1,
+    "name": "Stranglekelp",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3821,
+    "n": 1,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1213571,
+  "name": "Elixir of Alacrity",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 233977,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 2,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 234012,
+    "n": 2,
+    "name": "Hive Thistle",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 234011,
+    "n": 1,
+    "name": "?",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 234260,
+    "name": "?",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17557,
+  "name": "Elixir of Brute Force",
+  "min": 1,
+  "yellow": 290,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 13453,
+   "name": "Elixir of Brute Force",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8846,
+    "n": 2,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13466,
+    "n": 2,
+    "name": "Plaguebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13481,
+    "name": "Recipe: Elixir of Brute Force",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 426607,
+  "name": "Elixir of Coalesced Regret",
+  "min": 1,
+  "yellow": 90,
+  "grey": 110,
+  "acquire": 0,
+  "creates": {
+   "id": 210708,
+   "name": "Elixir of Coalesced Regret",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3820,
+    "n": 5,
+    "name": "Stranglekelp",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3369,
+    "n": 5,
+    "name": "Grave Moss",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 11083,
+    "n": 1,
+    "name": "Soul Dust",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 210709,
+    "name": "Recipe: Elixir of Coalesced Regret",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250777,
+  "name": "Elixir of Cunning",
+  "min": 1,
+  "yellow": 280,
+  "grey": 285,
+  "acquire": 0,
+  "creates": {
+   "id": 250328,
+   "name": "Elixir of Cunning",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 3,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8846,
+    "n": 2,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250364,
+    "name": "Recipe: Elixir of Cunning",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 11450,
+  "name": "Elixir of Defense",
+  "min": 1,
+  "yellow": 215,
+  "grey": 255,
+  "acquire": 0,
+  "creates": {
+   "id": 8951,
+   "name": "Elixir of Defense",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3355,
+    "n": 1,
+    "name": "Wild Steelbloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3821,
+    "n": 1,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250799,
+  "name": "Elixir of Ferocity",
+  "min": 1,
+  "yellow": 280,
+  "grey": 285,
+  "acquire": 0,
+  "creates": {
+   "id": 250350,
+   "name": "Elixir of Ferocity",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8846,
+    "n": 3,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8845,
+    "n": 1,
+    "name": "Ghost Mushroom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250386,
+    "name": "Recipe: Elixir of Ferocity",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 7845,
+  "name": "Elixir of Fire Power",
+  "min": 1,
+  "yellow": 165,
+  "grey": 205,
+  "acquire": 0,
+  "creates": {
+   "id": 6373,
+   "name": "Elixir of Fire Power",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 6371,
+    "n": 2,
+    "name": "Fire Oil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3356,
+    "n": 1,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250783,
+  "name": "Elixir of Fortitude",
+  "min": 1,
+  "yellow": 155,
+  "grey": 160,
+  "acquire": 0,
+  "creates": {
+   "id": 250334,
+   "name": "Elixir of Fortitude",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3821,
+    "n": 4,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250370,
+    "name": "Recipe: Elixir of Fortitude",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 21923,
+  "name": "Elixir of Frost Power",
+  "min": 1,
+  "yellow": 210,
+  "grey": 250,
+  "acquire": 0,
+  "creates": {
+   "id": 17708,
+   "name": "Elixir of Frost Power",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3819,
+    "n": 2,
+    "name": "Wintersbite",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3358,
+    "n": 1,
+    "name": "Khadgar's Whisker",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 17709,
+    "name": "Recipe: Elixir of Frost Power",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 8240,
+  "name": "Elixir of Giant Growth",
+  "min": 1,
+  "yellow": 120,
+  "grey": 160,
+  "acquire": 0,
+  "creates": {
+   "id": 6662,
+   "name": "Elixir of Giant Growth",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 6522,
+    "n": 1,
+    "name": "Deviate Fish",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2449,
+    "n": 1,
+    "name": "Earthroot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 6663,
+    "name": "Recipe: Elixir of Giant Growth",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11467,
+  "name": "Elixir of Greater Agility",
+  "min": 1,
+  "yellow": 255,
+  "grey": 295,
+  "acquire": 0,
+  "creates": {
+   "id": 9187,
+   "name": "Elixir of Greater Agility",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8838,
+    "n": 1,
+    "name": "Sungrass",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3821,
+    "n": 1,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17554,
+  "name": "Elixir of Greater Defense",
+  "min": 1,
+  "yellow": 280,
+  "grey": 320,
+  "acquire": 0,
+  "creates": {
+   "id": 13445,
+   "name": "Elixir of Greater Defense",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13423,
+    "n": 2,
+    "name": "Stonescale Oil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8838,
+    "n": 1,
+    "name": "Sungrass",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13478,
+    "name": "Recipe: Elixir of Superior Defense",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250784,
+  "name": "Elixir of Greater Fortitude",
+  "min": 1,
+  "yellow": 205,
+  "grey": 210,
+  "acquire": 0,
+  "creates": {
+   "id": 250335,
+   "name": "Elixir of Greater Fortitude",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8838,
+    "n": 4,
+    "name": "Sungrass",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250371,
+    "name": "Recipe: Elixir of Greater Fortitude",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 11465,
+  "name": "Elixir of Greater Intellect",
+  "min": 1,
+  "yellow": 250,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 9179,
+   "name": "Elixir of Greater Intellect",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8839,
+    "n": 1,
+    "name": "Blindweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3358,
+    "n": 1,
+    "name": "Khadgar's Whisker",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250796,
+  "name": "Elixir of Greater Spirit",
+  "min": 1,
+  "yellow": 170,
+  "grey": 175,
+  "acquire": 0,
+  "creates": {
+   "id": 250347,
+   "name": "Elixir of Greater Spirit",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8836,
+    "n": 3,
+    "name": "Arthas' Tears",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8831,
+    "n": 2,
+    "name": "Purple Lotus",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250383,
+    "name": "Recipe: Elixir of Greater Spirit",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 11472,
+  "name": "Elixir of Greater Strength",
+  "min": 1,
+  "yellow": 260,
+  "grey": 300,
+  "acquire": 0,
+  "creates": {
+   "id": 9206,
+   "name": "Elixir of Greater Strength",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8838,
+    "n": 1,
+    "name": "Sungrass",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8846,
+    "n": 1,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 9298,
+    "name": "Recipe: Elixir of Giants",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 26277,
+  "name": "Elixir of Holy Power",
+  "min": 1,
+  "yellow": 265,
+  "grey": 305,
+  "acquire": 0,
+  "creates": {
+   "id": 21546,
+   "name": "Elixir of Holy Power",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 6371,
+    "n": 3,
+    "name": "Fire Oil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 4625,
+    "n": 3,
+    "name": "Firebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 21547,
+    "name": "Recipe: Elixir of Holy Power",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250802,
+  "name": "Elixir of Intellect",
+  "min": 1,
+  "yellow": 140,
+  "grey": 145,
+  "acquire": 0,
+  "creates": {
+   "id": 250354,
+   "name": "Elixir of Intellect",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3358,
+    "n": 3,
+    "name": "Khadgar's Whisker",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250389,
+    "name": "Recipe: Elixir of Intellect",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 2333,
+  "name": "Elixir of Lesser Agility",
+  "min": 1,
+  "yellow": 165,
+  "grey": 205,
+  "acquire": 0,
+  "creates": {
+   "id": 3390,
+   "name": "Elixir of Lesser Agility",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3355,
+    "n": 1,
+    "name": "Wild Steelbloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2452,
+    "n": 1,
+    "name": "Swiftthistle",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 3396,
+    "name": "Recipe: Elixir of Lesser Agility",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 3177,
+  "name": "Elixir of Lesser Defense",
+  "min": 1,
+  "yellow": 155,
+  "grey": 195,
+  "acquire": 0,
+  "creates": {
+   "id": 3389,
+   "name": "Elixir of Lesser Defense",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3355,
+    "n": 1,
+    "name": "Wild Steelbloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3820,
+    "n": 1,
+    "name": "Stranglekelp",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 3450,
+  "name": "Elixir of Lesser Fortitude",
+  "min": 1,
+  "yellow": 195,
+  "grey": 235,
+  "acquire": 0,
+  "creates": {
+   "id": 3825,
+   "name": "Elixir of Lesser Fortitude",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3355,
+    "n": 1,
+    "name": "Wild Steelbloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3821,
+    "n": 1,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 3830,
+    "name": "Recipe: Elixir of Lesser Fortitude",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250801,
+  "name": "Elixir of Lesser Intellect",
+  "min": 1,
+  "yellow": 100,
+  "grey": 105,
+  "acquire": 0,
+  "creates": {
+   "id": 250353,
+   "name": "Elixir of Lesser Intellect",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3356,
+    "n": 3,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250388,
+    "name": "Recipe: Elixir of Lesser Intellect",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1250794,
+  "name": "Elixir of Lesser Spirit",
+  "min": 1,
+  "yellow": 70,
+  "grey": 75,
+  "acquire": 0,
+  "creates": {
+   "id": 250345,
+   "name": "Elixir of Lesser Spirit",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3355,
+    "n": 2,
+    "name": "Wild Steelbloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 785,
+    "n": 1,
+    "name": "Mageroyal",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250381,
+    "name": "Recipe: Elixir of Lesser Spirit",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 3230,
+  "name": "Elixir of Minor Agility",
+  "min": 1,
+  "yellow": 80,
+  "grey": 120,
+  "acquire": 0,
+  "creates": {
+   "id": 2457,
+   "name": "Elixir of Minor Agility",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2452,
+    "n": 1,
+    "name": "Swiftthistle",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 765,
+    "n": 1,
+    "name": "Silverleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 2553,
+    "name": "Recipe: Elixir of Minor Agility",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 7183,
+  "name": "Elixir of Minor Defense",
+  "min": 1,
+  "yellow": 55,
+  "grey": 95,
+  "acquire": 1,
+  "creates": {
+   "id": 5997,
+   "name": "Elixir of Minor Defense",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 765,
+    "n": 1,
+    "name": "Silverleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2447,
+    "n": 1,
+    "name": "Peacebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "changed",
+  "createsNew": false
+ },
+ {
+  "spell": 1245250,
+  "name": "Elixir of Minor Force",
+  "min": 1,
+  "yellow": 10,
+  "grey": 15,
+  "acquire": 1,
+  "creates": {
+   "id": 247755,
+   "name": "Elixir of Minor Force",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 765,
+    "n": 1,
+    "name": "Silverleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1250793,
+  "name": "Elixir of Minor Spirit",
+  "min": 1,
+  "yellow": 20,
+  "grey": 25,
+  "acquire": 0,
+  "creates": {
+   "id": 250344,
+   "name": "Elixir of Minor Spirit",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2449,
+    "n": 2,
+    "name": "Earthroot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2447,
+    "n": 1,
+    "name": "Peacebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250380,
+    "name": "Recipe: Elixir of Minor Spirit",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 2329,
+  "name": "Elixir of Minor Strength",
+  "min": 1,
+  "yellow": 55,
+  "grey": 95,
+  "acquire": 0,
+  "creates": {
+   "id": 2454,
+   "name": "Elixir of Minor Strength",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2449,
+    "n": 1,
+    "name": "Earthroot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 765,
+    "n": 1,
+    "name": "Silverleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250792,
+  "name": "Elixir of Nature Power",
+  "min": 1,
+  "yellow": 290,
+  "grey": 295,
+  "acquire": 0,
+  "creates": {
+   "id": 250343,
+   "name": "Elixir of Nature Power",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13464,
+    "n": 4,
+    "name": "Golden Sansam",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8838,
+    "n": 2,
+    "name": "Sungrass",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250379,
+    "name": "Recipe: Elixir of Nature Power",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 3188,
+  "name": "Elixir of Ogre Strength",
+  "min": 1,
+  "yellow": 175,
+  "grey": 215,
+  "acquire": 0,
+  "creates": {
+   "id": 3391,
+   "name": "Elixir of Ogre Strength",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2449,
+    "n": 1,
+    "name": "Earthroot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3356,
+    "n": 1,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 6211,
+    "name": "Recipe: Elixir of Ogre's Strength",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250787,
+  "name": "Elixir of Sages",
+  "min": 1,
+  "yellow": 280,
+  "grey": 285,
+  "acquire": 0,
+  "creates": {
+   "id": 250338,
+   "name": "Elixir of Sages",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 4,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13464,
+    "n": 2,
+    "name": "Golden Sansam",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 18256,
+    "n": 1,
+    "name": "Imbued Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250374,
+    "name": "Recipe: Elixir of Sages",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 11476,
+  "name": "Elixir of Shadow Power",
+  "min": 1,
+  "yellow": 265,
+  "grey": 305,
+  "acquire": 0,
+  "creates": {
+   "id": 9264,
+   "name": "Elixir of Shadow Power",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8845,
+    "n": 3,
+    "name": "Ghost Mushroom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 9301,
+    "name": "Recipe: Elixir of Shadow Power",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250795,
+  "name": "Elixir of Spirit",
+  "min": 1,
+  "yellow": 120,
+  "grey": 125,
+  "acquire": 0,
+  "creates": {
+   "id": 250346,
+   "name": "Elixir of Spirit",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3358,
+    "n": 3,
+    "name": "Khadgar's Whisker",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3356,
+    "n": 1,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250382,
+    "name": "Recipe: Elixir of Spirit",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1250798,
+  "name": "Elixir of Strength",
+  "min": 1,
+  "yellow": 155,
+  "grey": 160,
+  "acquire": 0,
+  "creates": {
+   "id": 250349,
+   "name": "Elixir of Strength",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3355,
+    "n": 3,
+    "name": "Wild Steelbloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3821,
+    "n": 1,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250385,
+    "name": "Recipe: Elixir of Strength",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1250785,
+  "name": "Elixir of Wicked Regeneration",
+  "min": 1,
+  "yellow": 290,
+  "grey": 295,
+  "acquire": 0,
+  "creates": {
+   "id": 250336,
+   "name": "Elixir of Wicked Regeneration",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13464,
+    "n": 3,
+    "name": "Golden Sansam",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13463,
+    "n": 2,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250372,
+    "name": "Recipe: Elixir of Wicked Regeneration",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 3171,
+  "name": "Elixir of Wisdom",
+  "min": 1,
+  "yellow": 120,
+  "grey": 160,
+  "acquire": 0,
+  "creates": {
+   "id": 3383,
+   "name": "Elixir of Wisdom",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 785,
+    "n": 1,
+    "name": "Mageroyal",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2450,
+    "n": 2,
+    "name": "Briarthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250800,
+  "name": "Elixir of the Grizzly",
+  "min": 1,
+  "yellow": 305,
+  "grey": 310,
+  "acquire": 0,
+  "creates": {
+   "id": 250351,
+   "name": "Elixir of the Grizzly",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8846,
+    "n": 3,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8839,
+    "n": 1,
+    "name": "Blindweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250387,
+    "name": "Recipe: Elixir of the Grizzly",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1213559,
+  "name": "Elixir of the Honey Badger",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 233967,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13465,
+    "n": 2,
+    "name": "Mountain Silversage",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 234012,
+    "n": 2,
+    "name": "Hive Thistle",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 234011,
+    "n": 1,
+    "name": "?",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 234257,
+    "name": "?",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1213565,
+  "name": "Elixir of the Ironside",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 233969,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13467,
+    "n": 2,
+    "name": "Icecap",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 234012,
+    "n": 2,
+    "name": "Hive Thistle",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 234011,
+    "n": 1,
+    "name": "?",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 234259,
+    "name": "?",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1213563,
+  "name": "Elixir of the Mage-Lord",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 233968,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13466,
+    "n": 2,
+    "name": "Plaguebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 234012,
+    "n": 2,
+    "name": "Hive Thistle",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 234011,
+    "n": 1,
+    "name": "?",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 234258,
+    "name": "?",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17571,
+  "name": "Elixir of the Mongoose",
+  "min": 1,
+  "yellow": 295,
+  "grey": 335,
+  "acquire": 0,
+  "creates": {
+   "id": 13452,
+   "name": "Elixir of the Mongoose",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13465,
+    "n": 2,
+    "name": "Mountain Silversage",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13466,
+    "n": 2,
+    "name": "Plaguebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13491,
+    "name": "Recipe: Elixir of the Mongoose",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250786,
+  "name": "Elixir of the Owl",
+  "min": 1,
+  "yellow": 285,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 250337,
+   "name": "Elixir of the Owl",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 4,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13465,
+    "n": 2,
+    "name": "Mountain Silversage",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 18256,
+    "n": 1,
+    "name": "Imbued Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250373,
+    "name": "Recipe: Elixir of the Owl",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1250778,
+  "name": "Elixir of the Phalanx",
+  "min": 1,
+  "yellow": 255,
+  "grey": 260,
+  "acquire": 0,
+  "creates": {
+   "id": 250329,
+   "name": "Elixir of the Phalanx",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13464,
+    "n": 2,
+    "name": "Golden Sansam",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8838,
+    "n": 4,
+    "name": "Sungrass",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250365,
+    "name": "Recipe: Elixir of the Phalanx",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 17555,
+  "name": "Elixir of the Sages",
+  "min": 1,
+  "yellow": 285,
+  "grey": 325,
+  "acquire": 0,
+  "creates": {
+   "id": 13447,
+   "name": "Elixir of the Sages",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 1,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13466,
+    "n": 2,
+    "name": "Plaguebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13479,
+    "name": "Recipe: Elixir of the Sages",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250797,
+  "name": "Elixir of the Whale",
+  "min": 1,
+  "yellow": 280,
+  "grey": 285,
+  "acquire": 0,
+  "creates": {
+   "id": 250348,
+   "name": "Elixir of the Whale",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 3,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8846,
+    "n": 1,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250384,
+    "name": "Recipe: Elixir of the Whale",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1263005,
+  "name": "Fermenter",
+  "min": 1,
+  "yellow": 140,
+  "grey": 140,
+  "acquire": 0,
+  "creates": {
+   "id": 279970,
+   "name": "Fermenter",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3356,
+    "n": 1,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2452,
+    "n": 1,
+    "name": "Swiftthistle",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 273085,
+    "name": "Blueprint: Fermenter",
+    "q": 2
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 7837,
+  "name": "Fire Oil",
+  "min": 1,
+  "yellow": 150,
+  "grey": 170,
+  "acquire": 0,
+  "creates": {
+   "id": 6371,
+   "name": "Fire Oil",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 6359,
+    "n": 2,
+    "name": "Firefin Snapper",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 7257,
+  "name": "Fire Protection Potion",
+  "min": 1,
+  "yellow": 210,
+  "grey": 250,
+  "acquire": 0,
+  "creates": {
+   "id": 6049,
+   "name": "Fire Protection Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 4402,
+    "n": 1,
+    "name": "Small Flame Sac",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 6371,
+    "n": 1,
+    "name": "Fire Oil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 6055,
+    "name": "Recipe: Fire Protection Potion",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1213546,
+  "name": "Flask of Ancient Knowledge",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 233964,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 16203,
+    "n": 1,
+    "name": "Greater Eternal Essence",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 234011,
+    "n": 1,
+    "name": "?",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13512,
+    "n": 1,
+    "name": "Flask of Supreme Power",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 234253,
+    "name": "?",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17638,
+  "name": "Flask of Chromatic Resistance",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 13513,
+   "name": "Flask of Chromatic Resistance",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13467,
+    "n": 30,
+    "name": "Icecap",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13465,
+    "n": 10,
+    "name": "Mountain Silversage",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13468,
+    "n": 1,
+    "name": "Black Lotus",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13522,
+    "name": "Recipe: Flask of Chromatic Resistance",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17636,
+  "name": "Flask of Distilled Wisdom",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 13511,
+   "name": "Flask of Distilled Wisdom",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 30,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13467,
+    "n": 10,
+    "name": "Icecap",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13468,
+    "n": 1,
+    "name": "Black Lotus",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13520,
+    "name": "Recipe: Flask of Distilled Wisdom",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 446226,
+  "name": "Flask of Everlasting Nightmares",
+  "min": 1,
+  "yellow": 250,
+  "grey": 260,
+  "acquire": 0,
+  "creates": {
+   "id": 221024,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 221021,
+    "n": 10,
+    "name": "?",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 220688,
+    "n": 1,
+    "name": "?",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1213552,
+  "name": "Flask of Madness",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 233962,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 16203,
+    "n": 1,
+    "name": "Greater Eternal Essence",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 234010,
+    "n": 1,
+    "name": "?",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13513,
+    "n": 1,
+    "name": "Flask of Chromatic Resistance",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 234256,
+    "name": "?",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1293559,
+  "name": "Flask of Natural Accuracy",
+  "min": 1,
+  "yellow": 320,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 274273,
+   "name": "Flask of Natural Accuracy",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 248822,
+    "n": 1,
+    "name": "Death Lotus",
+    "q": 2,
+    "new": true
+   },
+   {
+    "id": 248821,
+    "n": 12,
+    "name": "Demonsage",
+    "q": 1,
+    "new": true
+   },
+   {
+    "id": 13464,
+    "n": 9,
+    "name": "Golden Sansam",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 18256,
+    "n": 1,
+    "name": "Imbued Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 274277,
+    "name": "Recipe: Flask of Natural Accuracy",
+    "q": 3
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1293560,
+  "name": "Flask of Natural Aggression",
+  "min": 1,
+  "yellow": 320,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 274274,
+   "name": "Flask of Natural Aggression",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 248822,
+    "n": 1,
+    "name": "Death Lotus",
+    "q": 2,
+    "new": true
+   },
+   {
+    "id": 248821,
+    "n": 18,
+    "name": "Demonsage",
+    "q": 1,
+    "new": true
+   },
+   {
+    "id": 13465,
+    "n": 6,
+    "name": "Mountain Silversage",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 18256,
+    "n": 1,
+    "name": "Imbued Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 274278,
+    "name": "Recipe: Flask of Natural Aggression",
+    "q": 3
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1293561,
+  "name": "Flask of Natural Precision",
+  "min": 1,
+  "yellow": 320,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 274275,
+   "name": "Flask of Natural Precision",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 248822,
+    "n": 1,
+    "name": "Death Lotus",
+    "q": 2,
+    "new": true
+   },
+   {
+    "id": 248823,
+    "n": 12,
+    "name": "Marefoil",
+    "q": 1,
+    "new": true
+   },
+   {
+    "id": 13463,
+    "n": 9,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 18256,
+    "n": 1,
+    "name": "Imbued Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 274279,
+    "name": "Recipe: Flask of Natural Precision",
+    "q": 3
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1293562,
+  "name": "Flask of Natural Swiftness",
+  "min": 1,
+  "yellow": 320,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 274276,
+   "name": "Flask of Natural Swiftness",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 248822,
+    "n": 1,
+    "name": "Death Lotus",
+    "q": 2,
+    "new": true
+   },
+   {
+    "id": 248823,
+    "n": 18,
+    "name": "Marefoil",
+    "q": 1,
+    "new": true
+   },
+   {
+    "id": 13467,
+    "n": 6,
+    "name": "Icecap",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 18256,
+    "n": 1,
+    "name": "Imbued Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 274280,
+    "name": "Recipe: Flask of Natural Swiftness",
+    "q": 3
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 17634,
+  "name": "Flask of Petrification",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 13506,
+   "name": "Flask of Petrification",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13423,
+    "n": 30,
+    "name": "Stonescale Oil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13465,
+    "n": 10,
+    "name": "Mountain Silversage",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13468,
+    "n": 1,
+    "name": "Black Lotus",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13518,
+    "name": "Recipe: Flask of Petrification",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 448085,
+  "name": "Flask of Restless Dreams",
+  "min": 1,
+  "yellow": 250,
+  "grey": 260,
+  "acquire": 0,
+  "creates": {
+   "id": 222952,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 221021,
+    "n": 10,
+    "name": "?",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 220688,
+    "n": 1,
+    "name": "?",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17637,
+  "name": "Flask of Supreme Power",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 13512,
+   "name": "Flask of Supreme Power",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 30,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13465,
+    "n": 10,
+    "name": "Mountain Silversage",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13468,
+    "n": 1,
+    "name": "Black Lotus",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13521,
+    "name": "Recipe: Flask of Supreme Power",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1213544,
+  "name": "Flask of Unyielding Sorrow",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 233966,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 16203,
+    "n": 1,
+    "name": "Greater Eternal Essence",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 234012,
+    "n": 1,
+    "name": "Hive Thistle",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13511,
+    "n": 1,
+    "name": "Flask of Distilled Wisdom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 234252,
+    "name": "?",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1213548,
+  "name": "Flask of the Old Gods",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 233965,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 16203,
+    "n": 1,
+    "name": "Greater Eternal Essence",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 234006,
+    "n": 1,
+    "name": "?",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13510,
+    "n": 1,
+    "name": "Flask of the Titans",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 234255,
+    "name": "?",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17635,
+  "name": "Flask of the Titans",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 13510,
+   "name": "Flask of the Titans",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8846,
+    "n": 30,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13423,
+    "n": 10,
+    "name": "Stonescale Oil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13468,
+    "n": 1,
+    "name": "Black Lotus",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13519,
+    "name": "Recipe: Flask of the Titans",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 6624,
+  "name": "Free Action Potion",
+  "min": 1,
+  "yellow": 175,
+  "grey": 215,
+  "acquire": 0,
+  "creates": {
+   "id": 5634,
+   "name": "Free Action Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 6370,
+    "n": 2,
+    "name": "Blackmouth Oil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3820,
+    "n": 1,
+    "name": "Stranglekelp",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 5642,
+    "name": "Recipe: Free Action Potion",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1251737,
+  "name": "Frenzy Potion",
+  "min": 1,
+  "yellow": 145,
+  "grey": 150,
+  "acquire": 0,
+  "creates": {
+   "id": 250940,
+   "name": "Frenzy Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3818,
+    "n": 2,
+    "name": "Fadeleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2450,
+    "n": 2,
+    "name": "Briarthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250984,
+    "name": "Recipe: Frenzy Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 3454,
+  "name": "Frost Oil",
+  "min": 1,
+  "yellow": 220,
+  "grey": 260,
+  "acquire": 0,
+  "creates": {
+   "id": 3829,
+   "name": "Frost Oil",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3358,
+    "n": 4,
+    "name": "Khadgar's Whisker",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3819,
+    "n": 2,
+    "name": "Wintersbite",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 14634,
+    "name": "Recipe: Frost Oil",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 7258,
+  "name": "Frost Protection Potion",
+  "min": 1,
+  "yellow": 205,
+  "grey": 245,
+  "acquire": 0,
+  "creates": {
+   "id": 6050,
+   "name": "Frost Protection Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3819,
+    "n": 1,
+    "name": "Wintersbite",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3821,
+    "n": 1,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 6056,
+    "name": "Recipe: Frost Protection Potion",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11473,
+  "name": "Ghost Dye",
+  "min": 1,
+  "yellow": 260,
+  "grey": 300,
+  "acquire": 0,
+  "creates": {
+   "id": 9210,
+   "name": "Ghost Dye",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8845,
+    "n": 2,
+    "name": "Ghost Mushroom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 4342,
+    "n": 1,
+    "name": "Purple Dye",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 9302,
+    "name": "Recipe: Ghost Dye",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11466,
+  "name": "Gift of Arthas",
+  "min": 1,
+  "yellow": 255,
+  "grey": 295,
+  "acquire": 0,
+  "creates": {
+   "id": 9088,
+   "name": "Gift of Arthas",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8836,
+    "n": 1,
+    "name": "Arthas' Tears",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8839,
+    "n": 1,
+    "name": "Blindweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 9296,
+    "name": "Recipe: Gift of Arthas",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11456,
+  "name": "Goblin Rocket Fuel",
+  "min": 1,
+  "yellow": 225,
+  "grey": 265,
+  "acquire": 0,
+  "creates": {
+   "id": 9061,
+   "name": "Goblin Rocket Fuel",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 4625,
+    "n": 1,
+    "name": "Firebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 9260,
+    "n": 1,
+    "name": "Volatile Rum",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 10644,
+    "name": "Recipe: Goblin Rocket Fuel",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 6618,
+  "name": "Great Rage Potion",
+  "min": 1,
+  "yellow": 195,
+  "grey": 235,
+  "acquire": 0,
+  "creates": {
+   "id": 5633,
+   "name": "Great Rage Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 5637,
+    "n": 1,
+    "name": "Large Fang",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3356,
+    "n": 1,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 5643,
+    "name": "Recipe: Great Rage Potion",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17573,
+  "name": "Greater Arcane Elixir",
+  "min": 1,
+  "yellow": 300,
+  "grey": 340,
+  "acquire": 0,
+  "creates": {
+   "id": 13454,
+   "name": "Greater Arcane Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 3,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13465,
+    "n": 1,
+    "name": "Mountain Silversage",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13493,
+    "name": "Recipe: Greater Arcane Elixir",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17577,
+  "name": "Greater Arcane Protection Potion",
+  "min": 1,
+  "yellow": 305,
+  "grey": 345,
+  "acquire": 0,
+  "creates": {
+   "id": 13461,
+   "name": "Greater Arcane Protection Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 11176,
+    "n": 1,
+    "name": "Dream Dust",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13463,
+    "n": 1,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13497,
+    "name": "Recipe: Greater Arcane Protection Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250782,
+  "name": "Greater Cleric's Elixir",
+  "min": 1,
+  "yellow": 200,
+  "grey": 205,
+  "acquire": 0,
+  "creates": {
+   "id": 250333,
+   "name": "Greater Cleric's Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8836,
+    "n": 3,
+    "name": "Arthas' Tears",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8831,
+    "n": 1,
+    "name": "Purple Lotus",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250369,
+    "name": "Recipe: Greater Cleric's Elixir",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1244647,
+  "name": "Greater Discolored Healing Potion",
+  "min": 1,
+  "yellow": 175,
+  "grey": 215,
+  "acquire": 0,
+  "creates": {
+   "id": 247241,
+   "name": "Greater Discolored Healing Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3356,
+    "n": 1,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 730,
+    "n": 1,
+    "name": "Murloc Eye",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 24366,
+  "name": "Greater Dreamless Sleep Potion",
+  "min": 1,
+  "yellow": 290,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 20002,
+   "name": "Greater Dreamless Sleep Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 2,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13464,
+    "n": 1,
+    "name": "Golden Sansam",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 20012,
+    "name": "Recipe: Greater Dreamless Sleep",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17574,
+  "name": "Greater Fire Protection Potion",
+  "min": 1,
+  "yellow": 305,
+  "grey": 345,
+  "acquire": 0,
+  "creates": {
+   "id": 13457,
+   "name": "Greater Fire Protection Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 7068,
+    "n": 1,
+    "name": "Elemental Fire",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13463,
+    "n": 1,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13494,
+    "name": "Recipe: Greater Fire Protection Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1251738,
+  "name": "Greater Frenzy Potion",
+  "min": 1,
+  "yellow": 195,
+  "grey": 200,
+  "acquire": 0,
+  "creates": {
+   "id": 250941,
+   "name": "Greater Frenzy Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 4625,
+    "n": 3,
+    "name": "Firebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3818,
+    "n": 2,
+    "name": "Fadeleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250985,
+    "name": "Recipe: Greater Frenzy Potion",
+    "q": 2
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 17575,
+  "name": "Greater Frost Protection Potion",
+  "min": 1,
+  "yellow": 305,
+  "grey": 345,
+  "acquire": 0,
+  "creates": {
+   "id": 13456,
+   "name": "Greater Frost Protection Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 7070,
+    "n": 1,
+    "name": "Elemental Water",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13463,
+    "n": 1,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13495,
+    "name": "Recipe: Greater Frost Protection Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17579,
+  "name": "Greater Holy Protection Potion",
+  "min": 1,
+  "yellow": 305,
+  "grey": 345,
+  "acquire": 0,
+  "creates": {
+   "id": 13460,
+   "name": "Greater Holy Protection Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 7069,
+    "n": 1,
+    "name": "Elemental Air",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13463,
+    "n": 1,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13500,
+    "name": "Recipe: Greater Holy Protection Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250790,
+  "name": "Greater Mageblood Elixir",
+  "min": 1,
+  "yellow": 180,
+  "grey": 185,
+  "acquire": 0,
+  "creates": {
+   "id": 250341,
+   "name": "Greater Mageblood Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8839,
+    "n": 3,
+    "name": "Blindweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8836,
+    "n": 2,
+    "name": "Arthas' Tears",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250377,
+    "name": "Recipe: Greater Mageblood Elixir",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 11448,
+  "name": "Greater Mana Potion",
+  "min": 1,
+  "yellow": 220,
+  "grey": 260,
+  "acquire": 0,
+  "creates": {
+   "id": 6149,
+   "name": "Greater Mana Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3358,
+    "n": 1,
+    "name": "Khadgar's Whisker",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3821,
+    "n": 1,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1251744,
+  "name": "Greater Mender's Potion",
+  "min": 1,
+  "yellow": 185,
+  "grey": 190,
+  "acquire": 0,
+  "creates": {
+   "id": 250947,
+   "name": "Greater Mender's Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8836,
+    "n": 2,
+    "name": "Arthas' Tears",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8831,
+    "n": 1,
+    "name": "Purple Lotus",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250991,
+    "name": "Recipe: Greater Mender's Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 17576,
+  "name": "Greater Nature Protection Potion",
+  "min": 1,
+  "yellow": 305,
+  "grey": 345,
+  "acquire": 0,
+  "creates": {
+   "id": 13458,
+   "name": "Greater Nature Protection Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 7067,
+    "n": 1,
+    "name": "Elemental Earth",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13463,
+    "n": 1,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13496,
+    "name": "Recipe: Greater Nature Protection Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17578,
+  "name": "Greater Shadow Protection Potion",
+  "min": 1,
+  "yellow": 305,
+  "grey": 345,
+  "acquire": 0,
+  "creates": {
+   "id": 13459,
+   "name": "Greater Shadow Protection Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3824,
+    "n": 1,
+    "name": "Shadow Oil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13463,
+    "n": 1,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13499,
+    "name": "Recipe: Greater Shadow Protection Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1251732,
+  "name": "Greater Spellblasting Potion",
+  "min": 1,
+  "yellow": 190,
+  "grey": 195,
+  "acquire": 0,
+  "creates": {
+   "id": 250935,
+   "name": "Greater Spellblasting Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3356,
+    "n": 2,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3818,
+    "n": 1,
+    "name": "Fadeleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250979,
+    "name": "Recipe: Greater Spellblasting Potion",
+    "q": 2
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 17570,
+  "name": "Greater Stoneshield Potion",
+  "min": 1,
+  "yellow": 295,
+  "grey": 335,
+  "acquire": 0,
+  "creates": {
+   "id": 13455,
+   "name": "Greater Stoneshield Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13423,
+    "n": 3,
+    "name": "Stonescale Oil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 10620,
+    "n": 1,
+    "name": "Thorium Ore",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13490,
+    "name": "Recipe: Greater Stoneshield Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 24266,
+  "name": "Gurubashi Mojo Madness",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 19931,
+   "name": "Gurubashi Mojo Madness",
+   "q": 3
+  },
+  "reagents": [
+   {
+    "id": 12938,
+    "n": 1,
+    "name": "Blood of Heroes",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 19943,
+    "n": 1,
+    "name": "Massive Mojo",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 12804,
+    "n": 6,
+    "name": "Powerful Mojo",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13468,
+    "n": 1,
+    "name": "Black Lotus",
+    "q": 2,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 7255,
+  "name": "Holy Protection Potion",
+  "min": 1,
+  "yellow": 130,
+  "grey": 170,
+  "acquire": 0,
+  "creates": {
+   "id": 6051,
+   "name": "Holy Protection Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2453,
+    "n": 1,
+    "name": "Bruiseweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2452,
+    "n": 1,
+    "name": "Swiftthistle",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 6053,
+    "name": "Recipe: Holy Protection Potion",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 435969,
+  "name": "Insulating Gniodine",
+  "min": 1,
+  "yellow": 200,
+  "grey": 220,
+  "acquire": 0,
+  "creates": {
+   "id": 213372,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 213371,
+    "n": 5,
+    "name": "Crate of Tainted Gniodine Solution",
+    "q": 2,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 215433,
+    "name": "Recipe: Insulating Gniodine",
+    "q": 3
+   },
+   {
+    "id": 215434,
+    "name": "UNUSED",
+    "q": 4
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11464,
+  "name": "Invisibility Potion",
+  "min": 1,
+  "yellow": 250,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 9172,
+   "name": "Invisibility Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8845,
+    "n": 1,
+    "name": "Ghost Mushroom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8838,
+    "n": 1,
+    "name": "Sungrass",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 9295,
+    "name": "Recipe: Invisibility Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 446851,
+  "name": "Jar of Nightmarish Mojo",
+  "min": 1,
+  "yellow": 250,
+  "grey": 260,
+  "acquire": 0,
+  "creates": {
+   "id": 221313,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 221021,
+    "n": 5,
+    "name": "?",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 221312,
+    "n": 5,
+    "name": "?",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 439960,
+  "name": "Lesser Arcane Elixir",
+  "min": 1,
+  "yellow": 210,
+  "grey": 215,
+  "acquire": 0,
+  "creates": {
+   "id": 217398,
+   "name": "Lesser Arcane Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3356,
+    "n": 1,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3821,
+    "n": 1,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 217399,
+    "name": "Recipe: Lesser Arcane Elixir",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250791,
+  "name": "Lesser Arcane Elixir",
+  "min": 1,
+  "yellow": 125,
+  "grey": 130,
+  "acquire": 0,
+  "creates": {
+   "id": 250342,
+   "name": "Lesser Arcane Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3356,
+    "n": 4,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250378,
+    "name": "Recipe: Lesser Arcane Elixir",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1250780,
+  "name": "Lesser Cleric's Elixir",
+  "min": 1,
+  "yellow": 100,
+  "grey": 105,
+  "acquire": 0,
+  "creates": {
+   "id": 250331,
+   "name": "Lesser Cleric's Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3356,
+    "n": 2,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3357,
+    "n": 2,
+    "name": "Liferoot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250367,
+    "name": "Recipe: Lesser Cleric's Elixir",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1244645,
+  "name": "Lesser Discolored Healing Potion",
+  "min": 1,
+  "yellow": 85,
+  "grey": 125,
+  "acquire": 0,
+  "creates": {
+   "id": 247239,
+   "name": "Lesser Discolored Healing Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2450,
+    "n": 1,
+    "name": "Briarthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 730,
+    "n": 1,
+    "name": "Murloc Eye",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1251736,
+  "name": "Lesser Frenzy Potion",
+  "min": 1,
+  "yellow": 95,
+  "grey": 100,
+  "acquire": 0,
+  "creates": {
+   "id": 250939,
+   "name": "Lesser Frenzy Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2450,
+    "n": 1,
+    "name": "Briarthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2449,
+    "n": 2,
+    "name": "Earthroot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250983,
+    "name": "Recipe: Lesser Frenzy Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 3448,
+  "name": "Lesser Invisibility Potion",
+  "min": 1,
+  "yellow": 185,
+  "grey": 225,
+  "acquire": 0,
+  "creates": {
+   "id": 3823,
+   "name": "Lesser Invisibility Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3818,
+    "n": 1,
+    "name": "Fadeleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3355,
+    "n": 1,
+    "name": "Wild Steelbloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250789,
+  "name": "Lesser Mageblood Elixir",
+  "min": 1,
+  "yellow": 80,
+  "grey": 85,
+  "acquire": 0,
+  "creates": {
+   "id": 250340,
+   "name": "Lesser Mageblood Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3356,
+    "n": 3,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250376,
+    "name": "Recipe: Lesser Mageblood Elixir",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 3173,
+  "name": "Lesser Mana Potion",
+  "min": 1,
+  "yellow": 145,
+  "grey": 185,
+  "acquire": 0,
+  "creates": {
+   "id": 3385,
+   "name": "Lesser Mana Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 785,
+    "n": 1,
+    "name": "Mageroyal",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3820,
+    "n": 1,
+    "name": "Stranglekelp",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1251742,
+  "name": "Lesser Mender's Potion",
+  "min": 1,
+  "yellow": 85,
+  "grey": 90,
+  "acquire": 0,
+  "creates": {
+   "id": 250945,
+   "name": "Lesser Mender's Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3356,
+    "n": 2,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3357,
+    "n": 2,
+    "name": "Liferoot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250989,
+    "name": "Recipe: Lesser Mender's Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1251730,
+  "name": "Lesser Spellblasting Potion",
+  "min": 1,
+  "yellow": 90,
+  "grey": 95,
+  "acquire": 0,
+  "creates": {
+   "id": 250933,
+   "name": "Lesser Spellblasting Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 785,
+    "n": 1,
+    "name": "Mageroyal",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 765,
+    "n": 2,
+    "name": "Silverleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250977,
+    "name": "Recipe: Lesser Spellblasting Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 4942,
+  "name": "Lesser Stoneshield Potion",
+  "min": 1,
+  "yellow": 230,
+  "grey": 270,
+  "acquire": 0,
+  "creates": {
+   "id": 4623,
+   "name": "Lesser Stoneshield Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3858,
+    "n": 1,
+    "name": "Mithril Ore",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3821,
+    "n": 1,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 4624,
+    "name": "Recipe: Lesser Stoneshield Potion",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 3176,
+  "name": "Lesser Troll's Blood Elixir",
+  "min": 1,
+  "yellow": 150,
+  "grey": 190,
+  "acquire": 0,
+  "creates": {
+   "id": 3388,
+   "name": "Lesser Troll's Blood Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2453,
+    "n": 2,
+    "name": "Bruiseweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2450,
+    "n": 2,
+    "name": "Briarthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 3175,
+  "name": "Limited Invulnerability Potion",
+  "min": 1,
+  "yellow": 275,
+  "grey": 315,
+  "acquire": 0,
+  "creates": {
+   "id": 3387,
+   "name": "Limited Invulnerability Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8839,
+    "n": 2,
+    "name": "Blindweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8845,
+    "n": 1,
+    "name": "Ghost Mushroom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 3395,
+    "name": "Recipe: Limited Invulnerability Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 24367,
+  "name": "Living Action Potion",
+  "min": 1,
+  "yellow": 300,
+  "grey": 340,
+  "acquire": 0,
+  "creates": {
+   "id": 20008,
+   "name": "Living Action Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13467,
+    "n": 2,
+    "name": "Icecap",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13465,
+    "n": 2,
+    "name": "Mountain Silversage",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 10286,
+    "n": 2,
+    "name": "Heart of the Wild",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 20013,
+    "name": "Recipe: Living Action Potion",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 24365,
+  "name": "Mageblood Elixir",
+  "min": 1,
+  "yellow": 290,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 20007,
+   "name": "Mageblood Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 1,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13466,
+    "n": 2,
+    "name": "Plaguebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 20011,
+    "name": "Recipe: Mageblood Elixir",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1249631,
+  "name": "Magenta Dye",
+  "min": 1,
+  "yellow": 130,
+  "grey": 155,
+  "acquire": 0,
+  "creates": {
+   "id": 249430,
+   "name": "Magenta Dye",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 249424,
+    "n": 2,
+    "name": "Rosecap",
+    "q": 2,
+    "new": true
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 11453,
+  "name": "Magic Resistance Potion",
+  "min": 1,
+  "yellow": 225,
+  "grey": 265,
+  "acquire": 0,
+  "creates": {
+   "id": 9036,
+   "name": "Magic Resistance Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3358,
+    "n": 1,
+    "name": "Khadgar's Whisker",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8831,
+    "n": 1,
+    "name": "Purple Lotus",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 9293,
+    "name": "Recipe: Magic Resistance Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1231583,
+  "name": "Major Discolored Healing Potion",
+  "min": 1,
+  "yellow": 290,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 241650,
+   "name": "Major Discolored Healing Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13466,
+    "n": 1,
+    "name": "Plaguebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 730,
+    "n": 1,
+    "name": "Murloc Eye",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 241651,
+    "name": "Recipe: Major Discolored Healing Potion",
+    "q": 2
+   }
+  ],
+  "status": "changed",
+  "createsNew": false
+ },
+ {
+  "spell": 1251740,
+  "name": "Major Frenzy Potion",
+  "min": 1,
+  "yellow": 295,
+  "grey": 300,
+  "acquire": 0,
+  "creates": {
+   "id": 250943,
+   "name": "Major Frenzy Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13466,
+    "n": 3,
+    "name": "Plaguebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8839,
+    "n": 2,
+    "name": "Blindweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 18256,
+    "n": 1,
+    "name": "Imbued Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250987,
+    "name": "Recipe: Major Frenzy Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 17580,
+  "name": "Major Mana Potion",
+  "min": 1,
+  "yellow": 310,
+  "grey": 350,
+  "acquire": 0,
+  "creates": {
+   "id": 13444,
+   "name": "Major Mana Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 3,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13467,
+    "n": 2,
+    "name": "Icecap",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13501,
+    "name": "Recipe: Major Mana Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1251747,
+  "name": "Major Mender's Potion",
+  "min": 1,
+  "yellow": 285,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 250949,
+   "name": "Major Mender's Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 3,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8838,
+    "n": 1,
+    "name": "Sungrass",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 18256,
+    "n": 1,
+    "name": "Imbued Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250993,
+    "name": "Recipe: Major Mender's Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 22732,
+  "name": "Major Rejuvenation Potion",
+  "min": 1,
+  "yellow": 310,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 18253,
+   "name": "Major Rejuvenation Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 10286,
+    "n": 1,
+    "name": "Heart of the Wild",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13464,
+    "n": 4,
+    "name": "Golden Sansam",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13463,
+    "n": 4,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 18256,
+    "n": 1,
+    "name": "Imbued Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 18257,
+    "name": "Recipe: Major Rejuvenation Potion",
+    "q": 3
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1251734,
+  "name": "Major Spellblasting Potion",
+  "min": 1,
+  "yellow": 290,
+  "grey": 295,
+  "acquire": 0,
+  "creates": {
+   "id": 250937,
+   "name": "Major Spellblasting Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13463,
+    "n": 2,
+    "name": "Dreamfoil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13465,
+    "n": 1,
+    "name": "Mountain Silversage",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 18256,
+    "n": 1,
+    "name": "Imbued Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250981,
+    "name": "Recipe: Major Spellblasting Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 24368,
+  "name": "Major Troll's Blood Elixir",
+  "min": 1,
+  "yellow": 305,
+  "grey": 345,
+  "acquire": 0,
+  "creates": {
+   "id": 20004,
+   "name": "Major Troll's Blood Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8846,
+    "n": 1,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13466,
+    "n": 2,
+    "name": "Plaguebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 20014,
+    "name": "Recipe: Major Troll's Blood Elixir",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 3452,
+  "name": "Mana Potion",
+  "min": 1,
+  "yellow": 180,
+  "grey": 220,
+  "acquire": 0,
+  "creates": {
+   "id": 3827,
+   "name": "Mana Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3820,
+    "n": 1,
+    "name": "Stranglekelp",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3356,
+    "n": 1,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1230564,
+  "name": "Mana Well",
+  "min": 1,
+  "yellow": 20,
+  "grey": 20,
+  "acquire": 0,
+  "creates": {
+   "id": 279956,
+   "name": "Mana Well",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2447,
+    "n": 1,
+    "name": "Peacebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1251743,
+  "name": "Mender's Potion",
+  "min": 1,
+  "yellow": 135,
+  "grey": 140,
+  "acquire": 0,
+  "creates": {
+   "id": 250946,
+   "name": "Mender's Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3819,
+    "n": 2,
+    "name": "Wintersbite",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 4625,
+    "n": 2,
+    "name": "Firebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250990,
+    "name": "Recipe: Mender's Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 17552,
+  "name": "Mighty Rage Potion",
+  "min": 1,
+  "yellow": 270,
+  "grey": 310,
+  "acquire": 0,
+  "creates": {
+   "id": 13442,
+   "name": "Mighty Rage Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8846,
+    "n": 3,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13476,
+    "name": "Recipe: Mighty Rage Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 435971,
+  "name": "Mildly Irradiated Rejuvenation Potion",
+  "min": 1,
+  "yellow": 225,
+  "grey": 235,
+  "acquire": 0,
+  "creates": {
+   "id": 215162,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 213371,
+    "n": 1,
+    "name": "Crate of Tainted Gniodine Solution",
+    "q": 2,
+    "new": false
+   },
+   {
+    "id": 2456,
+    "n": 1,
+    "name": "Minor Rejuvenation Potion",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 215430,
+    "n": 3,
+    "name": "Gnomeregan Fallout",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 5,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 215163,
+    "name": "Recipe: Mildly-Irradiated Rejuvenation Potion",
+    "q": 4
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1245246,
+  "name": "Minor Arcane Elixir",
+  "min": 1,
+  "yellow": 10,
+  "grey": 15,
+  "acquire": 1,
+  "creates": {
+   "id": 247754,
+   "name": "Minor Arcane Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2447,
+    "n": 1,
+    "name": "Peacebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1250779,
+  "name": "Minor Cleric's Elixir",
+  "min": 1,
+  "yellow": 50,
+  "grey": 55,
+  "acquire": 0,
+  "creates": {
+   "id": 250330,
+   "name": "Minor Cleric's Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 785,
+    "n": 2,
+    "name": "Mageroyal",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2453,
+    "n": 1,
+    "name": "Bruiseweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250366,
+    "name": "Recipe: Minor Cleric's Elixir",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 4508,
+  "name": "Minor Discolored Healing Potion",
+  "min": 1,
+  "yellow": 55,
+  "grey": 95,
+  "acquire": 0,
+  "creates": {
+   "id": 4596,
+   "name": "Minor Discolored Healing Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2447,
+    "n": 1,
+    "name": "Peacebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 730,
+    "n": 1,
+    "name": "Murloc Eye",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 4597,
+    "name": "Recipe: Minor Discolored Healing Potion",
+    "q": 2
+   }
+  ],
+  "status": "changed",
+  "createsNew": false
+ },
+ {
+  "spell": 1251735,
+  "name": "Minor Frenzy Potion",
+  "min": 1,
+  "yellow": 45,
+  "grey": 50,
+  "acquire": 0,
+  "creates": {
+   "id": 250938,
+   "name": "Minor Frenzy Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2449,
+    "n": 1,
+    "name": "Earthroot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 765,
+    "n": 1,
+    "name": "Silverleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250982,
+    "name": "Recipe: Minor Frenzy Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1250788,
+  "name": "Minor Mageblood Elixir",
+  "min": 1,
+  "yellow": 30,
+  "grey": 35,
+  "acquire": 0,
+  "creates": {
+   "id": 250339,
+   "name": "Minor Mageblood Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 785,
+    "n": 2,
+    "name": "Mageroyal",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250375,
+    "name": "Recipe: Minor Mageblood Elixir",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 3172,
+  "name": "Minor Magic Resistance Potion",
+  "min": 1,
+  "yellow": 135,
+  "grey": 175,
+  "acquire": 0,
+  "creates": {
+   "id": 3384,
+   "name": "Minor Magic Resistance Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 785,
+    "n": 3,
+    "name": "Mageroyal",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3355,
+    "n": 1,
+    "name": "Wild Steelbloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 3393,
+    "name": "Recipe: Minor Magic Resistance Potion",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 2331,
+  "name": "Minor Mana Potion",
+  "min": 1,
+  "yellow": 65,
+  "grey": 105,
+  "acquire": 0,
+  "creates": {
+   "id": 2455,
+   "name": "Minor Mana Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 785,
+    "n": 1,
+    "name": "Mageroyal",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2447,
+    "n": 1,
+    "name": "Peacebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "changed",
+  "createsNew": false
+ },
+ {
+  "spell": 1251741,
+  "name": "Minor Mender's Potion",
+  "min": 1,
+  "yellow": 35,
+  "grey": 40,
+  "acquire": 0,
+  "creates": {
+   "id": 250944,
+   "name": "Minor Mender's Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 785,
+    "n": 2,
+    "name": "Mageroyal",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2453,
+    "n": 1,
+    "name": "Bruiseweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250988,
+    "name": "Recipe: Minor Mender's Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1251729,
+  "name": "Minor Spellblasting Potion",
+  "min": 1,
+  "yellow": 40,
+  "grey": 45,
+  "acquire": 0,
+  "creates": {
+   "id": 250932,
+   "name": "Minor Spellblasting Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 765,
+    "n": 1,
+    "name": "Silverleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2447,
+    "n": 1,
+    "name": "Peacebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250976,
+    "name": "Recipe: Minor Spellblasting Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 3170,
+  "name": "Minor Troll's Blood Elixir",
+  "min": 1,
+  "yellow": 60,
+  "grey": 100,
+  "acquire": 0,
+  "creates": {
+   "id": 3382,
+   "name": "Minor Troll's Blood Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2447,
+    "n": 1,
+    "name": "Peacebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2449,
+    "n": 2,
+    "name": "Earthroot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 7259,
+  "name": "Nature Protection Potion",
+  "min": 1,
+  "yellow": 210,
+  "grey": 250,
+  "acquire": 0,
+  "creates": {
+   "id": 6052,
+   "name": "Nature Protection Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3357,
+    "n": 1,
+    "name": "Liferoot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3820,
+    "n": 1,
+    "name": "Stranglekelp",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 6057,
+    "name": "Recipe: Nature Protection Potion",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11451,
+  "name": "Oil of Immolation",
+  "min": 1,
+  "yellow": 220,
+  "grey": 260,
+  "acquire": 0,
+  "creates": {
+   "id": 8956,
+   "name": "Oil of Immolation",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 4625,
+    "n": 1,
+    "name": "Firebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3821,
+    "n": 1,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11459,
+  "name": "Philosopher's Stone",
+  "min": 1,
+  "yellow": 240,
+  "grey": 280,
+  "acquire": 0,
+  "creates": {
+   "id": 9149,
+   "name": "Philosopher's Stone",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3575,
+    "n": 4,
+    "name": "Iron Bar",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 9262,
+    "n": 1,
+    "name": "Black Vitriol",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8831,
+    "n": 4,
+    "name": "Purple Lotus",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 4625,
+    "n": 4,
+    "name": "Firebloom",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 9303,
+    "name": "Recipe: Philosopher's Stone",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1251753,
+  "name": "Potion of Beast Slaying",
+  "min": 1,
+  "yellow": 285,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 250955,
+   "name": "Potion of Beast Slaying",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8846,
+    "n": 2,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13466,
+    "n": 2,
+    "name": "Plaguebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 18256,
+    "n": 1,
+    "name": "Imbued Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250999,
+    "name": "Recipe: Potion of Beast Slaying",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 11477,
+  "name": "Potion of Demon Slaying",
+  "min": 1,
+  "yellow": 265,
+  "grey": 305,
+  "acquire": 0,
+  "creates": {
+   "id": 9224,
+   "name": "Potion of Demon Slaying",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8846,
+    "n": 1,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8845,
+    "n": 1,
+    "name": "Ghost Mushroom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 9300,
+    "name": "Recipe: Potion of Demon Slaying",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1251752,
+  "name": "Potion of Elemental Purging",
+  "min": 1,
+  "yellow": 285,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 250954,
+   "name": "Potion of Elemental Purging",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 4625,
+    "n": 2,
+    "name": "Firebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3819,
+    "n": 2,
+    "name": "Wintersbite",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250998,
+    "name": "Recipe: Potion of Elemental Purging",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 3174,
+  "name": "Potion of Poison Cleansing",
+  "min": 1,
+  "yellow": 145,
+  "grey": 185,
+  "acquire": 3,
+  "creates": {
+   "id": 3386,
+   "name": "Potion of Poison Cleansing",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 1288,
+    "n": 1,
+    "name": "Large Venom Sac",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2453,
+    "n": 1,
+    "name": "Bruiseweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 3394,
+    "name": "Recipe: Potion of Poison Cleansing",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250776,
+  "name": "Potion of Predatory Senses",
+  "min": 1,
+  "yellow": 200,
+  "grey": 205,
+  "acquire": 0,
+  "creates": {
+   "id": 250327,
+   "name": "Potion of Predatory Senses",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3818,
+    "n": 2,
+    "name": "Fadeleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3821,
+    "n": 2,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250363,
+    "name": "Recipe: Potion of Predatory Senses",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1251748,
+  "name": "Potion of Venomous Blood",
+  "min": 1,
+  "yellow": 280,
+  "grey": 285,
+  "acquire": 0,
+  "creates": {
+   "id": 250950,
+   "name": "Potion of Venomous Blood",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8846,
+    "n": 3,
+    "name": "Gromsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13466,
+    "n": 2,
+    "name": "Plaguebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250994,
+    "name": "Recipe: Potion of Venomous Blood",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 17572,
+  "name": "Purification Potion",
+  "min": 1,
+  "yellow": 300,
+  "grey": 340,
+  "acquire": 3,
+  "creates": {
+   "id": 13462,
+   "name": "Purification Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13467,
+    "n": 2,
+    "name": "Icecap",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 13466,
+    "n": 2,
+    "name": "Plaguebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13492,
+    "name": "Recipe: Purification Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 6617,
+  "name": "Rage Potion",
+  "min": 1,
+  "yellow": 90,
+  "grey": 130,
+  "acquire": 0,
+  "creates": {
+   "id": 5631,
+   "name": "Rage Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 5635,
+    "n": 1,
+    "name": "Sharp Claw",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2450,
+    "n": 1,
+    "name": "Briarthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 5640,
+    "name": "Recipe: Rage Potion",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 22430,
+  "name": "Refined Scale of Onyxia",
+  "min": 1,
+  "yellow": 315,
+  "grey": 330,
+  "acquire": 0,
+  "creates": {
+   "id": 17967,
+   "name": "Refined Scale of Onyxia",
+   "q": 3
+  },
+  "reagents": [
+   {
+    "id": 15410,
+    "n": 1,
+    "name": "Scale of Onyxia",
+    "q": 3,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11452,
+  "name": "Restorative Potion",
+  "min": 1,
+  "yellow": 225,
+  "grey": 265,
+  "acquire": 0,
+  "creates": {
+   "id": 9030,
+   "name": "Restorative Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 7067,
+    "n": 1,
+    "name": "Elemental Earth",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3821,
+    "n": 1,
+    "name": "Goldthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1250775,
+  "name": "Revealing Draught",
+  "min": 1,
+  "yellow": 205,
+  "grey": 210,
+  "acquire": 0,
+  "creates": {
+   "id": 250326,
+   "name": "?",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3818,
+    "n": 3,
+    "name": "Fadeleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3358,
+    "n": 1,
+    "name": "Khadgar's Whisker",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250362,
+    "name": "?",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 3449,
+  "name": "Shadow Oil",
+  "min": 1,
+  "yellow": 190,
+  "grey": 230,
+  "acquire": 0,
+  "creates": {
+   "id": 3824,
+   "name": "Shadow Oil",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3818,
+    "n": 4,
+    "name": "Fadeleaf",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3369,
+    "n": 4,
+    "name": "Grave Moss",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 6068,
+    "name": "Recipe: Shadow Oil",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 7256,
+  "name": "Shadow Protection Potion",
+  "min": 1,
+  "yellow": 160,
+  "grey": 200,
+  "acquire": 0,
+  "creates": {
+   "id": 6048,
+   "name": "Shadow Protection Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3369,
+    "n": 1,
+    "name": "Grave Moss",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3356,
+    "n": 1,
+    "name": "Kingsblood",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 6054,
+    "name": "Recipe: Shadow Protection Potion",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1251731,
+  "name": "Spellblasting Potion",
+  "min": 1,
+  "yellow": 140,
+  "grey": 145,
+  "acquire": 0,
+  "creates": {
+   "id": 250934,
+   "name": "Spellblasting Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3355,
+    "n": 1,
+    "name": "Wild Steelbloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3369,
+    "n": 1,
+    "name": "Grave Moss",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250978,
+    "name": "Recipe: Spellblasting Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 17551,
+  "name": "Stonescale Oil",
+  "min": 1,
+  "yellow": 250,
+  "grey": 260,
+  "acquire": 0,
+  "creates": {
+   "id": 13423,
+   "name": "Stonescale Oil",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 13422,
+    "n": 1,
+    "name": "Stonescale Eel",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1249633,
+  "name": "Sulfuric Acid",
+  "min": 1,
+  "yellow": 50,
+  "grey": 90,
+  "acquire": 0,
+  "creates": {
+   "id": 249410,
+   "name": "Sulfuric Acid",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 249391,
+    "n": 2,
+    "name": "Pyrite",
+    "q": 2,
+    "new": true
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1244648,
+  "name": "Superior Discolored Healing Potion",
+  "min": 1,
+  "yellow": 230,
+  "grey": 270,
+  "acquire": 0,
+  "creates": {
+   "id": 247242,
+   "name": "Superior Discolored Healing Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8838,
+    "n": 1,
+    "name": "Sungrass",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 730,
+    "n": 1,
+    "name": "Murloc Eye",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1251739,
+  "name": "Superior Frenzy Potion",
+  "min": 1,
+  "yellow": 245,
+  "grey": 250,
+  "acquire": 0,
+  "creates": {
+   "id": 250942,
+   "name": "Superior Frenzy Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8839,
+    "n": 3,
+    "name": "Blindweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 4625,
+    "n": 2,
+    "name": "Firebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250986,
+    "name": "Recipe: Superior Frenzy Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 17553,
+  "name": "Superior Mana Potion",
+  "min": 1,
+  "yellow": 275,
+  "grey": 315,
+  "acquire": 0,
+  "creates": {
+   "id": 13443,
+   "name": "Superior Mana Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8838,
+    "n": 2,
+    "name": "Sungrass",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8839,
+    "n": 2,
+    "name": "Blindweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13477,
+    "name": "Recipe: Superior Mana Potion",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1251745,
+  "name": "Superior Mender's Potion",
+  "min": 1,
+  "yellow": 235,
+  "grey": 240,
+  "acquire": 0,
+  "creates": {
+   "id": 250948,
+   "name": "Superior Mender's Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8838,
+    "n": 2,
+    "name": "Sungrass",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8836,
+    "n": 1,
+    "name": "Arthas' Tears",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250992,
+    "name": "Recipe: Superior Mender's Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 1251733,
+  "name": "Superior Spellblasting Potion",
+  "min": 1,
+  "yellow": 240,
+  "grey": 245,
+  "acquire": 0,
+  "creates": {
+   "id": 250936,
+   "name": "Superior Spellblasting Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3819,
+    "n": 2,
+    "name": "Wintersbite",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3358,
+    "n": 2,
+    "name": "Khadgar's Whisker",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 250980,
+    "name": "Recipe: Superior Spellblasting Potion",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 7841,
+  "name": "Swim Speed Potion",
+  "min": 1,
+  "yellow": 130,
+  "grey": 170,
+  "acquire": 0,
+  "creates": {
+   "id": 6372,
+   "name": "Swim Speed Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2452,
+    "n": 1,
+    "name": "Swiftthistle",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 6370,
+    "n": 1,
+    "name": "Blackmouth Oil",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17559,
+  "name": "Transmute: Air to Fire",
+  "min": 1,
+  "yellow": 275,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 7078,
+   "name": "Essence of Fire",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 7082,
+    "n": 1,
+    "name": "Essence of Air",
+    "q": 2,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13482,
+    "name": "Recipe: Transmute Air to Fire",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17187,
+  "name": "Transmute: Arcanite",
+  "min": 1,
+  "yellow": 275,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 12360,
+   "name": "Arcanite Bar",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 12359,
+    "n": 1,
+    "name": "Thorium Bar",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 12363,
+    "n": 1,
+    "name": "Arcane Crystal",
+    "q": 2,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 12958,
+    "name": "Recipe: Transmute Arcanite",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17566,
+  "name": "Transmute: Earth to Life",
+  "min": 1,
+  "yellow": 275,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 12803,
+   "name": "Living Essence",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 7076,
+    "n": 1,
+    "name": "Essence of Earth",
+    "q": 2,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13489,
+    "name": "Recipe: Transmute Earth to Life",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17561,
+  "name": "Transmute: Earth to Water",
+  "min": 1,
+  "yellow": 275,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 7080,
+   "name": "Essence of Water",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 7076,
+    "n": 1,
+    "name": "Essence of Earth",
+    "q": 2,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13484,
+    "name": "Recipe: Transmute Earth to Water",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 25146,
+  "name": "Transmute: Elemental Fire",
+  "min": 1,
+  "yellow": 301,
+  "grey": 310,
+  "acquire": 0,
+  "creates": {
+   "id": 7068,
+   "name": "Elemental Fire",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 7077,
+    "n": 1,
+    "name": "Heart of Fire",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 20761,
+    "name": "Recipe: Transmute Elemental Fire",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17560,
+  "name": "Transmute: Fire to Earth",
+  "min": 1,
+  "yellow": 275,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 7076,
+   "name": "Essence of Earth",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 7078,
+    "n": 1,
+    "name": "Essence of Fire",
+    "q": 2,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13483,
+    "name": "Recipe: Transmute Fire to Earth",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11479,
+  "name": "Transmute: Iron to Gold",
+  "min": 1,
+  "yellow": 240,
+  "grey": 280,
+  "acquire": 0,
+  "creates": {
+   "id": 3577,
+   "name": "Gold Bar",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 3575,
+    "n": 1,
+    "name": "Iron Bar",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 9304,
+    "name": "Recipe: Transmute Iron to Gold",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1317279,
+  "name": "Transmute: Legionite",
+  "min": 1,
+  "yellow": 275,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 251290,
+   "name": "Legionite Bar",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 251291,
+    "n": 1,
+    "name": "Heavy Thorium Bar",
+    "q": 2,
+    "new": true
+   },
+   {
+    "id": 248819,
+    "n": 1,
+    "name": "Fel Crystal",
+    "q": 2,
+    "new": true
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 284871,
+    "name": "Recipe: Transmute Legionite",
+    "q": 1
+   }
+  ],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 17565,
+  "name": "Transmute: Life to Earth",
+  "min": 1,
+  "yellow": 275,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 7076,
+   "name": "Essence of Earth",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 12803,
+    "n": 1,
+    "name": "Living Essence",
+    "q": 2,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13488,
+    "name": "Recipe: Transmute Life to Earth",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 11480,
+  "name": "Transmute: Mithril to Truesilver",
+  "min": 1,
+  "yellow": 240,
+  "grey": 280,
+  "acquire": 0,
+  "creates": {
+   "id": 6037,
+   "name": "Truesilver Bar",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 3860,
+    "n": 1,
+    "name": "Mithril Bar",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 9305,
+    "name": "Recipe: Transmute Mithril to Truesilver",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17563,
+  "name": "Transmute: Undeath to Water",
+  "min": 1,
+  "yellow": 275,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 7080,
+   "name": "Essence of Water",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 12808,
+    "n": 1,
+    "name": "Essence of Undeath",
+    "q": 2,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13486,
+    "name": "Recipe: Transmute Undeath to Water",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17562,
+  "name": "Transmute: Water to Air",
+  "min": 1,
+  "yellow": 275,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 7082,
+   "name": "Essence of Air",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 7080,
+    "n": 1,
+    "name": "Essence of Water",
+    "q": 2,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13485,
+    "name": "Recipe: Transmute Water to Air",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 17564,
+  "name": "Transmute: Water to Undeath",
+  "min": 1,
+  "yellow": 275,
+  "grey": 290,
+  "acquire": 0,
+  "creates": {
+   "id": 12808,
+   "name": "Essence of Undeath",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 7080,
+    "n": 1,
+    "name": "Essence of Water",
+    "q": 2,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 13487,
+    "name": "Recipe: Transmute Water to Undeath",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 3451,
+  "name": "Troll's Blood Elixir",
+  "min": 1,
+  "yellow": 200,
+  "grey": 240,
+  "acquire": 0,
+  "creates": {
+   "id": 3826,
+   "name": "Troll's Blood Elixir",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 3357,
+    "n": 1,
+    "name": "Liferoot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2453,
+    "n": 1,
+    "name": "Bruiseweed",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3372,
+    "n": 1,
+    "name": "Leaded Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 3831,
+    "name": "Recipe: Troll's Blood Elixir",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 1249632,
+  "name": "Viridian Dye",
+  "min": 1,
+  "yellow": 230,
+  "grey": 270,
+  "acquire": 0,
+  "creates": {
+   "id": 249431,
+   "name": "Viridian Dye",
+   "q": 2
+  },
+  "reagents": [
+   {
+    "id": 249274,
+    "n": 2,
+    "name": "Stranglevine",
+    "q": 2,
+    "new": true
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "new",
+  "createsNew": true
+ },
+ {
+  "spell": 11458,
+  "name": "Wildvine Potion",
+  "min": 1,
+  "yellow": 225,
+  "grey": 250,
+  "acquire": 0,
+  "creates": {
+   "id": 9144,
+   "name": "Wildvine Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 8153,
+    "n": 1,
+    "name": "Wildvine",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8831,
+    "n": 1,
+    "name": "Purple Lotus",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 8925,
+    "n": 1,
+    "name": "Crystal Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 9294,
+    "name": "Recipe: Wildvine Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 2332,
+  "name": "Minor Rejuvenation Potion",
+  "min": 40,
+  "yellow": 70,
+  "grey": 110,
+  "acquire": 0,
+  "creates": {
+   "id": 2456,
+   "name": "Minor Rejuvenation Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 785,
+    "n": 2,
+    "name": "Mageroyal",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2447,
+    "n": 1,
+    "name": "Peacebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 2334,
+  "name": "Elixir of Minor Fortitude",
+  "min": 50,
+  "yellow": 80,
+  "grey": 120,
+  "acquire": 0,
+  "creates": {
+   "id": 2458,
+   "name": "Elixir of Minor Fortitude",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2449,
+    "n": 2,
+    "name": "Earthroot",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2447,
+    "n": 1,
+    "name": "Peacebloom",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 2554,
+    "name": "Deprecated Recipe: Elixir of Fortitude",
+    "q": 1
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ },
+ {
+  "spell": 2335,
+  "name": "Swiftness Potion",
+  "min": 60,
+  "yellow": 90,
+  "grey": 130,
+  "acquire": 0,
+  "creates": {
+   "id": 2459,
+   "name": "Swiftness Potion",
+   "q": 1
+  },
+  "reagents": [
+   {
+    "id": 2452,
+    "n": 1,
+    "name": "Swiftthistle",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 2450,
+    "n": 1,
+    "name": "Briarthorn",
+    "q": 1,
+    "new": false
+   },
+   {
+    "id": 3371,
+    "n": 1,
+    "name": "Empty Vial",
+    "q": 1,
+    "new": false
+   }
+  ],
+  "recipeItems": [
+   {
+    "id": 2555,
+    "name": "Recipe: Swiftness Potion",
+    "q": 2
+   }
+  ],
+  "status": "same",
+  "createsNew": false
+ }
+]

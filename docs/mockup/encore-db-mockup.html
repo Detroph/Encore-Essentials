@@ -1,0 +1,951 @@
+<title>Encore-DB</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Marcellus+SC&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: a classic in-game portrait frame (Encore crest top-left, metal border, rock fill) holding top tabs, a filter strip and three recessed panes: tree | sections | loot. Single dark look on purpose: it depicts the game client. Palette comes from the Encore crest: copper gold, Horde red, Forever teal. */
+:root {
+  color-scheme: dark;
+  --logo: url("data:image/webp;base64,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");
+  --icon: url("data:image/webp;base64,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");
+  --page: #0b0806;
+  --page-ink: #cdb894;
+  --rock: #1b1510;
+  --rock-2: #241b14;
+  --well: rgba(4, 3, 2, .62);
+  --copper: #eb9339;
+  --copper-hi: #ffd08a;
+  --copper-lo: #6e3b10;
+  --gold-text: #ffd100;
+  --red: #b20a07;
+  --red-deep: #4d0100;
+  --ink: #f1e6cf;
+  --ink-dim: #a39278;
+  --forever: #12c8c8;
+  --forever-tint: rgba(18, 200, 200, .15);
+  --tip-bg: rgba(6, 8, 18, .94);
+  --tip-line: #8e97ab;
+  --q0: #9d9d9d; --q1: #ffffff; --q2: #1eff00; --q3: #0070dd; --q4: #a335ee; --q5: #ff8000;
+  --font-display: "Marcellus SC", "Marcellus", Georgia, serif;
+  --font-name: "Marcellus", Georgia, serif;
+  --font-body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  --shadow-text: 1px 1px 0 #000, 0 0 2px #000;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--page); color: var(--page-ink); }
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding-block: 28px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: radial-gradient(1100px 520px at 50% -8%, rgba(178,10,7,.16), transparent 70%), var(--page);
+}
+.page { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+.page > *, .frame, .frame-inner { min-width: 0; }
+.page-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; }
+.page-head h1 { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 400; color: var(--copper); font-size: 1.1rem; letter-spacing: .08em; margin: 0; }
+.page-head h1::before { content: ""; width: 30px; height: 30px; background: var(--icon) center / contain no-repeat; }
+.page-head p { margin: 0; color: var(--ink-dim); font-size: .9rem; }
+
+/* ---------- portrait frame ---------- */
+.frame-wrap { position: relative; padding-top: 22px; padding-left: 22px; }
+.frame {
+  position: relative; padding: 6px; border-radius: 9px;
+  background:
+    linear-gradient(135deg, #ffd59a 0%, #b8691f 18%, #f0a24e 34%, #7a4313 52%, #e39a4c 70%, #6e3b10 86%, #f5bb73 100%);
+  box-shadow: 0 0 0 1px #000, 0 0 0 2px rgba(255,208,138,.18), 0 24px 70px rgba(0,0,0,.75);
+}
+.frame-inner {
+  position: relative; border-radius: 5px; overflow: hidden;
+  background: linear-gradient(180deg, rgba(255,214,160,.05), transparent 160px), linear-gradient(180deg, #221a13, #19130e 45%, #120d0a);
+  box-shadow: inset 0 0 0 1px #000, inset 0 0 0 2px rgba(0,0,0,.6), inset 0 0 26px rgba(0,0,0,.85);
+}
+.gem {
+  position: absolute; width: 16px; height: 16px; transform: rotate(45deg); z-index: 3;
+  background: radial-gradient(circle at 35% 35%, #b9ffff, var(--forever) 45%, #036565 100%);
+  border: 2px solid var(--copper); box-shadow: 0 0 0 1px #000, 0 0 10px rgba(18,200,200,.55);
+}
+.gem.tr { top: -5px; right: -5px; } .gem.bl { bottom: -5px; left: -5px; } .gem.br { bottom: -5px; right: -5px; }
+.portrait {
+  position: absolute; top: 0; left: 0; z-index: 4; width: 100px; height: 100px; border-radius: 50%;
+  background: var(--logo) center / 100% no-repeat, #1d0903;
+  box-shadow: 0 0 0 3px #000, 0 0 0 6px #c9792e, 0 0 0 7px #000, 0 8px 22px rgba(0,0,0,.8);
+}
+
+.titlebar {
+  position: relative; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  min-height: 52px; padding: 8px 12px 8px 96px;
+  background: linear-gradient(180deg, rgba(178,10,7,.35), rgba(77,1,0,.35) 60%, transparent), rgba(0,0,0,.35);
+  border-bottom: 2px solid #000; box-shadow: 0 1px 0 rgba(235,147,57,.35);
+}
+.title { margin-right: auto; display: grid; line-height: 1.05; }
+.title b { font-family: var(--font-display); font-weight: 400; font-size: 1.5rem; color: var(--gold-text); letter-spacing: .05em; text-shadow: var(--shadow-text), 0 0 14px rgba(255,209,0,.18); }
+.title span { font-size: .76rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-dim); text-shadow: var(--shadow-text); }
+.search { position: relative; flex: 1 1 240px; max-width: 360px; }
+.search svg { position: absolute; left: 9px; top: 50%; translate: 0 -50%; width: 15px; height: 15px; color: #c9b38a; }
+.search input {
+  width: 100%; font: inherit; font-size: .95rem; color: var(--ink); background: rgba(0,0,0,.75);
+  border: 1px solid #5c5040; border-radius: 4px; padding: 6px 10px 6px 30px;
+  box-shadow: inset 0 1px 3px #000, 0 0 0 1px #000;
+}
+.search input:focus { outline: none; border-color: var(--copper); box-shadow: inset 0 1px 3px #000, 0 0 0 1px #000, 0 0 8px rgba(235,147,57,.4); }
+.search input::placeholder { color: #7d6f5b; }
+.close {
+  flex: none; width: 26px; height: 26px; border-radius: 4px; cursor: pointer; display: grid; place-items: center;
+  border: 2px solid #c9792e; background: radial-gradient(circle at 40% 30%, #e0281e, #8d0a05 55%, #3f0300);
+  box-shadow: 0 0 0 1px #000, inset 0 1px 0 rgba(255,255,255,.25); color: #ffd9a0; font: 700 16px/1 var(--font-body); text-shadow: var(--shadow-text);
+}
+.close:hover { filter: brightness(1.2); }
+
+/* tabs */
+.tabs { display: flex; gap: 3px; padding: 10px 12px 0; overflow-x: auto; scrollbar-width: none; border-bottom: 2px solid #000; box-shadow: 0 1px 0 rgba(235,147,57,.3); }
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: none; display: flex; align-items: center; gap: 7px; position: relative; top: 2px; cursor: pointer;
+  font-family: var(--font-name); font-size: .98rem; color: #d5b98a; text-shadow: var(--shadow-text);
+  padding: 7px 15px; border: 2px solid #8a5420; border-bottom: 0; border-radius: 8px 8px 0 0;
+  background: linear-gradient(180deg, #2c2016, #160f0a); box-shadow: inset 0 1px 0 rgba(255,208,138,.15), 0 0 0 1px #000;
+}
+.tab:hover { color: #fff1d0; background: linear-gradient(180deg, #3a2a1c, #1d140d); }
+.tab:focus-visible { outline: 1px solid var(--gold-text); outline-offset: -4px; }
+.tab.on {
+  color: var(--gold-text); padding-top: 9px; margin-top: -2px; border-color: var(--copper);
+  background: linear-gradient(180deg, #c3150e, #7a0603 45%, #3a0200);
+  box-shadow: inset 0 1px 0 rgba(255,200,150,.45), 0 0 0 1px #000, 0 -2px 12px rgba(178,10,7,.35);
+}
+
+/* filters */
+.filters { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 9px 14px; }
+.flabel { display: flex; align-items: center; gap: 7px; font-size: .9rem; color: var(--gold-text); text-shadow: var(--shadow-text); }
+.dd {
+  appearance: none; font: inherit; font-size: .92rem; color: var(--ink); cursor: pointer;
+  padding: 4px 32px 4px 9px; border-radius: 3px; border: 1px solid #5c5040;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='22'><rect x='1' y='1' width='20' height='20' rx='3' fill='%238d0a05' stroke='%23eb9339' stroke-width='1.5'/><path d='M6 9l5 5 5-5' fill='none' stroke='%23ffd100' stroke-width='2.2'/></svg>") right 3px center / 20px no-repeat,
+    rgba(0,0,0,.75);
+  box-shadow: inset 0 1px 3px #000, 0 0 0 1px #000;
+}
+.dd:focus-visible { outline: 1px solid var(--gold-text); }
+.dd option { background: #140f0b; }
+.check { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: .92rem; color: var(--forever); text-shadow: var(--shadow-text); user-select: none; }
+.check input { position: absolute; opacity: 0; pointer-events: none; }
+.check .box {
+  width: 20px; height: 20px; border-radius: 3px; display: grid; place-items: center;
+  border: 1px solid #8a7a5e; background: rgba(0,0,0,.8); box-shadow: 0 0 0 1px #000, inset 0 1px 3px #000;
+}
+.check .box svg { width: 18px; height: 18px; opacity: 0; transform: scale(.6); transition: opacity .12s, transform .12s; }
+.check input:checked + .box svg { opacity: 1; transform: none; }
+.check input:focus-visible + .box { outline: 1px solid var(--gold-text); outline-offset: 2px; }
+.btn-red {
+  font-family: var(--font-name); font-size: .92rem; color: var(--gold-text); text-shadow: var(--shadow-text); cursor: pointer;
+  padding: 4px 14px; border-radius: 4px; border: 1px solid #c9792e;
+  background: linear-gradient(180deg, #c71a12, #860804 55%, #4d0100); box-shadow: 0 0 0 1px #000, inset 0 1px 0 rgba(255,200,150,.35);
+}
+.btn-red:hover { filter: brightness(1.15); }
+.btn-red:active { transform: translateY(1px); }
+.filters .spacer { flex: 1; }
+.legend { display: flex; align-items: center; gap: 7px; font-size: .85rem; color: var(--ink-dim); }
+
+/* panes */
+.panes { display: grid; grid-template-columns: 250px 222px minmax(0, 1fr); gap: 8px; height: 600px; padding: 0 10px 10px; }
+.pane {
+  min-width: 0; overflow-y: auto; border-radius: 4px; background: var(--well);
+  border: 1px solid #000; box-shadow: inset 0 0 0 1px rgba(235,147,57,.2), inset 0 3px 10px rgba(0,0,0,.9);
+  scrollbar-width: thin; scrollbar-color: #8a5420 rgba(0,0,0,.4);
+}
+.pane-title { position: sticky; top: 0; z-index: 2; font-family: var(--font-display); color: var(--copper); font-size: .84rem; letter-spacing: .14em; padding: 10px 14px 8px; background: linear-gradient(180deg, rgba(10,7,5,.97) 70%, transparent); text-shadow: var(--shadow-text); }
+
+/* tree: quest-log style headers with +/- buttons */
+.tree { padding: 0 8px 14px; }
+.tree ul { list-style: none; margin: 0; padding: 0; }
+.tree ul ul { padding-left: 10px; }
+.node {
+  width: 100%; display: flex; align-items: center; gap: 8px; text-align: left; cursor: pointer;
+  font: inherit; background: none; border: 0; border-radius: 2px; padding: 4px 8px; text-shadow: var(--shadow-text);
+}
+.node:focus-visible { outline: 1px solid var(--gold-text); }
+.node.cat { font-family: var(--font-name); color: var(--gold-text); font-size: 1.02rem; padding-top: 8px; }
+.node.sub { color: #e8c98e; font-size: .94rem; }
+.node.leaf { color: var(--ink); font-size: .94rem; padding-left: 36px; }
+.node.cat:hover, .node.sub:hover { color: #fff3c0; }
+.node.leaf:hover { background: linear-gradient(90deg, rgba(255,209,0,.14), transparent); }
+.node.leaf.on { color: #fff; background: linear-gradient(90deg, rgba(255,209,0,.32), rgba(255,209,0,.06) 80%, transparent); box-shadow: inset 2px 0 0 var(--gold-text); }
+.pm {
+  flex: none; width: 16px; height: 16px; border-radius: 3px; display: grid; place-items: center;
+  border: 1px solid #c9792e; background: linear-gradient(180deg, #5b3a1b, #24150a); box-shadow: 0 0 0 1px #000;
+  color: var(--gold-text); font: 700 13px/1 var(--font-body);
+}
+.node[aria-expanded="false"] .pm::before { content: "+"; }
+.node[aria-expanded="true"] .pm::before { content: "−"; }
+.node .lv { margin-left: auto; font-size: .78rem; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+.pip {
+  flex: none; display: inline-flex; align-items: center; justify-content: center; min-width: 19px; height: 17px; padding: 0 5px;
+  border-radius: 9px; font: 700 .72rem/1 var(--font-body); color: #022a2a; text-shadow: none;
+  background: linear-gradient(180deg, #8ff4f4, var(--forever)); border: 1px solid #c9792e; box-shadow: 0 0 0 1px #000, 0 0 8px rgba(18,200,200,.5);
+}
+.size { font-size: .7rem; color: #e8c98e; border: 1px solid rgba(235,147,57,.45); border-radius: 3px; padding: 0 4px; }
+
+/* sections column */
+.inst-head { padding: 2px 14px 12px; border-bottom: 1px solid rgba(235,147,57,.22); margin-bottom: 6px; }
+.inst-head h2 { font-family: var(--font-name); font-weight: 400; color: var(--gold-text); font-size: 1.28rem; margin: 0 0 4px; text-wrap: balance; text-shadow: var(--shadow-text); }
+.inst-head .meta { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: .82rem; color: var(--ink-dim); }
+.sections { list-style: none; margin: 0; padding: 0 8px 14px; display: grid; gap: 3px; }
+.sec {
+  width: 100%; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 8px; text-align: left; cursor: pointer;
+  font: inherit; color: var(--ink); background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(0,0,0,.2)); border: 1px solid rgba(0,0,0,.8);
+  border-radius: 3px; padding: 6px 9px; text-shadow: var(--shadow-text); box-shadow: inset 0 0 0 1px rgba(235,147,57,.1);
+}
+.sec:hover { box-shadow: inset 0 0 0 1px rgba(255,209,0,.4); }
+.sec:focus-visible { outline: 1px solid var(--gold-text); }
+.sec.on { border-color: #000; background: linear-gradient(180deg, rgba(178,10,7,.55), rgba(77,1,0,.55)); box-shadow: inset 0 0 0 1px var(--copper), 0 0 10px rgba(178,10,7,.3); }
+.sec .nm { font-family: var(--font-name); font-size: 1rem; }
+.sec.on .nm { color: var(--gold-text); }
+.sec .sm { grid-column: 1; font-size: .78rem; color: var(--ink-dim); }
+.sec .rt { grid-row: 1 / span 2; grid-column: 2; display: flex; gap: 5px; align-items: center; }
+.tag-rare { font-size: .66rem; text-transform: uppercase; letter-spacing: .08em; color: #d8d8d8; border: 1px solid #6c6c6c; border-radius: 3px; padding: 0 4px; background: rgba(0,0,0,.5); }
+
+/* loot */
+.loot-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 10px 16px 6px; text-shadow: var(--shadow-text); }
+.loot-head h3 { font-family: var(--font-name); font-weight: 400; color: var(--gold-text); font-size: 1.2rem; margin: 0; }
+.loot-head .crumb { font-size: .84rem; color: var(--ink-dim); }
+.loot-head .count { margin-left: auto; font-size: .82rem; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 10px; padding: 4px 12px 16px; }
+.item {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 1px 10px; width: 100%;
+  padding: 5px 9px 5px 5px; border-radius: 3px; text-align: left; font: inherit; color: inherit; cursor: default;
+  background: linear-gradient(90deg, rgba(0,0,0,.55), rgba(0,0,0,.25)); border: 1px solid transparent;
+}
+.item:hover, .item:focus-visible { outline: none; background: linear-gradient(90deg, rgba(255,209,0,.16), rgba(255,209,0,.03)); border-color: rgba(255,209,0,.35); }
+.item.fv {
+  background: linear-gradient(90deg, rgba(18,200,200,.24), rgba(18,200,200,.06) 75%), rgba(0,0,0,.4);
+  border-color: rgba(18,200,200,.6); box-shadow: inset 0 0 0 1px rgba(0,0,0,.6), 0 0 10px rgba(18,200,200,.14);
+}
+.item.fv:hover, .item.fv:focus-visible { border-color: var(--forever); box-shadow: inset 0 0 0 1px rgba(0,0,0,.6), 0 0 16px rgba(18,200,200,.35); }
+/* icon slot: black bevel, quality border, gloss */
+.icon {
+  grid-row: 1 / span 2; position: relative; width: 44px; height: 44px; border-radius: 3px; display: grid; place-items: center;
+  border: 2px solid var(--qc); box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #000, 0 0 6px color-mix(in srgb, var(--qc) 45%, transparent);
+  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--qc) 32%, #3a2a1a), #070504 78%);
+}
+.icon::after { content: ""; position: absolute; inset: 1px; border-radius: 2px; background: linear-gradient(160deg, rgba(255,255,255,.22), transparent 42%); pointer-events: none; }
+.icon svg { width: 25px; height: 25px; color: color-mix(in srgb, var(--qc) 50%, #f3e2bf); filter: drop-shadow(0 1px 1px #000); }
+.iname { font-family: var(--font-name); font-size: 1.01rem; color: var(--qc); text-shadow: var(--shadow-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.itype { grid-column: 2; font-size: .8rem; color: var(--ink-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.iside { grid-row: 1 / span 2; grid-column: 3; display: grid; justify-items: end; gap: 4px; }
+.fbadge { display: inline-flex; align-items: center; gap: 6px; font-size: .64rem; font-weight: 700; letter-spacing: .14em; color: var(--forever); text-shadow: var(--shadow-text); }
+.fbadge::before, .lg-gem {
+  content: ""; width: 9px; height: 9px; transform: rotate(45deg); flex: none;
+  background: radial-gradient(circle at 35% 35%, #c8ffff, var(--forever) 50%, #046a6a); border: 1px solid var(--copper); box-shadow: 0 0 6px rgba(18,200,200,.7);
+}
+.lg-gem { display: inline-block; }
+.setmark { font-size: .72rem; color: var(--gold-text); text-shadow: var(--shadow-text); }
+.src { font-size: .74rem; color: var(--ink-dim); text-align: right; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.empty { margin: 40px 16px; padding: 28px 20px; text-align: center; color: var(--ink-dim); border: 1px dashed rgba(235,147,57,.35); border-radius: 4px; }
+.empty b { display: block; font-family: var(--font-name); font-weight: 400; color: var(--gold-text); font-size: 1.05rem; margin-bottom: 6px; text-shadow: var(--shadow-text); }
+
+.statusbar { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; margin: 0 10px 10px; padding: 6px 12px; border-radius: 3px; background: rgba(0,0,0,.5); border: 1px solid #000; box-shadow: inset 0 0 0 1px rgba(235,147,57,.15); font-size: .8rem; color: var(--ink-dim); }
+.statusbar .grow { flex: 1; }
+.statusbar kbd { font-family: var(--font-body); color: var(--gold-text); border: 1px solid #8a5420; border-radius: 3px; padding: 0 5px; background: rgba(0,0,0,.5); }
+
+/* tooltip, modelled on the game's item tooltip */
+.tip {
+  position: fixed; z-index: 50; width: 300px; max-width: calc(100vw - 24px); pointer-events: none;
+  background: var(--tip-bg); border: 2px solid var(--tip-line); border-radius: 6px; padding: 9px 11px;
+  box-shadow: 0 0 0 1px #000, 0 10px 28px rgba(0,0,0,.6); font-size: .92rem; line-height: 1.35; color: var(--q1); text-shadow: 1px 1px 0 #000;
+}
+.tip.fv { border-color: var(--forever); box-shadow: 0 0 0 1px #000, 0 0 18px rgba(18,200,200,.35); }
+.tip .tn { font-family: var(--font-name); font-size: 1.08rem; color: var(--qc); }
+.tip .row { display: flex; justify-content: space-between; gap: 10px; }
+.tip .dim { color: var(--ink-dim); }
+.tip .set { color: var(--gold-text); margin-top: 4px; }
+.tip .fl { color: var(--forever); margin-top: 6px; }
+.tip .src2 { color: var(--gold-text); margin-top: 6px; }
+.tip .note { margin-top: 6px; font-size: .78rem; color: #8590a8; font-style: italic; }
+
+/* recipe detail view */
+.rd { padding: 10px 16px 18px; display: grid; gap: 14px; }
+.rd-back { justify-self: start; font-size: .85rem; padding: 3px 12px; }
+.rd-head { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.rd-head .ricon { width: 58px; height: 58px; }
+.rd-head .ricon svg { width: 32px; height: 32px; }
+.rd-title { display: grid; gap: 3px; min-width: 0; flex: 1; }
+.rd-title b { font-family: var(--font-name); font-weight: 400; font-size: 1.4rem; color: var(--qc); text-shadow: var(--shadow-text); }
+.rd-title span { color: var(--ink-dim); font-size: .88rem; }
+.rd-badges { display: flex; gap: 8px; align-items: center; }
+.chg { font-size: .64rem; font-weight: 700; letter-spacing: .14em; color: var(--forever); border: 1px solid rgba(18,200,200,.6); border-radius: 3px; padding: 1px 5px; text-shadow: var(--shadow-text); }
+.skillrow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .82rem; color: var(--ink-dim); }
+.sk { font-variant-numeric: tabular-nums; font-weight: 700; padding: 1px 7px; border-radius: 3px; background: rgba(0,0,0,.6); border: 1px solid rgba(255,255,255,.08); text-shadow: var(--shadow-text); }
+.sk.o { color: #ff8040; } .sk.y { color: #ffff00; } .sk.g { color: #40bf40; } .sk.x { color: #9a9a9a; }
+.rd-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.rd-box { min-width: 0; background: rgba(0,0,0,.38); border: 1px solid rgba(235,147,57,.22); border-radius: 4px; padding: 10px 12px; }
+.rd-box h4 { margin: 0 0 9px; display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 400; color: var(--copper); font-size: .8rem; letter-spacing: .14em; text-shadow: var(--shadow-text); }
+.rd-box h4 .grow { flex: 1; }
+.linkrow { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 1px 10px; align-items: center; }
+.linkrow + .linkrow { margin-top: 8px; }
+.linkrow .ln { font-family: var(--font-name); color: var(--qc); text-shadow: var(--shadow-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.linkrow .ls { grid-column: 2; font-size: .78rem; color: var(--ink-dim); }
+.reag { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px 12px; }
+.ricon {
+  grid-row: 1 / span 2; position: relative; width: 40px; height: 40px; padding: 0; border-radius: 3px; display: grid; place-items: center; cursor: default; font: inherit;
+  border: 2px solid var(--qc); box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #000;
+  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--qc) 30%, #3a2a1a), #070504 78%);
+}
+.ricon::after { content: ""; position: absolute; inset: 1px; border-radius: 2px; background: linear-gradient(160deg, rgba(255,255,255,.22), transparent 42%); pointer-events: none; }
+.ricon svg { width: 23px; height: 23px; color: color-mix(in srgb, var(--qc) 45%, #f3e2bf); filter: drop-shadow(0 1px 1px #000); }
+.ricon:hover, .ricon:focus-visible { outline: none; box-shadow: 0 0 0 1px #000, 0 0 10px rgba(255,209,0,.55); }
+.ricon.fvr { box-shadow: 0 0 0 1px #000, 0 0 0 3px var(--forever), 0 0 10px rgba(18,200,200,.5); }
+.ricon .cnt { position: absolute; right: 3px; bottom: 0; z-index: 1; font: 700 .9rem/1.1 var(--font-body); color: #fff; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; }
+.chips { display: inline-flex; gap: 4px; }
+.chips button { font: inherit; font-size: .74rem; letter-spacing: .04em; color: var(--ink-dim); background: rgba(0,0,0,.5); border: 1px solid #5c5040; border-radius: 3px; padding: 1px 8px; cursor: pointer; }
+.chips button.on { color: var(--gold-text); border-color: var(--copper); background: linear-gradient(180deg, rgba(178,10,7,.6), rgba(77,1,0,.6)); }
+.chips button:focus-visible { outline: 1px solid var(--gold-text); }
+.srcs { display: grid; gap: 2px; }
+.npc { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 1px 10px; align-items: center; padding: 6px 8px; border-radius: 3px; background: rgba(0,0,0,.22); }
+.npc:nth-child(even) { background: rgba(0,0,0,.36); }
+.fdot { grid-row: 1 / span 2; width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 0 1px #000; }
+.fdot.alliance { background: #2f6fd6; } .fdot.horde { background: #c41f1f; } .fdot.both { background: #9b8f78; }
+.npc .nm { font-family: var(--font-name); color: var(--ink); text-shadow: var(--shadow-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.npc .nm small { font-family: var(--font-body); font-size: .78rem; color: var(--ink-dim); }
+.npc .loc { grid-column: 2; font-size: .8rem; color: var(--ink-dim); }
+.npc .loc .xy { color: var(--gold-text); font-variant-numeric: tabular-nums; }
+.npc .rt { grid-row: 1 / span 2; grid-column: 3; display: flex; gap: 8px; align-items: center; }
+.chance { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 700; }
+.rank { font-size: .66rem; text-transform: uppercase; letter-spacing: .08em; border-radius: 3px; padding: 0 4px; border: 1px solid; }
+.rank.boss { color: #ff8a65; border-color: #a5432b; } .rank.elite { color: var(--gold-text); border-color: #8a6a1a; } .rank.rare { color: #d8d8d8; border-color: #6c6c6c; }
+.wp { font: inherit; font-size: .76rem; color: var(--gold-text); background: rgba(0,0,0,.55); border: 1px solid #8a5420; border-radius: 3px; padding: 2px 8px; cursor: pointer; text-shadow: var(--shadow-text); }
+.wp:hover { border-color: var(--copper); }
+.nosrc { color: var(--ink-dim); font-size: .9rem; line-height: 1.45; }
+.nosrc b { color: var(--forever); font-weight: 500; }
+.prov { font-size: .78rem; color: var(--ink-dim); line-height: 1.45; border-top: 1px solid rgba(235,147,57,.18); padding-top: 8px; }
+.item .skp { font-size: .74rem; font-weight: 700; font-variant-numeric: tabular-nums; color: #ffff00; text-shadow: var(--shadow-text); }
+.item[data-rec] { cursor: pointer; }
+.toast {
+  position: absolute; left: 50%; bottom: 52px; translate: -50% 0; z-index: 20; max-width: calc(100% - 32px);
+  padding: 8px 14px; border-radius: 4px; font-size: .9rem; color: var(--gold-text); text-shadow: var(--shadow-text);
+  background: rgba(10,7,5,.95); border: 1px solid var(--copper); box-shadow: 0 0 0 1px #000, 0 8px 24px rgba(0,0,0,.6);
+}
+
+/* notes under the window */
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.note-card { min-width: 0; background: var(--rock); border: 1px solid rgba(235,147,57,.28); border-radius: 4px; padding: 14px 16px; }
+.note-card h4 { margin: 0 0 8px; font-family: var(--font-display); font-weight: 400; color: var(--copper); letter-spacing: .08em; font-size: .9rem; }
+.note-card ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; color: var(--page-ink); font-size: .9rem; line-height: 1.4; }
+.note-card em { color: var(--forever); font-style: normal; }
+
+@media (max-width: 980px) {
+  .panes { grid-template-columns: 220px minmax(0, 1fr); grid-template-rows: auto auto; height: auto; }
+  .p-tree { grid-row: 1 / span 2; max-height: 780px; }
+  .p-sec { max-height: 260px; }
+  .p-loot { max-height: 520px; }
+  .notes { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .frame-wrap { padding-top: 16px; padding-left: 10px; }
+  .portrait { width: 72px; height: 72px; }
+  .titlebar { padding-left: 72px; padding-right: 46px; }
+  .close { position: absolute; top: 12px; right: 10px; }
+  .search { flex-basis: 100%; }
+  .title b { font-size: 1.25rem; }
+  .panes { grid-template-columns: minmax(0, 1fr); padding: 0 6px 6px; }
+  .p-tree { grid-row: auto; max-height: 300px; }
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  .legend, .src { display: none; }
+  .statusbar { margin: 0 6px 6px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="g-sword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4L9 15M20 4h-4.5M20 4v4.5M6.5 12.5l5 5M4.5 19.5l3-3"/></symbol>
+    <symbol id="g-axe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20L15.5 7"/><path d="M12.5 4.5c4.5-.5 8 3 7.5 7.5l-6-3.5z"/></symbol>
+    <symbol id="g-mace" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20l8-8"/><circle cx="15.5" cy="8.5" r="4"/><path d="M15.5 2.5v2M21.5 8.5h-2M19.7 4.3l-1.4 1.4"/></symbol>
+    <symbol id="g-staff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20L16.5 7.5"/><circle cx="18" cy="6" r="2.8"/></symbol>
+    <symbol id="g-dagger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15l9-9 1.5-3-3 1.5-9 9M6.5 12.5l5 5M5 19l2-2"/></symbol>
+    <symbol id="g-polearm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L16 8"/><path d="M14 4l6 6-3.5 1-3.5-3.5z"/></symbol>
+    <symbol id="g-fist" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11h12v5a4 4 0 01-4 4h-4a4 4 0 01-4-4z M8 11V5 M12 11V3 M16 11V5"/></symbol>
+    <symbol id="g-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M12 7v10"/></symbol>
+    <symbol id="g-chest" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 4l4 2 4-2 4 3-2 4v9H6v-9L4 7z"/></symbol>
+    <symbol id="g-hands" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 21v-7l-2-4 2-1 2 3V5h2v6V4h2v7V5h2v7l1.5-3H19l-2 7v5z"/></symbol>
+    <symbol id="g-feet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h5v10l6 3v4H6v-4l2-2z"/></symbol>
+    <symbol id="g-legs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 3h10l1 18h-4l-2-11-2 11H6z"/></symbol>
+    <symbol id="g-waist" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="9" width="18" height="6" rx="1"/><rect x="10" y="7.5" width="4" height="9" rx="1"/></symbol>
+    <symbol id="g-head" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 16a7 7 0 0114 0v3H5z M12 9v10"/></symbol>
+    <symbol id="g-shoulder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 15c0-5 4-8 9-8s9 3 9 8l-4-1-5 3-5-3z"/></symbol>
+    <symbol id="g-wrist" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="6" y="5" width="12" height="14" rx="3"/><path d="M6 12h12"/></symbol>
+    <symbol id="g-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3.5 18-7.5-3-7.5 3z"/></symbol>
+    <symbol id="g-ring" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="14.5" r="6"/><path d="M10 7l2-3.5L14 7z"/></symbol>
+    <symbol id="g-neck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 3c0 7 3 10 7 10s7-3 7-10"/><circle cx="12" cy="17.5" r="3"/></symbol>
+    <symbol id="g-trinket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.3-5.5-3-5.5 3 1-6.3L3 9.7l6.2-.9z"/></symbol>
+    <symbol id="g-wand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 19L15.5 8.5"/><path d="M18 3v4M16 5h4M20.5 10l.8.8M13.5 3.5l.8.8"/></symbol>
+    <symbol id="g-bow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 3c9 2 14 7 16 16"/><path d="M5 3l16 16"/></symbol>
+    <symbol id="g-orb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="11" r="6.5"/><path d="M8 20h8M12 17.5V20"/></symbol>
+    <symbol id="g-recipe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 4h11v14a2 2 0 01-2 2H6a2 2 0 01-2-2v-1h3z"/><path d="M10 8h5M10 11h5M10 14h3"/></symbol>
+    <symbol id="g-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11"/></symbol>
+    <symbol id="g-potion" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9.5 3h5M10.5 3v5L6 15.5A4 4 0 009.5 21h5a4 4 0 003.5-5.5L13.5 8V3"/><path d="M7.5 14h9"/></symbol>
+    <symbol id="g-pet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 20V10a6 6 0 0112 0v10z M5 20h14 M10 8.5V20 M14 8.5V20"/></symbol>
+    <symbol id="g-letter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="1"/><path d="M3 7l9 6 9-6"/></symbol>
+    <symbol id="g-herb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V10"/><path d="M12 13c-5 0-7-3-7-7 4 0 7 2 7 7z"/><path d="M12 10c0-4 3-7 7-7 0 4-2 7-7 7z"/></symbol>
+    <symbol id="g-vial" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v4l-3 4v8a2 2 0 002 2h6a2 2 0 002-2v-8l-3-4V3"/><path d="M7 14h10"/></symbol>
+    <symbol id="g-ore" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 15l4-8 6-2 6 6-2 7-8 2z"/><path d="M8 7l3 6 7-2M11 13l-3 7"/></symbol>
+    <symbol id="g-camp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 20h18M5 20l7-15 7 15"/><path d="M12 20v-5l-3 5M12 15l3 5"/></symbol>
+    <symbol id="g-misc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="g-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+    <symbol id="g-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20.5 5" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 12.5l5 5L20.5 5" fill="none" stroke="#ffd100" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="page">
+  <div class="page-head">
+    <h1>Encore Essentials · Encore-DB mock-up v0.6</h1>
+    <p>Sample data only. Teal items are invented placeholders that show how Forever content is marked.</p>
+  </div>
+
+  <div class="frame-wrap">
+    <div class="portrait" role="img" aria-label="Encore crest"></div>
+    <section class="frame" aria-label="Encore-DB window">
+      <span class="gem tr"></span><span class="gem bl"></span><span class="gem br"></span>
+      <div class="frame-inner">
+        <header class="titlebar">
+          <div class="title"><b>Encore-DB</b><span>Encore Essentials · loot database</span></div>
+          <div class="search">
+            <svg aria-hidden="true"><use href="#g-search"/></svg>
+            <input id="q" type="search" placeholder="Search all loot…" autocomplete="off" aria-label="Search all loot">
+          </div>
+          <button class="close" type="button" aria-label="Close window">✕</button>
+        </header>
+
+        <nav class="tabs" id="tabs" role="tablist" aria-label="Loot categories"></nav>
+
+        <div class="filters">
+          <label class="flabel">Usable by
+            <select class="dd" id="f-class">
+              <option value="">All classes</option>
+              <option>Druid</option><option>Hunter</option><option>Mage</option><option>Paladin</option>
+              <option>Priest</option><option>Rogue</option><option>Shaman</option><option>Warlock</option><option>Warrior</option>
+            </select>
+          </label>
+          <label class="flabel">Slot
+            <select class="dd" id="f-slot">
+              <option value="">Any slot</option>
+              <option value="armor">Armor</option>
+              <option value="weapon">Weapons</option>
+              <option value="jewel">Neck, rings, trinkets</option>
+              <option value="other">Recipes and other</option>
+            </select>
+          </label>
+          <label class="flabel">Quality
+            <select class="dd" id="f-q">
+              <option value="0">Any quality</option>
+              <option value="2">Uncommon and better</option>
+              <option value="3">Rare and better</option>
+              <option value="4">Epic only</option>
+            </select>
+          </label>
+          <label class="check"><input id="f-fv" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#g-check"/></svg></span>Forever only</label>
+          <button class="btn-red" id="reset" type="button">Reset</button>
+          <span class="spacer"></span>
+          <span class="legend"><span class="lg-gem"></span>New in WoW Forever</span>
+        </div>
+
+        <div class="panes">
+          <nav class="pane p-tree" aria-label="Categories">
+            <div class="pane-title" id="tree-title">Browse</div>
+            <div class="tree" id="tree"></div>
+          </nav>
+          <div class="pane p-sec" id="sec-pane"></div>
+          <div class="pane p-loot" id="loot-pane"></div>
+        </div>
+
+        <div class="toast" id="toast" role="status" hidden></div>
+        <footer class="statusbar">
+          <span id="status">Ready</span>
+          <span class="grow"></span>
+          <span>Open with <kbd>/encore db</kbd></span>
+          <span>Shift-click an item to link it in chat</span>
+        </footer>
+      </div>
+    </section>
+  </div>
+
+  <div class="notes">
+    <div class="note-card">
+      <h4>Layout</h4>
+      <ul>
+        <li>Main categories are tabs across the top. The left tree shows only the open tab.</li>
+        <li>Dungeons are grouped into level brackets. 20- and 40-player raids share one list with a size tag.</li>
+        <li>The middle column adapts: bosses for instances, skill brackets for professions, standings for factions.</li>
+      </ul>
+    </div>
+    <div class="note-card">
+      <h4>Encore look</h4>
+      <ul>
+        <li>Encore crest without text as the window portrait and minimap button.</li>
+        <li>Clean dark finish inside the copper frame, with teal gems on the corners.</li>
+        <li>Red Encore tabs, red buttons, gold game text with black outline, quest-log +/− headers.</li>
+        <li>In-game, frames, icons and the Friz Quadrata font come from the game itself. This page imitates them.</li>
+      </ul>
+    </div>
+    <div class="note-card">
+      <h4>Recipes (real data)</h4>
+      <ul>
+        <li>Professions › Alchemy: click any recipe to open it.</li>
+        <li>Hover the recipe, crafted item and reagent icons for their tooltips.</li>
+        <li>Recipes, reagents and skill levels come from the WoW Forever client.</li>
+        <li>Trainers, vendors and drops are not collected yet. They will come from Forever itself, with zone, map coordinates and a faction filter.</li>
+      </ul>
+    </div>
+    <div class="note-card">
+      <h4>Forever marking</h4>
+      <ul>
+        <li>No separate Forever category. New items stay where they drop.</li>
+        <li><em>Teal frame, teal background and a teal gem</em> on the item, using the crest's teal.</li>
+        <li>Teal counters on tabs, tree entries and bosses. "Forever only" filters every view.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="tip" id="tip" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- sample data ----------
+     item: [name, quality 0-5, slot, type, glyph, extra]
+     extra: { fv: true } marks an invented Forever placeholder; { set: "Name" } marks a set piece */
+  /* Real Alchemy data. Recipes, reagents, skill levels and new/changed status: WoW Forever client build 1.60.1.70959
+     (wago.tools), compared with Classic Era 1.15.9. Trainers, vendors and drops: not collected yet (to come from Forever itself). */
+  const RECIPES = {"2329":{"name":"Elixir of Minor Strength","status":"same","acq":0,"y":55,"g":95,"creates":{"id":2454,"name":"Elixir of Minor Strength","q":1,"new":false,"gl":"potion"},"recipe":[],"reagents":[{"id":2449,"name":"Earthroot","q":1,"n":1,"new":false,"gl":"herb"},{"id":765,"name":"Silverleaf","q":1,"n":1,"new":false,"gl":"herb"},{"id":3371,"name":"Empty Vial","q":1,"n":1,"new":false,"gl":"vial"}],"src":[]},"2331":{"name":"Minor Mana Potion","status":"changed","acq":0,"y":65,"g":105,"creates":{"id":2455,"name":"Minor Mana Potion","q":1,"new":false,"gl":"potion"},"recipe":[],"reagents":[{"id":785,"name":"Mageroyal","q":1,"n":1,"new":false,"gl":"herb"},{"id":2447,"name":"Peacebloom","q":1,"n":1,"new":false,"gl":"herb"},{"id":3371,"name":"Empty Vial","q":1,"n":1,"new":false,"gl":"vial"}],"src":[]},"4942":{"name":"Lesser Stoneshield Potion","status":"same","acq":0,"y":230,"g":270,"creates":{"id":4623,"name":"Lesser Stoneshield Potion","q":1,"new":false,"gl":"potion"},"recipe":[{"id":4624,"name":"Recipe: Lesser Stoneshield Potion","q":1,"req":215}],"reagents":[{"id":3858,"name":"Mithril Ore","q":1,"n":1,"new":false,"gl":"ore"},{"id":3821,"name":"Goldthorn","q":1,"n":1,"new":false,"gl":"herb"},{"id":3372,"name":"Leaded Vial","q":1,"n":1,"new":false,"gl":"vial"}],"src":[]},"7183":{"name":"Elixir of Minor Defense","status":"changed","acq":1,"y":55,"g":95,"creates":{"id":5997,"name":"Elixir of Minor Defense","q":1,"new":false,"gl":"potion"},"recipe":[],"reagents":[{"id":765,"name":"Silverleaf","q":1,"n":1,"new":false,"gl":"herb"},{"id":2447,"name":"Peacebloom","q":1,"n":1,"new":false,"gl":"herb"},{"id":3371,"name":"Empty Vial","q":1,"n":1,"new":false,"gl":"vial"}],"src":[{"type":"auto"}]},"17574":{"name":"Greater Fire Protection Potion","status":"same","acq":0,"y":305,"g":345,"creates":{"id":13457,"name":"Greater Fire Protection Potion","q":1,"new":false,"gl":"potion"},"recipe":[{"id":13494,"name":"Recipe: Greater Fire Protection Potion","q":2,"req":290}],"reagents":[{"id":7068,"name":"Elemental Fire","q":1,"n":1,"new":false,"gl":"herb"},{"id":13463,"name":"Dreamfoil","q":1,"n":1,"new":false,"gl":"misc"},{"id":8925,"name":"Crystal Vial","q":1,"n":1,"new":false,"gl":"vial"}],"src":[]},"17635":{"name":"Flask of the Titans","status":"same","acq":0,"y":315,"g":330,"creates":{"id":13510,"name":"Flask of the Titans","q":1,"new":false,"gl":"potion"},"recipe":[{"id":13519,"name":"Recipe: Flask of the Titans","q":2,"req":300}],"reagents":[{"id":8846,"name":"Gromsblood","q":1,"n":30,"new":false,"gl":"herb"},{"id":13423,"name":"Stonescale Oil","q":1,"n":10,"new":false,"gl":"misc"},{"id":13468,"name":"Black Lotus","q":2,"n":1,"new":false,"gl":"herb"},{"id":8925,"name":"Crystal Vial","q":1,"n":1,"new":false,"gl":"vial"}],"src":[]},"1230564":{"name":"Mana Well","status":"new","acq":0,"y":20,"g":20,"creates":{"id":279956,"name":"Mana Well","q":1,"new":true,"gl":"camp"},"recipe":[],"reagents":[{"id":2447,"name":"Peacebloom","q":1,"n":1,"new":false,"gl":"herb"},{"id":3371,"name":"Empty Vial","q":1,"n":1,"new":false,"gl":"vial"}],"src":[]},"1244645":{"name":"Lesser Discolored Healing Potion","status":"new","acq":0,"y":85,"g":125,"creates":{"id":247239,"name":"Lesser Discolored Healing Potion","q":1,"new":true,"gl":"potion"},"recipe":[],"reagents":[{"id":3371,"name":"Empty Vial","q":1,"n":1,"new":false,"gl":"vial"},{"id":2450,"name":"Briarthorn","q":1,"n":1,"new":false,"gl":"herb"},{"id":730,"name":"Murloc Eye","q":1,"n":1,"new":false,"gl":"misc"}],"src":[]},"1245250":{"name":"Elixir of Minor Force","status":"new","acq":1,"y":10,"g":15,"creates":{"id":247755,"name":"Elixir of Minor Force","q":1,"new":true,"gl":"potion"},"recipe":[],"reagents":[{"id":765,"name":"Silverleaf","q":1,"n":1,"new":false,"gl":"herb"},{"id":3371,"name":"Empty Vial","q":1,"n":1,"new":false,"gl":"vial"}],"src":[{"type":"auto"}]},"1250783":{"name":"Elixir of Fortitude","status":"new","acq":0,"y":155,"g":160,"creates":{"id":250334,"name":"Elixir of Fortitude","q":1,"new":true,"gl":"potion"},"recipe":[{"id":250370,"name":"Recipe: Elixir of Fortitude","q":1,"req":150}],"reagents":[{"id":3821,"name":"Goldthorn","q":1,"n":4,"new":false,"gl":"herb"},{"id":3372,"name":"Leaded Vial","q":1,"n":1,"new":false,"gl":"vial"}],"src":[]},"1250785":{"name":"Elixir of Wicked Regeneration","status":"new","acq":0,"y":290,"g":295,"creates":{"id":250336,"name":"Elixir of Wicked Regeneration","q":1,"new":true,"gl":"potion"},"recipe":[{"id":250372,"name":"Recipe: Elixir of Wicked Regeneration","q":1,"req":285}],"reagents":[{"id":13464,"name":"Golden Sansam","q":1,"n":3,"new":false,"gl":"herb"},{"id":13463,"name":"Dreamfoil","q":1,"n":2,"new":false,"gl":"misc"},{"id":8925,"name":"Crystal Vial","q":1,"n":1,"new":false,"gl":"vial"}],"src":[]},"1251741":{"name":"Minor Mender's Potion","status":"new","acq":0,"y":35,"g":40,"creates":{"id":250944,"name":"Minor Mender's Potion","q":1,"new":true,"gl":"potion"},"recipe":[{"id":250988,"name":"Recipe: Minor Mender's Potion","q":1,"req":30}],"reagents":[{"id":785,"name":"Mageroyal","q":1,"n":2,"new":false,"gl":"herb"},{"id":2453,"name":"Bruiseweed","q":1,"n":1,"new":false,"gl":"herb"},{"id":3371,"name":"Empty Vial","q":1,"n":1,"new":false,"gl":"vial"}],"src":[]},"1263005":{"name":"Fermenter","status":"new","acq":0,"y":140,"g":140,"creates":{"id":279970,"name":"Fermenter","q":1,"new":true,"gl":"camp"},"recipe":[{"id":273085,"name":"Blueprint: Fermenter","q":2,"req":140}],"reagents":[{"id":3372,"name":"Leaded Vial","q":1,"n":1,"new":false,"gl":"vial"},{"id":3356,"name":"Kingsblood","q":1,"n":1,"new":false,"gl":"herb"},{"id":2452,"name":"Swiftthistle","q":1,"n":1,"new":false,"gl":"herb"}],"src":[]},"1263078":{"name":"Alchemy Laboratory","status":"new","acq":0,"y":300,"g":300,"creates":{"id":279990,"name":"Alchemy Laboratory","q":1,"new":true,"gl":"camp"},"recipe":[{"id":273112,"name":"Blueprint: Alchemy Laboratory","q":2,"req":300}],"reagents":[{"id":273125,"name":"Lich's Index Finger","q":2,"n":1,"new":true,"gl":"misc"},{"id":8925,"name":"Crystal Vial","q":1,"n":1,"new":false,"gl":"vial"},{"id":13463,"name":"Dreamfoil","q":1,"n":2,"new":false,"gl":"misc"}],"src":[]},"1293559":{"name":"Flask of Natural Accuracy","status":"new","acq":0,"y":320,"g":330,"creates":{"id":274273,"name":"Flask of Natural Accuracy","q":2,"new":true,"gl":"potion"},"recipe":[{"id":274277,"name":"Recipe: Flask of Natural Accuracy","q":3,"req":300}],"reagents":[{"id":248822,"name":"Death Lotus","q":2,"n":1,"new":true,"gl":"herb"},{"id":248821,"name":"Demonsage","q":1,"n":12,"new":true,"gl":"herb"},{"id":13464,"name":"Golden Sansam","q":1,"n":9,"new":false,"gl":"herb"},{"id":18256,"name":"Imbued Vial","q":1,"n":1,"new":false,"gl":"vial"}],"src":[]},"1317279":{"name":"Transmute: Legionite","status":"new","acq":0,"y":275,"g":290,"creates":{"id":251290,"name":"Legionite Bar","q":2,"new":true,"gl":"ore"},"recipe":[{"id":284871,"name":"Recipe: Transmute Legionite","q":1,"req":275}],"reagents":[{"id":251291,"name":"Heavy Thorium Bar","q":2,"n":1,"new":true,"gl":"ore"},{"id":248819,"name":"Fel Crystal","q":2,"n":1,"new":true,"gl":"ore"}],"src":[]}};
+  const BRACKETS = [["Apprentice", 1, 75], ["Journeyman", 75, 150], ["Expert", 150, 225], ["Artisan", 225, 300], ["Master", 300, 350]];
+  function recipeItem(id) {
+    const r = RECIPES[id];
+    return [r.creates.name, r.creates.q, "Alchemy", "Skill " + r.y + " – " + r.g, r.creates.gl, { fv: r.status === "new", changed: r.status === "changed", rec: id, id: r.creates.id }];
+  }
+  const SETS = { mage: "Arcanist Regalia", lock: "Felheart Raiment", druid: "Cenarion Raiment", sham: "The Earthfury", pala: "Lawbringer Armor", war: "Battlegear of Might" };
+  const INST = {
+    deadmines: {
+      name: "The Deadmines", zone: "Westfall", lv: "17–26", size: "5-player", kind: "Bosses",
+      secs: [
+        { n: "Rhahk'Zor", lv: 19, items: [["Rockslicer",3,"Two-Hand","Axe","axe"],["Rhahk'Zor's Hammer",2,"Two-Hand","Mace","mace"]] },
+        { n: "Miner Johnson", lv: 19, rare: true, items: [["Gold-plated Buckler",2,"Off Hand","Shield","shield"],["Miner's Cape",2,"Back","Cloth","back"]] },
+        { n: "Sneed", lv: 20, items: [["Taskmaster Axe",3,"Two-Hand","Axe","axe"],["Gold-flecked Gloves",2,"Hands","Cloth","hands"]] },
+        { n: "Sneed's Shredder", lv: 20, items: [["Buzz Saw",2,"One-Hand","Sword","sword"],["Buzzer Blade",2,"One-Hand","Dagger","dagger"]] },
+        { n: "Gilnid", lv: 20, items: [["Lavishly Jeweled Ring",3,"Finger","Ring","ring"],["Smelting Pants",2,"Legs","Leather","legs"]] },
+        { n: "Mr. Smite", lv: 20, items: [["Smite's Mighty Hammer",3,"Two-Hand","Mace","mace"],["Thief's Blade",2,"One-Hand","Sword","sword"],["Smite's Reaver",2,"One-Hand","Axe","axe"],["Smite's Anchor Chain",3,"Waist","Mail","waist",{fv:true}]] },
+        { n: "Captain Greenskin", lv: 21, items: [["Emberstone Staff",2,"Two-Hand","Staff","staff"],["Blackened Defias Belt",2,"Waist","Leather","waist"],["Impaling Harpoon",2,"Two-Hand","Polearm","polearm"]] },
+        { n: "Edwin VanCleef", lv: 21, items: [["Cape of the Brotherhood",3,"Back","Cloth","back"],["Corsair's Overshirt",2,"Chest","Cloth","chest"],["Blackened Defias Armor",3,"Chest","Leather","chest"],["Cruel Barb",3,"One-Hand","Sword","sword"],["An Unsent Letter",1,"Quest","Starts a quest","letter"],["Signet of the Brotherhood",3,"Finger","Ring","ring",{fv:true}]] },
+        { n: "Cookie", lv: 20, items: [["Cookie's Stirring Rod",2,"Ranged","Wand","wand"],["Cookie's Tenderizer",2,"One-Hand","Mace","mace"],["Cat Carrier (Siamese)",1,"Companion","Pet","pet"],["Recipe: Galley Fish Stew",2,"Recipe","Cooking","recipe",{fv:true}]] },
+        { n: "Trash mobs", lv: "", items: [["Parrot Cage (Green Wing Macaw)",1,"Companion","Pet","pet"]] }
+      ]
+    },
+    moltencore: {
+      name: "Molten Core", zone: "Blackrock Mountain", lv: "60", size: "40-player", kind: "Bosses",
+      secs: [
+        { n: "Lucifron", lv: "??", items: [
+          ["Arcanist Boots",4,"Feet","Cloth","feet",{set:SETS.mage}],["Felheart Gloves",4,"Hands","Cloth","hands",{set:SETS.lock}],
+          ["Cenarion Boots",4,"Feet","Leather","feet",{set:SETS.druid}],["Earthfury Boots",4,"Feet","Mail","feet",{set:SETS.sham}],
+          ["Lawbringer Boots",4,"Feet","Plate","feet",{set:SETS.pala}],["Gauntlets of Might",4,"Hands","Plate","hands",{set:SETS.war}],
+          ["Helm of the Lifegiver",4,"Head","Mail","head"],["Choker of Enlightenment",4,"Neck","Amulet","neck"],
+          ["Robe of Volatile Power",4,"Chest","Cloth","chest"],["Wristguards of Stability",4,"Wrist","Leather","wrist"],
+          ["Manastorm Leggings",4,"Legs","Cloth","legs"],["Salamander Scale Pants",4,"Legs","Leather","legs"],
+          ["Flamewaker Legplates",4,"Legs","Plate","legs"],["Heavy Dark Iron Ring",4,"Finger","Ring","ring"],
+          ["Ring of Spell Power",4,"Finger","Ring","ring"],["Crimson Shocker",4,"Ranged","Wand","wand"],
+          ["Sorcerous Dagger",4,"One-Hand","Dagger","dagger"],["Tome of Tranquilizing Shot",4,"Book","Hunter","book"],
+          ["Flamewaker Brand",4,"Trinket","Trinket","trinket",{fv:true}]
+        ]},
+        { n: "Magmadar", lv: "??", items: [
+          ["Eskhandar's Right Claw",4,"One-Hand","Fist Weapon","fist"],["Medallion of Steadfast Might",4,"Neck","Amulet","neck"],
+          ["Deep Earth Spaulders",4,"Shoulder","Mail","shoulder"],["Aged Core Leather Gloves",4,"Hands","Leather","hands"],
+          ["Flameguard Gauntlets",4,"Hands","Plate","hands"],["Mana Igniting Cord",4,"Waist","Cloth","waist"],
+          ["Sabatons of the Flamewalker",4,"Feet","Mail","feet"],["Magma Tempered Boots",4,"Feet","Plate","feet"],
+          ["Quick Strike Ring",4,"Finger","Ring","ring"],["Talisman of Ephemeral Power",4,"Trinket","Trinket","trinket"],
+          ["Fire Runed Grimoire",4,"Off Hand","Held In Off-hand","orb"],["Striker's Mark",4,"Ranged","Bow","bow"],
+          ["Earthshaker",4,"Two-Hand","Mace","mace"],["Obsidian Edged Blade",4,"Two-Hand","Sword","sword"],
+          ["Core Hound Collar",4,"Companion","Pet","pet",{fv:true}]
+        ]},
+        { n: "Gehennas", lv: "??", items: null }, { n: "Garr", lv: "??", items: null }, { n: "Shazzrah", lv: "??", items: null },
+        { n: "Baron Geddon", lv: "??", items: null }, { n: "Golemagg the Incinerator", lv: "??", items: null },
+        { n: "Sulfuron Harbinger", lv: "??", items: null }, { n: "Majordomo Executus", lv: "??", items: null }, { n: "Ragnaros", lv: "??", items: null }
+      ]
+    },
+    alchemy: {
+      name: "Alchemy", zone: "Crafting profession", lv: "1–350", size: "Real WoW Forever data", kind: "Skill brackets",
+      secs: BRACKETS.map(([n, lo, hi]) => ({
+        n, lv: lo + "–" + hi,
+        items: Object.keys(RECIPES).filter((id) => RECIPES[id].y >= lo && RECIPES[id].y < hi).map(recipeItem)
+      }))
+    }
+  };
+
+  /* Top tabs; each tab has its own tree. Leaves with an id have sample data; the rest show the empty state. */
+  const TABS = [
+    { id: "dr", label: "Dungeons & Raids", tree: [
+      { c: "Dungeons", open: true, kids: [
+        { s: "Level 13–25", open: true, kids: [["Ragefire Chasm","13–18"],["Wailing Caverns","17–24"],["The Deadmines","17–26","deadmines"],["Shadowfang Keep","22–30"],["The Stockade","22–30"],["Blackfathom Deeps","24–32"]] },
+        { s: "Level 25–40", kids: [["Gnomeregan","29–38"],["Razorfen Kraul","29–38"],["Scarlet Monastery","30–45"],["Razorfen Downs","37–46"]] },
+        { s: "Level 40–50", kids: [["Uldaman","41–51"],["Zul'Farrak","42–46"],["Maraudon","46–55"],["Sunken Temple","50–60"]] },
+        { s: "Level 50–60", kids: [["Blackrock Depths","52–60"],["Lower Blackrock Spire","55–60"],["Upper Blackrock Spire","58–60"],["Dire Maul","55–60"],["Scholomance","58–60"],["Stratholme","58–60"]] }
+      ]},
+      { c: "Raids", open: true, raid: true, kids: [["Molten Core","40","moltencore"],["Onyxia's Lair","40"],["Zul'Gurub","20"],["Blackwing Lair","40"],["Ruins of Ahn'Qiraj","20"],["Temple of Ahn'Qiraj","40"],["Naxxramas","40"]] }
+    ]},
+    { id: "world", label: "Open World", tree: [
+      { c: "World Bosses", open: true, kids: [["Azuregos"],["Lord Kazzak"],["Emerald Dragons"]] },
+      { c: "Rare Elites", open: true, kids: [["Level 1–30"],["Level 30–50"],["Level 50–60"]] },
+      { c: "World Drops", open: true, kids: [["Level 1–20"],["Level 20–40"],["Level 40–60"]] }
+    ]},
+    { id: "prof", label: "Professions", tree: [
+      { c: "Crafting", open: true, kids: [["Alchemy","","alchemy"],["Blacksmithing"],["Enchanting"],["Engineering"],["Leatherworking"],["Tailoring"]] },
+      { c: "Secondary", open: true, kids: [["Cooking"],["First Aid"],["Fishing"]] },
+      { c: "Class", open: true, kids: [["Rogue Poisons"]] }
+    ]},
+    { id: "pvp", label: "PvP", tree: [
+      { c: "Battlegrounds", open: true, kids: [["Alterac Valley"],["Warsong Gulch"],["Arathi Basin"]] },
+      { c: "Honor Rewards", open: true, kids: [["Rank Armor Sets"],["Rank Weapons"],["Insignia"],["PvP Mounts"]] }
+    ]},
+    { id: "rep", label: "Reputations", tree: [
+      { c: "Major Factions", open: true, kids: [["Argent Dawn"],["Timbermaw Hold"],["Thorium Brotherhood"],["Cenarion Circle"],["Zandalar Tribe"],["Brood of Nozdormu"],["Hydraxian Waterlords"]] },
+      { c: "Minor Factions", open: true, kids: [["Bloodsail Buccaneers"],["Wintersaber Trainers"]] }
+    ]},
+    { id: "events", label: "World Events", tree: [
+      { c: "Holidays", open: true, kids: [["Lunar Festival"],["Love is in the Air"],["Noblegarden"],["Children's Week"],["Midsummer Fire Festival"],["Hallow's End"],["Feast of Winter Veil"]] },
+      { c: "Recurring", open: true, kids: [["Darkmoon Faire"],["Fishing Extravaganza"],["Gurubashi Arena"]] },
+      { c: "World Events", open: false, kids: [["Scourge Invasion"],["Gates of Ahn'Qiraj"],["Elemental Invasions"]] }
+    ]},
+    { id: "coll", label: "Collections", tree: [
+      { c: "Item Sets", open: true, kids: [["Tier Sets"],["Dungeon Sets"],["Zul'Gurub Sets"],["Ahn'Qiraj Sets"],["Other Sets"]] },
+      { c: "Collectibles", open: true, kids: [["Mounts"],["Companions"],["Tabards"],["Legendaries"]] }
+    ]}
+  ];
+
+  /* ---------- class usability (simplified for the mock-up) ---------- */
+  const ARMOR = { Cloth: "all", Leather: ["Druid","Hunter","Paladin","Rogue","Shaman","Warrior"], Mail: ["Hunter","Paladin","Shaman","Warrior"], Plate: ["Paladin","Warrior"] };
+  const WEAP = {
+    Axe: ["Hunter","Paladin","Shaman","Warrior","Rogue"], Mace: ["Druid","Paladin","Priest","Rogue","Shaman","Warrior"],
+    Sword: ["Hunter","Mage","Paladin","Rogue","Warlock","Warrior"], Dagger: ["Druid","Hunter","Mage","Priest","Rogue","Shaman","Warlock","Warrior"],
+    Staff: ["Druid","Hunter","Mage","Priest","Shaman","Warlock","Warrior"], Polearm: ["Hunter","Paladin","Warrior"],
+    "Fist Weapon": ["Druid","Hunter","Rogue","Shaman","Warrior"], Wand: ["Mage","Priest","Warlock"], Bow: ["Hunter","Rogue","Warrior"],
+    Shield: ["Paladin","Shaman","Warrior"], "Held In Off-hand": ["Druid","Mage","Paladin","Priest","Shaman","Warlock"], Hunter: ["Hunter"]
+  };
+  function usable(it, cls) {
+    if (!cls || it[2] === "Back") return true;
+    const rule = ARMOR[it[3]] || WEAP[it[3]];
+    if (!rule) return true;
+    return rule === "all" || rule.includes(cls);
+  }
+  function slotGroup(it) {
+    const s = it[2], t = it[3];
+    if (["Neck","Finger","Trinket"].includes(s)) return "jewel";
+    if (ARMOR[t] || s === "Back") return "armor";
+    if (WEAP[t] && t !== "Hunter") return "weapon";
+    return "other";
+  }
+
+  /* ---------- state ---------- */
+  const st = { tab: "dr", inst: "deadmines", sec: 7, q: "", cls: "", slot: "", minq: 0, fv: false, recipe: null, side: "all" };
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const QNAME = ["Poor","Common","Uncommon","Rare","Epic","Legendary"];
+  const curTab = () => TABS.find((t) => t.id === st.tab);
+  const leavesOf = (tab) => tab.tree.flatMap((c) => c.kids.flatMap((k) => (k.s ? k.kids : [k])));
+
+  function fvCount(id) {
+    const d = INST[id]; if (!d) return 0;
+    return d.secs.reduce((n, s) => n + (s.items || []).filter((i) => i[5] && i[5].fv).length, 0);
+  }
+  function passes(it) {
+    if (st.fv && !(it[5] && it[5].fv)) return false;
+    if (it[1] < st.minq) return false;
+    if (st.slot && slotGroup(it) !== st.slot) return false;
+    return usable(it, st.cls);
+  }
+
+  /* ---------- tabs ---------- */
+  function renderTabs() {
+    $("tabs").innerHTML = TABS.map((t) => {
+      const fc = leavesOf(t).reduce((n, k) => n + (k[2] ? fvCount(k[2]) : 0), 0);
+      return `<button class="tab${t.id === st.tab ? " on" : ""}" type="button" role="tab" aria-selected="${t.id === st.tab}" data-tab="${t.id}">${esc(t.label)}${fc ? `<span class="pip" title="${fc} new in WoW Forever">${fc}</span>` : ""}</button>`;
+    }).join("");
+  }
+  $("tabs").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-tab]"); if (!b || b.dataset.tab === st.tab) return;
+    st.tab = b.dataset.tab;
+    st.q = ""; $("q").value = "";
+    const leaves = leavesOf(curTab());
+    const first = leaves.find((k) => k[2]) || leaves[0];
+    st.inst = first[2] || "none:" + first[0];
+    st.sec = 0; st.recipe = null;
+    renderTabs(); renderTree(); renderSecs(); renderLoot();
+  });
+
+  /* ---------- tree ---------- */
+  function renderTree() {
+    const tab = curTab();
+    $("tree-title").textContent = tab.label;
+    const leaf = (k, raid) => {
+      const [name, lv, id] = k;
+      const on = id && id === st.inst ? " on" : "";
+      const fc = id ? fvCount(id) : 0;
+      const right = raid ? `<span class="lv"></span><span class="size">${esc(lv)}</span>` : lv ? `<span class="lv">${esc(lv)}</span>` : "";
+      return `<li><button class="node leaf${on}" type="button" data-leaf="${esc(id || "")}" data-name="${esc(name)}"><span>${esc(name)}</span>${right}${fc ? `<span class="pip" title="${fc} new in WoW Forever">${fc}</span>` : ""}</button></li>`;
+    };
+    let h = "<ul>";
+    tab.tree.forEach((c, ci) => {
+      h += `<li><button class="node cat" type="button" aria-expanded="${!!c.open}" data-cat="${ci}"><span class="pm"></span>${esc(c.c)}</button>`;
+      if (c.open) {
+        h += "<ul>";
+        c.kids.forEach((k, ki) => {
+          if (k.s) {
+            h += `<li><button class="node sub" type="button" aria-expanded="${!!k.open}" data-cat="${ci}" data-sub="${ki}"><span class="pm"></span>${esc(k.s)}</button>`;
+            if (k.open) h += "<ul>" + k.kids.map((x) => leaf(x)).join("") + "</ul>";
+            h += "</li>";
+          } else h += leaf(k, c.raid);
+        });
+        h += "</ul>";
+      }
+      h += "</li>";
+    });
+    $("tree").innerHTML = h + "</ul>";
+  }
+  $("tree").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.leaf !== undefined) {
+      st.q = ""; $("q").value = "";
+      st.inst = b.dataset.leaf || "none:" + b.dataset.name;
+      st.sec = 0; st.recipe = null;
+      renderTree(); renderSecs(); renderLoot();
+      return;
+    }
+    const c = curTab().tree[+b.dataset.cat];
+    if (b.dataset.sub !== undefined) { const s = c.kids[+b.dataset.sub]; s.open = !s.open; } else c.open = !c.open;
+    renderTree();
+  });
+
+  /* ---------- sections column ---------- */
+  function renderSecs() {
+    const d = INST[st.inst];
+    if (!d) {
+      const nm = st.inst.replace(/^none:/, "");
+      $("sec-pane").innerHTML = `<div class="pane-title">Details</div><div class="inst-head"><h2>${esc(nm)}</h2><div class="meta"><span>Not in the mock-up sample</span></div></div>`;
+      return;
+    }
+    let h = `<div class="pane-title">${esc(d.kind)}</div><div class="inst-head"><h2>${esc(d.name)}</h2><div class="meta"><span>${esc(d.zone)}</span><span>Level ${esc(d.lv)}</span>${d.size ? `<span>${esc(d.size)}</span>` : ""}</div></div><ul class="sections">`;
+    d.secs.forEach((s, i) => {
+      const items = s.items || [];
+      const shown = items.filter(passes).length;
+      const fc = items.filter((x) => x[5] && x[5].fv).length;
+      const sub = s.items ? `${shown} of ${items.length} items${s.lv ? " · " + (d.kind === "Bosses" ? "level " : "skill ") + s.lv : ""}` : "No sample data";
+      h += `<li><button class="sec${i === st.sec ? " on" : ""}" type="button" data-sec="${i}"><span class="nm">${esc(s.n)}</span><span class="sm">${esc(sub)}</span><span class="rt">${s.rare ? '<span class="tag-rare">Rare</span>' : ""}${fc ? `<span class="pip">${fc}</span>` : ""}</span></button></li>`;
+    });
+    $("sec-pane").innerHTML = h + "</ul>";
+  }
+  $("sec-pane").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-sec]"); if (!b) return;
+    st.sec = +b.dataset.sec; st.recipe = null; renderSecs(); renderLoot();
+  });
+
+  /* ---------- loot pane ---------- */
+  function itemHTML(it, src) {
+    const ex = it[5] || {};
+    const side = [];
+    if (ex.fv) side.push('<span class="fbadge">FOREVER</span>');
+    if (ex.changed) side.push('<span class="chg">CHANGED</span>');
+    if (ex.set) side.push('<span class="setmark">Set piece</span>');
+    if (src) side.push(`<span class="src">${esc(src)}</span>`);
+    return `<button class="item${ex.fv ? " fv" : ""}" type="button" style="--qc: var(--q${it[1]})"${ex.rec ? ` data-rec="${ex.rec}"` : ""} data-tip="${esc(JSON.stringify([it, src || ""]))}">
+      <span class="icon"><svg aria-hidden="true"><use href="#g-${it[4]}"/></svg></span>
+      <span class="iname">${esc(it[0])}</span>
+      <span class="itype">${esc(it[2] === it[3] ? it[2] : it[2] + " · " + it[3])}</span>
+      <span class="iside">${side.join("")}</span>
+    </button>`;
+  }
+  /* ---------- recipe detail ---------- */
+  const tipAttr = (name, q, slot, type, gl, ex) => esc(JSON.stringify([[name, q, slot, type, gl, ex], ""]));
+  function iconBtn(o, slot, type, gl, ex, count) {
+    return `<button type="button" class="ricon${o.new || (ex && ex.fv) ? " fvr" : ""}" style="--qc: var(--q${o.q})" aria-label="${esc(o.name)}" data-tip="${tipAttr(o.name, o.q, slot, type, gl, Object.assign({ id: o.id, fv: !!o.new }, ex || {}))}"><svg aria-hidden="true"><use href="#g-${gl}"/></svg>${count > 1 ? `<b class="cnt">${count}</b>` : ""}</button>`;
+  }
+  const RANK = { 1: ["elite", "Elite"], 2: ["rare", "Rare elite"], 3: ["boss", "Boss"], 4: ["rare", "Rare"] };
+  function locText(l) {
+    if (!l) return "Location unknown";
+    return l.x == null ? esc(l.zone) + " (instance)" : `${esc(l.zone)} <span class="xy">${l.x}, ${l.y}</span>`;
+  }
+  function wpBtn(l, name) {
+    return l && l.x != null ? `<button type="button" class="wp" data-wp="${esc(name + "|" + l.zone + "|" + l.x + "|" + l.y)}">Waypoint</button>` : "";
+  }
+  function sourcesHTML(r) {
+    if (!r.src.length) {
+      return `<p class="nosrc">${r.status === "new"
+        ? "<b>New in WoW Forever.</b> Where to learn this recipe isn't collected yet. Trainers, vendors and drops will come from the game itself and from Encore players discovering them in-game."
+        : "Where to learn this recipe isn't collected yet. Trainers, vendors and drops will come from the game itself and from Encore players discovering them in-game."}</p>`;
+    }
+    return r.src.map((s) => {
+      if (s.type === "auto") return `<div class="rd-box"><h4>Learned automatically</h4><p class="nosrc">Known as soon as you learn Alchemy. From the WoW Forever client data.</p></div>`;
+      const list = s.list.filter((n) => s.type !== "trainer" || st.side === "all" || n.side === st.side || n.side === "both");
+      const rows = list.map((n) => {
+        const l = n.locs[0];
+        const rk = RANK[n.rank];
+        const right = (s.type === "drop" ? `<span class="chance">${n.chance >= 10 ? Math.round(n.chance) : n.chance.toFixed(1).replace(/\.0$/, "")}%</span>` : "") + wpBtn(l, n.name);
+        return `<div class="npc"><span class="fdot ${n.side}" title="${n.side === "both" ? "Neutral" : n.side === "alliance" ? "Alliance" : "Horde"}"></span>
+          <span class="nm">${esc(n.name)} ${n.sub ? `<small>&lt;${esc(n.sub)}&gt;</small>` : ""} ${rk ? `<span class="rank ${rk[0]}">${rk[1]}</span>` : ""}</span>
+          <span class="loc">${locText(l)} · level ${n.lv[0] === n.lv[1] ? n.lv[0] : n.lv[0] + "–" + n.lv[1]}${n.spawns > 1 && s.type === "drop" ? ` · ${n.spawns} spawns` : ""}</span>
+          <span class="rt">${right}</span></div>`;
+      }).join("");
+      const head = s.type === "trainer"
+        ? `<h4>Trainers <span class="grow"></span><span class="chips" role="group" aria-label="Faction">${["all", "alliance", "horde"].map((k) => `<button type="button" data-side="${k}" class="${st.side === k ? "on" : ""}">${k === "all" ? "All" : k[0].toUpperCase() + k.slice(1)}</button>`).join("")}</span></h4>`
+        : `<h4>${s.type === "drop" ? "Recipe drops from" : "Recipe sold by"}</h4>`;
+      return `<div class="rd-box">${head}<div class="srcs">${rows || '<p class="nosrc">No trainer for this faction.</p>'}</div></div>`;
+    }).join("");
+  }
+  function renderRecipe() {
+    const r = RECIPES[st.recipe];
+    const d = INST[st.inst], s = d.secs[st.sec];
+    const green = Math.round((r.y + r.g) / 2);
+    const learn = r.recipe[0] ? r.recipe[0].req : null;
+    const c = r.creates;
+    const recipeRows = r.recipe.length
+      ? r.recipe.map((ri) => `<div class="linkrow" style="--qc: var(--q${ri.q})">${iconBtn(ri, "Recipe", "Alchemy", "recipe", { req: ri.req })}<span class="ln">${esc(ri.name)}</span><span class="ls">Requires Alchemy (${ri.req}) · item ${ri.id}</span></div>`).join("")
+      : `<p class="nosrc">${r.acq === 1 ? "No recipe item. Learned automatically." : "No recipe item. Taught by a trainer."}</p>`;
+    $("loot-pane").innerHTML = `<div class="rd" style="--qc: var(--q${c.q})">
+      <button type="button" class="btn-red rd-back" data-back>‹ ${esc(s.n)}</button>
+      <div class="rd-head">
+        ${iconBtn(c, "Crafted item", "Alchemy", c.gl, {})}
+        <div class="rd-title"><b>${esc(r.name)}</b><span>Alchemy · spell ${st.recipe}</span></div>
+        <div class="rd-badges">${r.status === "new" ? '<span class="fbadge">FOREVER</span>' : r.status === "changed" ? '<span class="chg">CHANGED IN FOREVER</span>' : ""}</div>
+      </div>
+      <div class="skillrow">Skill
+        <span class="sk o" title="Learn">${learn || "—"}</span><span class="sk y" title="Yellow">${r.y}</span><span class="sk g" title="Green">${green}</span><span class="sk x" title="Grey">${r.g}</span>
+        ${r.status === "changed" ? "· Reagents differ from Classic Era" : ""}
+      </div>
+      <div class="rd-grid">
+        <div class="rd-box"><h4>Recipe</h4>${recipeRows}</div>
+        <div class="rd-box"><h4>Creates</h4><div class="linkrow" style="--qc: var(--q${c.q})">${iconBtn(c, "Crafted item", "Alchemy", c.gl, {})}<span class="ln">${esc(c.name)}</span><span class="ls">Item ${c.id}${c.new ? " · new item in Forever" : ""}</span></div></div>
+      </div>
+      <div class="rd-box"><h4>Reagents</h4><div class="reag">${r.reagents.map((g) => `<div class="linkrow" style="--qc: var(--q${g.q})">${iconBtn(g, "Reagent", "Trade Goods", g.gl, {}, g.n)}<span class="ln">${esc(g.name)}</span><span class="ls">× ${g.n}${g.new ? " · new in Forever" : ""}</span></div>`).join("")}</div></div>
+      ${sourcesHTML(r)}
+      <p class="prov">Recipe, reagents and skill levels: WoW Forever client data, build 1.60.1.70959 (via wago.tools). Trainers, vendors and drops: not collected yet; they will come from Forever itself.</p>
+    </div>`;
+    $("status").textContent = `${d.name} › ${s.n} › ${r.name}`;
+  }
+
+  function renderLoot() {
+    hideTip();
+    const pane = $("loot-pane");
+    if (st.q) return renderSearch();
+    if (st.recipe && RECIPES[st.recipe]) return renderRecipe();
+    const d = INST[st.inst];
+    if (!d) {
+      pane.innerHTML = `<div class="empty"><b>Sample data not included</b>This entry is part of the proposed tree. Open The Deadmines, Molten Core or Alchemy to see loot.</div>`;
+      $("status").textContent = "Ready";
+      return;
+    }
+    const s = d.secs[st.sec];
+    if (!s.items) {
+      pane.innerHTML = `<div class="loot-head"><h3>${esc(s.n)}</h3><span class="crumb">${esc(d.name)}</span></div><div class="empty"><b>No sample loot for ${esc(s.n)}</b>Lucifron and Magmadar have full sample tables.</div>`;
+      return;
+    }
+    const list = s.items.filter(passes);
+    pane.innerHTML = `<div class="loot-head"><h3>${esc(s.n)}</h3><span class="crumb">${esc(d.name)}</span><span class="count">${list.length} of ${s.items.length} shown</span></div>` +
+      (list.length ? `<div class="grid">${list.map((i) => itemHTML(i)).join("")}</div>` : `<div class="empty"><b>No items match your filters</b>Change "Usable by", "Slot", "Quality" or "Forever only", or press Reset.</div>`);
+    $("status").textContent = `${d.name} › ${s.n}`;
+  }
+  function renderSearch() {
+    const q = st.q.toLowerCase();
+    const res = [];
+    Object.values(INST).forEach((d) => d.secs.forEach((s) => (s.items || []).forEach((it) => {
+      const hay = (it[0] + " " + it[2] + " " + it[3]).toLowerCase();
+      if (hay.includes(q) && passes(it)) res.push([it, d.name + " › " + s.n]);
+    })));
+    $("loot-pane").innerHTML = `<div class="loot-head"><h3>Search results</h3><span class="crumb">“${esc(st.q)}” in all categories</span><span class="count">${res.length} found</span></div>` +
+      (res.length ? `<div class="grid">${res.map(([it, src]) => itemHTML(it, src)).join("")}</div>` : `<div class="empty"><b>Nothing found for “${esc(st.q)}”</b>Try an item name, a slot like "boots", or a type like "staff".</div>`);
+    $("status").textContent = `Search: ${res.length} result${res.length === 1 ? "" : "s"}`;
+  }
+
+  /* ---------- tooltip ---------- */
+  const tip = $("tip");
+  let pinned = null;
+  function showTip(btn, x, y) {
+    const [it, src] = JSON.parse(btn.dataset.tip);
+    const ex = it[5] || {};
+    const bind = it[2] === "Quest" ? "Quest Item" : it[1] >= 3 ? "Binds when picked up" : it[2] === "Recipe" || it[2] === "Companion" ? "" : "Binds when equipped";
+    const right = it[2] === it[3] ? "" : it[3];
+    tip.className = "tip" + (ex.fv ? " fv" : "");
+    tip.style.setProperty("--qc", `var(--q${it[1]})`);
+    tip.innerHTML =
+      `<div class="tn">${esc(it[0])}</div>` +
+      (bind && !ex.id ? `<div>${bind}</div>` : "") +
+      `<div class="row"><span>${esc(it[2])}</span><span>${esc(right)}</span></div>` +
+      (ex.req ? `<div>Requires Alchemy (${ex.req})</div>` : "") +
+      `<div class="dim">${QNAME[it[1]]} quality${ex.id ? " · item " + ex.id : ""}</div>` +
+      (ex.rec ? `<div class="src2">Click to open the recipe</div>` : "") +
+      (ex.set ? `<div class="set">${esc(ex.set)}</div>` : "") +
+      (src ? `<div class="src2">Drops from: ${esc(src)}</div>` : "") +
+      (ex.fv ? `<div class="fl">New in WoW Forever</div>` : "") +
+      `<div class="note">In the addon, stats come from the game's own item tooltip.</div>`;
+    tip.hidden = false;
+    placeTip(x, y);
+  }
+  function placeTip(x, y) {
+    const w = tip.offsetWidth, h = tip.offsetHeight, pad = 12;
+    let left = x + 18, top = y + 14;
+    if (left + w > innerWidth - pad) left = x - w - 18;
+    if (left < pad) left = pad;
+    if (top + h > innerHeight - pad) top = innerHeight - h - pad;
+    if (top < pad) top = pad;
+    tip.style.left = left + "px"; tip.style.top = top + "px";
+  }
+  function hideTip() { tip.hidden = true; pinned = null; }
+  const loot = $("loot-pane");
+  loot.addEventListener("pointermove", (e) => {
+    if (e.pointerType !== "mouse") return;
+    const b = e.target.closest("[data-tip]");
+    if (!b) { if (!pinned) tip.hidden = true; return; }
+    if (tip.hidden || tip.dataset.for !== b.dataset.tip) { showTip(b, e.clientX, e.clientY); tip.dataset.for = b.dataset.tip; }
+    else placeTip(e.clientX, e.clientY);
+  });
+  loot.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse" && !pinned) tip.hidden = true; });
+  let toastTimer = 0;
+  function toast(msg) {
+    const t = $("toast"); t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2600);
+  }
+  loot.addEventListener("click", (e) => {
+    if (e.target.closest("[data-back]")) { st.recipe = null; renderLoot(); loot.scrollTop = 0; return; }
+    const sideBtn = e.target.closest("[data-side]");
+    if (sideBtn) { st.side = sideBtn.dataset.side; renderLoot(); return; }
+    const wp = e.target.closest("[data-wp]");
+    if (wp) { const [n, z, x, y] = wp.dataset.wp.split("|"); toast(`Waypoint set: ${n}, ${z} ${x}, ${y}`); return; }
+    const rec = e.target.closest("[data-rec]");
+    if (rec) { st.recipe = rec.dataset.rec; st.q = ""; $("q").value = ""; renderLoot(); loot.scrollTop = 0; return; }
+    const b = e.target.closest("[data-tip]"); if (!b) return;
+    if (pinned === b) { hideTip(); return; }
+    const r = b.getBoundingClientRect();
+    showTip(b, r.left + r.width / 2, r.bottom - 6); pinned = b; tip.dataset.for = b.dataset.tip;
+  });
+  loot.addEventListener("focusin", (e) => {
+    const b = e.target.closest("[data-tip]"); if (!b) return;
+    const r = b.getBoundingClientRect(); showTip(b, r.right - 40, r.top); tip.dataset.for = b.dataset.tip;
+  });
+  loot.addEventListener("focusout", () => { if (!pinned) tip.hidden = true; });
+  loot.addEventListener("scroll", hideTip, { passive: true });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") hideTip(); });
+  document.addEventListener("pointerdown", (e) => { if (pinned && !e.target.closest("[data-tip]")) hideTip(); });
+
+  /* ---------- filters ---------- */
+  const refresh = () => { renderSecs(); renderLoot(); };
+  $("q").addEventListener("input", (e) => { st.q = e.target.value.trim(); renderLoot(); });
+  $("f-class").addEventListener("change", (e) => { st.cls = e.target.value; refresh(); });
+  $("f-slot").addEventListener("change", (e) => { st.slot = e.target.value; refresh(); });
+  $("f-q").addEventListener("change", (e) => { st.minq = +e.target.value; refresh(); });
+  $("f-fv").addEventListener("change", (e) => { st.fv = e.target.checked; refresh(); });
+  $("reset").addEventListener("click", () => {
+    st.cls = ""; st.slot = ""; st.minq = 0; st.fv = false; st.q = "";
+    $("f-class").value = ""; $("f-slot").value = ""; $("f-q").value = "0"; $("f-fv").checked = false; $("q").value = "";
+    refresh();
+  });
+
+  renderTabs(); renderTree(); renderSecs(); renderLoot();
+})();
+</script>

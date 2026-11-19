@@ -1,0 +1,56 @@
+Encore-DB - where its data comes from, and under which terms
+==============================================================
+
+Encore-DB is part of Encore Essentials, Copyright (C) 2026 the Encore Essentials
+authors, licensed under GPL-3.0 (see LICENSE in
+the repository).
+
+1. ForeverDB.net
+   Data from ForeverDB.net (https://foreverdb.net)
+
+   Data/Loot.lua and Data/Recipes.lua are built from the ForeverDB addon's
+   data files (Loot.lua, Recipes.lua, Items.lua, NPCs.lua, Dungeons.lua,
+   SearchNames.lua),
+   Copyright (C) 2026 ForeverDB.net, licensed under GPL-3.0 with an
+   attribution term under section 7(b): keep the notices in the files,
+   including the first line of each file
+     -- Data: ForeverDB.net (https://foreverdb.net), build <client build>. ...
+   and credit "Data from ForeverDB.net (https://foreverdb.net)" where the work
+   lists its credits and sources. Anyone reusing these files must do the
+   same.
+
+   Encore-DB keeps only what ForeverDB labels as seen in WoW Forever (drops,
+   drop rates per looted kill, vendors, quests) and what it reads from the WoW
+   Forever client. ForeverDB's Classic data (from the CMaNGOS classic-db),
+   its unconfirmed client clues and the recipes it marks as speculation are
+   left out.
+
+2. Quests: QuestieDB
+   Data/Quests-questie.lua is built from QuestieDB
+   (https://github.com/Questie/QuestieDB) by the Questie team, licensed under
+   GPL-3.0: its WoW Forever database, which is Questie's Classic quest data
+   converted to Forever's maps plus Forever corrections, QuestieTrace
+   recordings and hand-written fixes. Questie's Classic data was
+   originally built from CMaNGOS. Thank you to the Questie team.
+
+3. Fill-in sources
+   foreverchanges.pro (https://foreverchanges.pro) adds bosses, items and
+   instances that ForeverDB has no Forever data for yet, and recipe sources
+   from its item pages.
+   Boss levels come from QuestieDB (https://github.com/Questie/QuestieDB,
+   GPL-3.0), its WoW Forever NPC data: Questie's Classic data (built from
+   CMaNGOS) with Forever corrections, QuestieTrace and hand-written fixes (tools/loot/questie-levels.mjs). Only the levels and
+   boss rank are used.
+
+4. Boss portraits: Dungeon Journal
+   The boss portrait pictures in Media/Portraits come from Dungeon Journal
+   (ForeverDungeonJournal) by Exehn, which photographed the game's own
+   portraits in WoW Forever. They are renamed to each boss's NPC ID; the
+   pictures themselves are unchanged. Data/Portraits.lua lists them and was
+   made with tools/import-dj-portraits.mjs. Thank you, Exehn.
+
+5. World of Warcraft
+   World of Warcraft, WoW Forever and their names, places and icons are
+   trademarks or property of Blizzard Entertainment, Inc. Encore Essentials is
+   not affiliated with or endorsed by Blizzard Entertainment, ForeverDB.net,
+   the Questie team, foreverchanges.pro or Exehn.
