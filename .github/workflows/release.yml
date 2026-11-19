@@ -1,0 +1,23 @@
+# Builds the CurseForge zip with the BigWigs packager.
+# Push a tag like v0.1.0 (release), v0.2.0-beta1 (beta) or v0.2.0-alpha1 (alpha) to upload.
+# Needs the repository secret CF_API_KEY and "## X-Curse-Project-ID:" in EncoreEssentials/EncoreEssentials.toc.
+name: Package and release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: BigWigsMods/packager@v2

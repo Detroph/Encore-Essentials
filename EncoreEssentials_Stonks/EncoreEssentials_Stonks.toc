@@ -3,7 +3,7 @@
 ## Notes: Auction price history for Encore Essentials: trends, moving averages, weekday and hour patterns from Auctionator scans. Opens beside the auction house; /encore stonks opens the browser.
 ## Author: Encore
 ## X-License: GPL-3.0
-## Version: 0.1.0
+## Version: @project-version@
 ## IconTexture: Interface\AddOns\EncoreEssentials\Media\encore-stonks-icon
 ## Dependencies: EncoreEssentials
 ## OptionalDeps: Auctionator

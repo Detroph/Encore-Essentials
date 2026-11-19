@@ -7,7 +7,9 @@ local Encore = {}
 ns.Encore = Encore
 _G.EncoreEssentials = Encore -- public handle for Encore modules (EncoreEssentials_DB and later ones)
 
-Encore.version = C_AddOns.GetAddOnMetadata(addonName, "Version") or "dev"
+local tocVersion = C_AddOns.GetAddOnMetadata(addonName, "Version")
+-- The packager replaces @project-version@ with the release tag; a copy straight from git shows "dev".
+Encore.version = (tocVersion and not tocVersion:find("@", 1, true)) and tocVersion or "dev"
 Encore.tocInterface = 16001
 Encore.SCHEMA = 1
 

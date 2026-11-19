@@ -1,0 +1,21 @@
+# CurseForge packaging (BigWigs packager / CurseForge automatic packaging).
+# The repository holds three addon folders; each becomes a top-level folder in the zip.
+package-as: EncoreEssentials
+
+move-folders:
+  EncoreEssentials/EncoreEssentials: EncoreEssentials
+  EncoreEssentials/EncoreEssentials_DB: EncoreEssentials_DB
+  EncoreEssentials/EncoreEssentials_Stonks: EncoreEssentials_Stonks
+
+ignore:
+  - tools
+  - docs
+  - assets
+  - README.md
+  - CLAUDE.md
+  - CLAUDE.local.md
+  - "*.zip"
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
