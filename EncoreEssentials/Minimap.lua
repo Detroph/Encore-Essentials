@@ -12,7 +12,8 @@
 --
 -- From the right-click menu the button can also be detached ("Unlock button"): it can then be dragged anywhere,
 -- locked in place, and drawn as a larger rounded square instead. "Reattach to minimap" puts it back below the sun.
--- Saved account-wide in EncoreEssentialsDB.settings.minimap: detached, locked, square, point.
+-- The square button has a resize knob while unlocked.
+-- Saved account-wide in EncoreEssentialsDB.settings.minimap: detached, locked, square, size, point.
 local _, ns = ...
 local L = ns.L
 local Encore = ns.Encore
@@ -26,7 +27,9 @@ local FRAME_SIZE = 31
 local ART_SIZE = 33
 local ICON_OFFSET_X, ICON_OFFSET_Y = 1.5, 0.5 -- ring centre (17, -15 from the top-left) minus frame centre
 local STEP = 1.1 -- distance from the indicator's centre to the button's, in indicator widths
-local SQUARE_SIZE = 40 -- the detached square button, in UI units (follows the UI scale like any other window)
+-- The detached square button, in UI units (follows the UI scale like any other window). It can be resized with a
+-- knob at its bottom-right corner, up to the width of two standard 36px action button icons at 100% UI scale.
+local SQUARE_SIZE, SQUARE_MIN, SQUARE_MAX = 40, 24, 72
 local SQUARE_BACKDROP = {
     bgFile = "Interface\\Buttons\\WHITE8X8",
     edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -135,14 +138,21 @@ end
 local applyStyle
 
 -- Detached: a plain UIParent child at UI scale, at its saved spot.
+local function squareSize()
+    local size = tonumber(Encore.db.settings.minimap.size) or SQUARE_SIZE
+    return math.max(SQUARE_MIN, math.min(SQUARE_MAX, size))
+end
+
 local function layoutFree()
     local settings = Encore.db.settings.minimap
     local p = settings.point
-    local key = ("free:%s:%s:%s:%s:%s"):format(tostring(settings.square), p and p[1] or "", p and p[2] or "",
-        p and p[3] or "", p and p[4] or "")
+    local key = ("free:%s:%s:%s:%s:%s:%s:%s"):format(tostring(settings.square), tostring(settings.locked), squareSize(),
+        p and p[1] or "", p and p[2] or "", p and p[3] or "", p and p[4] or "")
     if key == lastKey then return end
     lastKey = key
     applyStyle(settings.square)
+    if settings.square then button:SetSize(squareSize(), squareSize()) end
+    button.grip:SetShown(settings.square and not settings.locked)
     button:SetScale(1)
     button:ClearAllPoints()
     if type(p) == "table" and p[1] then
@@ -154,9 +164,10 @@ end
 
 local function layout()
     if not button then return end
-    if button.moving then return end
+    if button.moving or button.sizing then return end
     if Encore.db.settings.minimap.detached then return layoutFree() end
     applyStyle(false)
+    button.grip:Hide()
     local uiScale = UIParent:GetEffectiveScale()
     local gt = indicator()
     local mmX, mmY = Minimap:GetCenter()
@@ -342,6 +353,58 @@ local function createButton()
         layout()
     end)
 
+    -- Resize knob for the square button (shown only while detached, square and unlocked)
+    local grip = CreateFrame("Button", nil, button)
+    grip:SetSize(12, 12)
+    grip:SetPoint("BOTTOMRIGHT", 2, -2)
+    grip:SetFrameLevel(button:GetFrameLevel() + 5)
+    grip:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+    grip:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
+    grip:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+    grip:Hide()
+    button.grip = grip
+    local sizing
+    local function cursor()
+        local x, y = GetCursorPosition()
+        local scale = button:GetEffectiveScale()
+        return x / scale, y / scale
+    end
+    local function stopSizing()
+        if not sizing then return end
+        sizing = nil
+        button.sizing = nil
+        grip:SetScript("OnUpdate", nil)
+        Encore.db.settings.minimap.size = math.floor(button:GetWidth() + 0.5)
+        Encore:SaveMinimapButtonPosition()
+    end
+    grip:SetScript("OnMouseDown", function(_, mouseButton)
+        if mouseButton ~= "LeftButton" then return end
+        local left, top = button:GetLeft(), button:GetTop()
+        if not left then return end
+        GameTooltip:Hide()
+        -- Pin the top-left corner so only the bottom-right corner follows the cursor
+        button:ClearAllPoints()
+        button:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", left, top)
+        local x, y = cursor()
+        sizing = { x = x, y = y, size = button:GetWidth() }
+        button.sizing = true
+        grip:SetScript("OnUpdate", function()
+            if not IsMouseButtonDown("LeftButton") then return stopSizing() end
+            local cx, cy = cursor()
+            local delta = math.max(cx - sizing.x, sizing.y - cy) -- whichever way the cursor moved further
+            local size = math.max(SQUARE_MIN, math.min(SQUARE_MAX, sizing.size + delta))
+            button:SetSize(size, size)
+        end)
+    end)
+    grip:SetScript("OnMouseUp", stopSizing)
+    grip:SetScript("OnHide", stopSizing)
+    grip:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText(L.MINIMAP_TIP_RESIZE)
+        GameTooltip:Show()
+    end)
+    grip:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
     hookSources()
 end
 
@@ -412,6 +475,7 @@ end
 function Encore:SetMinimapButtonLocked(locked)
     self.db.settings.minimap.locked = locked and true or false
     self:Print(locked and L.MINIMAP_LOCKED or L.MINIMAP_UNLOCKED)
+    relayout()
 end
 
 function Encore:SetMinimapButtonSquare(square)

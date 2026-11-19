@@ -32,6 +32,7 @@ local DEFAULTS = {
             detached = false, -- false: on the minimap below the day/night indicator; true: free on screen
             locked = false,   -- detached only: can't be dragged
             square = false,   -- detached only: larger rounded-square button
+            size = 40,        -- square button size in UI units (24 to 72)
             -- point = { "CENTER", "BOTTOMLEFT", x, y }, saved when a detached button is dropped
         },
     },

@@ -40,4 +40,5 @@ ns.L = setmetatable({
     MINIMAP_TIP_DRAG = "Drag: move this button",
     MINIMAP_UNLOCKED = "Button unlocked: drag it anywhere, then right-click it and choose Lock button position.",
     MINIMAP_LOCKED = "Button position locked.",
+    MINIMAP_TIP_RESIZE = "Drag to resize",
 }, { __index = function(_, key) return key end })
