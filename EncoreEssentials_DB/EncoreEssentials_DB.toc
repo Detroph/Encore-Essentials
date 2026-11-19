@@ -3,7 +3,7 @@
 ## Notes: Loot and recipe database for Encore Essentials. Loads when you open it with /encore db.
 ## Author: Encore
 ## X-License: GPL-3.0
-## Version: 0.1.0
+## Version: @project-version@
 ## IconTexture: Interface\AddOns\EncoreEssentials\Media\encore-icon
 ## Dependencies: EncoreEssentials
 ## LoadOnDemand: 1
@@ -13,7 +13,7 @@ Data\Recipes.lua
 Data\Portraits.lua
 Data\Wings.lua
 Data\Quests-questie.lua
-Data\Quests-wowhead.lua
+Data\Quests-fillin.lua
 DB.lua
 QuestData.lua
 Templates.xml
