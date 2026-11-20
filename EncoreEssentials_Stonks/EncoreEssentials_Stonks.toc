@@ -19,7 +19,9 @@ Browser.lua
 Hooks.lua
 Sync\Codec.lua
 Sync\Comm.lua
+Sync\Log.lua
 Sync\Sync.lua
 Sync\Links.lua
+Sync\HistoryView.lua
 Sync\Slash.lua
 Sync\Buttons.lua

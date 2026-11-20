@@ -39,7 +39,7 @@ local function follow(item)
     if not active() then return end
     local key = U.keyFrom(item)
     if not key or key == Stonks:PanelKey() then return end
-    Stonks:ShowItem(key)
+    Stonks:ShowItem(key, { follow = true }) -- following the AH keeps the History tab open if it is
 end
 
 ---------------------------------------------------------------------------
@@ -189,7 +189,7 @@ function Stonks:HookAuctionator()
         elseif listEvents[eventName] then
             if not active() then return end
             local name = listName(arg)
-            if name then Stonks:ShowList(name) end
+            if name then Stonks:ShowList(name, { follow = true }) end
         end
     end)
     local ok = pcall(A.EventBus.Register, A.EventBus, listener, all)

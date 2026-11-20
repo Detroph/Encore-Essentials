@@ -3,7 +3,7 @@
 -- Loads the real addon files into many simulated clients that talk over a fake guild channel, and checks the
 -- wire format, the login handshake, hourly claims, resume after a sender leaves, and the per-frame work budget.
 local ROOT = "EncoreEssentials_Stonks/"
-local FILES = { "Recorder.lua", "Stats.lua", "Sync/Codec.lua", "Sync/Comm.lua", "Sync/Sync.lua", "Sync/Links.lua", "Sync/Slash.lua", "Sync/Buttons.lua" }
+local FILES = { "Recorder.lua", "Stats.lua", "Sync/Codec.lua", "Sync/Comm.lua", "Sync/Log.lua", "Sync/Sync.lua", "Sync/Links.lua", "Sync/Slash.lua", "Sync/Buttons.lua" }
 
 local clock = 1763560000 -- a fixed start time (seconds)
 local queue = {} -- timed callbacks { at, fn }
@@ -219,6 +219,14 @@ run(1500)
 local got = count(newbie.Stonks.realmData.baseline)
 check(got == 2000, "newcomer received the full summary (" .. got .. " items)")
 check(newbie.Stonks.realmData.sync.from == afkName, "summary marked complete")
+local function logOf(c, kind)
+    local out = {}
+    for _, e in ipairs(c.Stonks.realmData.syncLog or {}) do if e.kind == kind then out[#out + 1] = e end end
+    return out
+end
+local nl = logOf(newbie, "summary")
+check(#nl == 1 and nl[1].from == afkName and nl[1].done and nl[1].kept == 2000 and nl[1].expected == 2000,
+    "sync history: one complete login summary from " .. afkName .. " (" .. tostring(nl[1] and nl[1].kept) .. " kept)")
 local st = newbie.Stonks:ItemStats("150")
 check(st and st.guild and st.median and st.median > 0, "charts see the guild baseline for an item the newcomer never scanned")
 
@@ -237,6 +245,9 @@ run(2400)
 local final = count(late.Stonks.realmData.baseline)
 check(server ~= nil and partial > 0 and partial < final, ("resumed after %s left (%d items before, %d after)"):format(tostring(server), partial, final))
 check(final >= 1990, "late player ends with (nearly) everything (" .. final .. ")")
+local ll = logOf(late, "summary")
+check(#ll >= 2 and ll[1].from == server and ll[1].stopped and ll[#ll].done and not ll[#ll].stopped and ll[#ll].from ~= server,
+    "sync history: the summary from " .. tostring(server) .. " is marked stopped, the resume from someone else complete (" .. #ll .. " entries)")
 
 ---------------------------------------------------------------------------
 print("== Hourly claim: 4 players finish a scan in the same hour")
@@ -258,6 +269,10 @@ check(msgs > 0 and msgs < 120, "1,200 items fit in " .. msgs .. " messages")
 local watcher = clients[150]
 local g = watcher.Stonks.realmData.guild["600"]
 check(g ~= nil, "a bystander stored the guild price")
+local claimer = next(claimers)
+local wl = logOf(watcher, "hourly")
+check(#wl == 1 and wl[1].from == claimer and wl[1].done and wl[1].got == 1200 and wl[1].hour == nowHour,
+    "sync history: the bystander logged one complete hourly scan from " .. tostring(claimer) .. " (" .. tostring(wl[1] and wl[1].got) .. " items)")
 
 ---------------------------------------------------------------------------
 print("== Never in combat, outliers rejected")
@@ -299,6 +314,9 @@ check(clicker.Stonks.realmData.baseline["150"] ~= nil, "clicker imported the lin
 clicker.Stonks.Sync.Links.Request(poster.name, "i", "151")
 run(20)
 check(clicker.Stonks.realmData.baseline["151"] == nil, "an item the poster never linked is not sent")
+local cs, ci = logOf(clicker, "scan"), logOf(clicker, "item")
+check(#cs == 1 and cs[1].from == poster.name and cs[1].done and cs[1].got == 300, "sync history: the linked scan is logged (" .. tostring(cs[1] and cs[1].got) .. " items)")
+check(#ci == 1 and ci[1].id == 150 and ci[1].kept == 1 and ci[1].med and ci[1].med > 0, "sync history: the linked item is logged with its price")
 
 table.sort(frameSamples)
 local p99 = frameSamples[math.max(1, math.floor(#frameSamples * 0.99))] or 0

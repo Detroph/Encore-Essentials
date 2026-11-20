@@ -10,7 +10,7 @@
 --  * Sharing is on by default; /stonksync receive or off turns it down.
 local _, ns = ...
 local Stonks = ns.Stonks
-local Codec, Comm = Stonks.SyncCodec, Stonks.SyncComm
+local Codec, Comm, Log = Stonks.SyncCodec, Stonks.SyncComm, Stonks.SyncLog
 local Sync = {}
 Stonks.Sync = Sync
 
@@ -401,13 +401,16 @@ local function acceptObsMessage(body, sender, live)
     if not live and (hour > hourNow() or hour < hourNow() - Stonks:KeepDays() * 24) then return Comm.Reject() end
     local list = Codec.decodeObs(rest)
     if not list then return Comm.Reject() end
+    local kept = 0
     for _, o in ipairs(list) do
         local key = tostring(o[1])
-        Sync.AddGuildSample(key, hour, o[2], o[3], sender)
+        if Sync.AddGuildSample(key, hour, o[2], o[3], sender) then kept = kept + 1 end
         if live then lastSlot[o[1]] = { o[2], o[3] } end
     end
     Sync.Touched()
-    return list
+    -- Sync history: an hourly guild scan, or a scan shared by chat link (whisper).
+    Log.Add(live and "hourly" or "scan", sender, hour, { got = #list, kept = kept, hour = hour })
+    return list, kept
 end
 Sync.acceptObsMessage = acceptObsMessage
 
@@ -467,6 +470,7 @@ local function pickOffer()
         if Comm.now() - ask.lastBlock > BLOCK_TIMEOUT then
             -- Sender went quiet (logged off, disconnected): keep what we have and ask someone else to continue.
             local resume = ask.resume
+            Log.Finish("summary", best.name, "login", { stopped = true })
             ask.chosen = nil
             startAsk(resume)
         else
@@ -567,17 +571,22 @@ end)
 Comm.On("Y", function(body, sender, channel)
     if channel ~= "WHISPER" or not ask or ask.chosen ~= sender then return end
     ask.lastBlock = Comm.now()
+    local got, kept = 0, 0
     for text in (body .. ";"):gmatch("([^;]*);") do
+        got = got + 1
         if Sync.AddSummary(text, sender) then
+            kept = kept + 1
             local id = Codec.dec(text:match("^([^,]+)") or "")
             if id and id >= ask.resume then ask.resume = id + 1 end
         end
     end
+    Log.Add("summary", sender, "login", { got = got, kept = kept, hour = ask.asOf })
     Sync.Touched()
 end)
 
-Comm.On("Z", function(_, sender, channel)
+Comm.On("Z", function(body, sender, channel)
     if channel ~= "WHISPER" or not ask or ask.chosen ~= sender then return end
+    Log.Finish("summary", sender, "login", { expected = Codec.dec(body) })
     local r = realm()
     r.sync.since, r.sync.from, r.sync.at = ask.asOf, sender, time()
     ask = nil

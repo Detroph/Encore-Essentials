@@ -4,4 +4,5 @@
 	<Button name="EncoreStonksItemRowTemplate" virtual="true"/>
 	<Button name="EncoreStonksTreeRowTemplate" virtual="true"/>
 	<Button name="EncoreStonksResultRowTemplate" virtual="true"/>
+	<Button name="EncoreStonksSyncRowTemplate" virtual="true"/>
 </Ui>
