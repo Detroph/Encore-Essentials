@@ -358,7 +358,8 @@ for (const I of instances.values()) {
       // The Journal's own loot stays own loot; its probable and shared drops are random unless another source ties them here.
       e.random = e.djOwn ? false : e.djRandom && !e.whOwn && !e.src.has('fc') && !e.src.has('tbc') && !e.src.has('wh') ? true : !own || (!!e.whNone && !e.whOwn);
       // A drop in 10% or more of this boss's looted kills is its own too (e.g. Corruptor's Scourgestone from Gandling).
-      const tied = e.djOwn || e.src.has('fc') || e.src.has('tbc') || e.src.has('wh') || (e.chance ?? 0) >= WH_OWN_ANY_PCT;
+      const lowQuality = it.quality != null && it.quality < BOSS_MIN_QUALITY;
+      const tied = e.djOwn || e.src.has('fc') || e.src.has('tbc') || e.src.has('wh') || ((e.chance ?? 0) >= WH_OWN_ANY_PCT && !lowQuality);
       const levelRange = !it.recipe && !tied &&
         (whWorldIds.has(id) || (seenIn.get(id)?.size || 0) >= 2 || (bossInsts.get(id)?.size || 0) >= 2);
       if (levelRange) e.random = true;
@@ -369,7 +370,9 @@ for (const I of instances.values()) {
     for (const [id, e] of [...B.items]) {
       const it = items[id];
       const keep = !it || it.quality == null || it.quality >= BOSS_MIN_QUALITY || it.recipe || it.bind === 'Quest Item' ||
-        it.startsQuest || it.type === 'Quest' || (e.chance ?? 0) >= WH_OWN_ANY_PCT;
+        it.startsQuest || it.type === 'Quest' ||
+        // a white item a boss drops often and nothing else drops (a quest starter Wowhead doesn't mark); not cloth or food
+        ((e.chance ?? 0) >= WH_OWN_ANY_PCT && (seenIn.get(id)?.size || 0) < 2 && (bossInsts.get(id)?.size || 0) < 2);
       if (!keep) { B.items.delete(id); lowQualityDropped++; }
     }
   }
