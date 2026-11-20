@@ -357,16 +357,20 @@ for (const I of instances.values()) {
         ((seenIn.get(id)?.size || 0) < 2 && (it.bind === 'Binds when picked up' || it.bind === 'Quest Item' || (it.quality ?? 0) >= 3 || it.recipe));
       // The Journal's own loot stays own loot; its probable and shared drops are random unless another source ties them here.
       e.random = e.djOwn ? false : e.djRandom && !e.whOwn && !e.src.has('fc') && !e.src.has('tbc') && !e.src.has('wh') ? true : !own || (!!e.whNone && !e.whOwn);
-      const tied = e.djOwn || e.src.has('fc') || e.src.has('tbc') || e.src.has('wh');
+      // A drop in 10% or more of this boss's looted kills is its own too (e.g. Corruptor's Scourgestone from Gandling).
+      const tied = e.djOwn || e.src.has('fc') || e.src.has('tbc') || e.src.has('wh') || (e.chance ?? 0) >= WH_OWN_ANY_PCT;
       const levelRange = !it.recipe && !tied &&
         (whWorldIds.has(id) || (seenIn.get(id)?.size || 0) >= 2 || (bossInsts.get(id)?.size || 0) >= 2);
       if (levelRange) e.random = true;
     }
     // Random drops are not shown under the boss (Det, 2026-11-20): only its own loot stays.
     for (const [id, e] of [...B.items]) if (e.random) { B.items.delete(id); levelRangeIds.add(id); levelRangeDropped++; }
-    for (const id of [...B.items.keys()]) {
+    // Quest items, quest starters (e.g. An Unsent Letter), recipes and drops in 10%+ of kills stay whatever their quality.
+    for (const [id, e] of [...B.items]) {
       const it = items[id];
-      if (it && it.quality != null && it.quality < BOSS_MIN_QUALITY && !it.recipe && it.bind !== 'Quest Item') { B.items.delete(id); lowQualityDropped++; }
+      const keep = !it || it.quality == null || it.quality >= BOSS_MIN_QUALITY || it.recipe || it.bind === 'Quest Item' ||
+        it.startsQuest || it.type === 'Quest' || (e.chance ?? 0) >= WH_OWN_ANY_PCT;
+      if (!keep) { B.items.delete(id); lowQualityDropped++; }
     }
   }
   // A fill-in "boss" named after its only item (e.g. Defias Gunpowder) is trash loot.
