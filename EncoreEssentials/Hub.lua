@@ -1,5 +1,6 @@
 -- Encore Essentials: the main window. Opens in the middle of the screen from the minimap button
--- (left-click) or the addon compartment, and lists the Encore modules. Click a module to open it.
+-- (left-click) or the addon compartment, and shows the Encore modules as tiles, four to a row.
+-- Click a module to open it.
 local _, ns = ...
 local L = ns.L
 local Encore = ns.Encore
@@ -26,12 +27,16 @@ Encore.MODULE_LIST = {
     },
 }
 
-local WIDTH = 420
+-- Modules are laid out as tiles, left to right, starting a new row after COLUMNS tiles.
+local COLUMNS = 4
+local TILE_W = 150
+local TILE_H = 156
+local TILE_GAP = 8
+local SIDE = 16     -- left/right padding
 local TOP = 64      -- room for the title bar and portrait
-local ROW_H = 64
-local ROW_GAP = 6
 local BOTTOM = 36   -- room for the footer hint
-local ICON_SIZE = 48
+local MIN_WIDTH = 340
+local ICON_SIZE = 56
 
 local frame
 
@@ -39,11 +44,25 @@ local function isInstalled(module)
     return not module.folder or C_AddOns.DoesAddOnExist(module.folder)
 end
 
+-- Columns actually used: never more than COLUMNS, never more than the module count.
+local function gridColumns()
+    return math.max(1, math.min(COLUMNS, #Encore.MODULE_LIST))
+end
+
+local function gridWidth()
+    local cols = gridColumns()
+    return cols * TILE_W + (cols - 1) * TILE_GAP
+end
+
 local function createRow(parent, module, index)
+    local col = (index - 1) % COLUMNS
+    local line = math.floor((index - 1) / COLUMNS)
+    -- Center the grid when the window is wider than the tiles need
+    local left = math.max(SIDE, (parent:GetWidth() - gridWidth()) / 2)
+
     local row = CreateFrame("Button", nil, parent)
-    row:SetHeight(ROW_H)
-    row:SetPoint("TOPLEFT", 16, -(TOP + (index - 1) * (ROW_H + ROW_GAP)))
-    row:SetPoint("TOPRIGHT", -16, -(TOP + (index - 1) * (ROW_H + ROW_GAP)))
+    row:SetSize(TILE_W, TILE_H)
+    row:SetPoint("TOPLEFT", left + col * (TILE_W + TILE_GAP), -(TOP + line * (TILE_H + TILE_GAP)))
 
     local bg = row:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints()
@@ -54,21 +73,24 @@ local function createRow(parent, module, index)
 
     local icon = row:CreateTexture(nil, "ARTWORK")
     icon:SetSize(ICON_SIZE, ICON_SIZE)
-    icon:SetPoint("LEFT", 8, 0)
+    icon:SetPoint("TOP", 0, -10)
     icon:SetTexture(module.icon)
     row.icon = icon
 
     local name = row:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    name:SetPoint("TOPLEFT", icon, "TOPRIGHT", 12, -6)
-    name:SetPoint("RIGHT", -10, 0)
-    name:SetJustifyH("LEFT")
+    name:SetPoint("TOP", icon, "BOTTOM", 0, -6)
+    name:SetWidth(TILE_W - 12)
+    name:SetJustifyH("CENTER")
+    name:SetWordWrap(false)
     name:SetText(module.name)
     row.name = name
 
     local desc = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    desc:SetPoint("TOPLEFT", name, "BOTTOMLEFT", 0, -4)
-    desc:SetPoint("RIGHT", -10, 0)
-    desc:SetJustifyH("LEFT")
+    desc:SetPoint("TOP", name, "BOTTOM", 0, -4)
+    desc:SetPoint("BOTTOM", 0, 6)
+    desc:SetWidth(TILE_W - 12)
+    desc:SetJustifyH("CENTER")
+    desc:SetJustifyV("TOP")
     desc:SetText(module.desc or "")
     row.desc = desc
 
@@ -98,8 +120,9 @@ local function createWindow()
     frame = CreateFrame("Frame", "EncoreEssentialsHubFrame", UIParent, "PortraitFrameTemplate")
     frame:Hide()
     tinsert(UISpecialFrames, "EncoreEssentialsHubFrame") -- Escape closes it
-    local count = #Encore.MODULE_LIST
-    frame:SetSize(WIDTH, TOP + count * ROW_H + (count - 1) * ROW_GAP + BOTTOM)
+    local lines = math.max(1, math.ceil(#Encore.MODULE_LIST / COLUMNS))
+    frame:SetSize(math.max(MIN_WIDTH, gridWidth() + 2 * SIDE),
+        TOP + lines * TILE_H + (lines - 1) * TILE_GAP + BOTTOM)
     frame:SetPoint("CENTER")
     if frame.SetDontSavePosition then frame:SetDontSavePosition(true) end
     frame:SetFrameStrata("HIGH")

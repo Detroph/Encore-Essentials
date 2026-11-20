@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## Unreleased
+
+- Module window: modules show as tiles from left to right, starting a new row after four.
+
 ## 0.1.1
 
 - Minimap button: right-click to unlock and drag it anywhere on screen, lock it, or reattach it to the minimap.
