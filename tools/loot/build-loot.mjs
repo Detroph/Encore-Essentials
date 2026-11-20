@@ -461,7 +461,8 @@ L.push(`-- Data from ForeverDB.net (https://foreverdb.net), data version ${FL.ve
 L.push('-- with drop rates per looted kill, and the reputation and PvP vendors players saw. Its Classic data and clues are left out.');
 if (dj) L.push(`-- Boss loot first from Dungeon Journal (ForeverDungeonJournal) ${dj.version || ''} by Exehn: its hand-kept boss and loot lists.`);
 const fills = [fc.length && 'foreverchanges.pro', tbc.length && 'wowtbc.gg'].filter(Boolean);
-L.push(`-- ${fills.length ? `Filled in from ${fills.join(' and ')}; i` : 'I'}tem details from the game client.`);
+L.push(`-- ${fills.length ? `Filled in from ${fills.join(' and ')}. ` : ''}${Object.keys(wh).length ? 'Item details from Wowhead Forever (https://www.wowhead.com/forever) and the game client.' : 'Item details from the game client.'}`);
+if (whd) L.push('-- Boss drops, drop chances, reputation rewards and world drops filled in from Wowhead Forever (https://www.wowhead.com/forever).');
 if (npcLevels) L.push(`-- Boss levels from QuestieDB (https://github.com/Questie/QuestieDB, GPL-3.0), ${npcLevels.source}: its WoW Forever NPC data, which is Questie's Classic data with Forever corrections. No other Classic or emulator data.`);
 else L.push('-- No Classic or emulator data.');
 L.push("-- Licence: GPL-3.0 with ForeverDB.net's attribution term; see NOTICE.txt in this addon.");

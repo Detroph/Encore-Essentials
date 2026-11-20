@@ -37,6 +37,11 @@ the repository).
    foreverchanges.pro (https://foreverchanges.pro) adds bosses, items and
    instances that ForeverDB has no Forever data for yet, and recipe sources
    from its item pages.
+   Wowhead Forever (https://www.wowhead.com/forever) gives item details
+   (names, qualities, icons, slots and levels), fills in boss drops and
+   drop chances ForeverDB has not seen, reputation rewards, world drops and
+   quest details QuestieDB leaves blank, and every recipe is checked against
+   it. Thank you to Wowhead.
    Boss levels come from QuestieDB (https://github.com/Questie/QuestieDB,
    GPL-3.0), its WoW Forever NPC data: Questie's Classic data (built from
    CMaNGOS) with Forever corrections, QuestieTrace and hand-written fixes (tools/loot/questie-levels.mjs). Only the levels and
@@ -53,4 +58,4 @@ the repository).
    World of Warcraft, WoW Forever and their names, places and icons are
    trademarks or property of Blizzard Entertainment, Inc. Encore Essentials is
    not affiliated with or endorsed by Blizzard Entertainment, ForeverDB.net,
-   the Questie team, foreverchanges.pro or Exehn.
+   the Questie team, foreverchanges.pro, Wowhead or Exehn.
