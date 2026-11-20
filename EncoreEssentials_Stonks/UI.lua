@@ -68,18 +68,9 @@ function U.gem(parent, point, x, y)
 end
 
 -- A dark inset pane with a black edge and a faint copper inner edge.
-function U.well(parent)
-    local COPPER = U.COPPER
+function U.well(parent, atlas)
     local f = CreateFrame("Frame", nil, parent)
-    local bg = f:CreateTexture(nil, "BACKGROUND")
-    bg:SetAllPoints()
-    bg:SetColorTexture(0.063, 0.035, 0.016, 0.70)
-    U.addBorder(f, 0, 0, 0, 1)
-    local inner = U.addBorder(f, COPPER[1], COPPER[2], COPPER[3], 0.22)
-    inner[1]:SetPoint("TOPLEFT", 1, -1); inner[1]:SetPoint("TOPRIGHT", -1, -1)
-    inner[2]:SetPoint("BOTTOMLEFT", 1, 1); inner[2]:SetPoint("BOTTOMRIGHT", -1, 1)
-    inner[3]:SetPoint("TOPLEFT", 1, -1); inner[3]:SetPoint("BOTTOMLEFT", 1, 1)
-    inner[4]:SetPoint("TOPRIGHT", -1, -1); inner[4]:SetPoint("BOTTOMRIGHT", -1, 1)
+    _G.EncoreEssentials.Theme.AHPane(f, atlas) -- an Auction House-style pane
     return f
 end
 
@@ -356,7 +347,7 @@ function U.CreateWindow(opts)
         portrait:SetTexture(U.TEX.crest)
         portrait:SetTexCoord(0, 1, 0, 1)
     end
-    _G.EncoreEssentials.WarmFrame(frame)
+    _G.EncoreEssentials.Theme.ApplyWindow(frame) -- parchment, red border and title bar
     U.gem(frame, "BOTTOMLEFT", 3, 3)
 
     -- Resize grip, sized by hand from the cursor (StartSizing snaps to maximum size on some clients)
