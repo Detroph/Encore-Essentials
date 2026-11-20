@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## Unreleased
+
+- Encore-Stonks: Share scan and Share item now really go to the chat you were typing in (whisper, party, raid, guild, officer or a channel), or the whisper tab you have selected. In 0.1.3 they still fell back to guild, because clicking the button closes the chat box and the game resets its chat type first. Guild only when your last chat was say, yell or emote, or you have not typed yet this session.
+
 ## 0.1.3-beta
 
 - Encore-DB: quests show their rewards: items, reward choices, reputation, XP and money. Exact values come from what the game shows you at quest givers and in your quest log, with QuestieDB and Wowhead Forever filling the rest.

@@ -21,28 +21,48 @@ local expecting = {} -- [sender] = { kind, arg, untilTime }
 -- Chat types that make no sense for a shared link; for these we send to guild instead.
 local PUBLIC = { SAY = true, YELL = true, EMOTE = true }
 
--- Puts the link text into the chat the player has open: whisper, party, raid, guild, officer or a channel,
--- ready to send with Enter. Order: the box being typed in, then a box still open but unfocused (it lost focus
--- when the player clicked somewhere), then the chat that Enter would open. Guild only when that chat is
--- say, yell or emote, or nothing is known.
+-- The chat the player last typed in this session (whisper target, party, raid, guild, officer or a channel).
+-- Clicking Share takes focus from the chat box and the game then resets it to its default type, so by the time
+-- the button runs, the box no longer knows. We remember it from every header update while the player types.
+local lastChat
+local restoring = false
+local function remember(box)
+    if restoring or not box or not box.GetAttribute then return end
+    -- Only while the player is typing in it: the game also updates the header when it resets a closed box.
+    if not (ChatEdit_GetActiveWindow and ChatEdit_GetActiveWindow() == box) then return end
+    local chatType = box:GetAttribute("chatType")
+    if not chatType then return end
+    lastChat = { chatType = chatType, tellTarget = box:GetAttribute("tellTarget"), channelTarget = box:GetAttribute("channelTarget") }
+end
+if hooksecurefunc and ChatEdit_UpdateHeader then hooksecurefunc("ChatEdit_UpdateHeader", remember) end
+
+local function setChat(box, chatType, tellTarget, channelTarget)
+    restoring = true
+    box:SetAttribute("chatType", chatType)
+    if tellTarget then box:SetAttribute("tellTarget", tellTarget) end
+    if channelTarget then box:SetAttribute("channelTarget", channelTarget) end
+    if ChatEdit_UpdateHeader then ChatEdit_UpdateHeader(box) end
+    restoring = false
+end
+
+-- Puts the link text into the chat the player has open, ready to send with Enter: the box being typed in,
+-- else the selected whisper tab, else the chat the player last typed in. Guild only when that is say, yell
+-- or emote, or nothing is known yet.
 local function insertChat(text)
     local box = ChatEdit_GetActiveWindow and ChatEdit_GetActiveWindow()
     if box then box:Insert(text); return end
-    box = ChatEdit_GetLastActiveWindow and ChatEdit_GetLastActiveWindow()
-    if box and box:IsShown() and ChatEdit_ActivateChat then
-        ChatEdit_ActivateChat(box)
-        box:Insert(text)
-        return
-    end
     if not ChatFrame_OpenChat then return end
-    ChatFrame_OpenChat(text, box and box.chatFrame or nil)
+    ChatFrame_OpenChat("")
     box = ChatEdit_GetActiveWindow and ChatEdit_GetActiveWindow()
     if not box then return end
-    local chatType = box:GetAttribute("chatType")
-    if (not chatType or PUBLIC[chatType]) and IsInGuild() then
-        box:SetAttribute("chatType", "GUILD")
-        if ChatEdit_UpdateHeader then ChatEdit_UpdateHeader(box) end
+    local tab = box.chatFrame
+    local whisperTab = tab and tab.isTemporary and box:GetAttribute("chatType") ~= "SAY"
+    if not whisperTab and lastChat then
+        setChat(box, lastChat.chatType, lastChat.tellTarget, lastChat.channelTarget)
     end
+    local chatType = box:GetAttribute("chatType")
+    if (not chatType or PUBLIC[chatType]) and IsInGuild() then setChat(box, "GUILD") end
+    box:Insert(text)
 end
 
 function Links.PostItem(input)

@@ -2,7 +2,7 @@
 
 Guildmates running Encore-Stonks share auction prices over the guild channel. It is **on by default** (share); `/stonksync receive` or `/stonksync off` turns it down.
 
-The graph panel has **Share item** and **Share scan** buttons at the bottom right. Each puts a chat link into the chat you have open (whisper, party, raid, guild, officer or a channel), ready to send with Enter. If no chat is open it uses the chat Enter would open, and guild chat when that is say, yell or emote.
+The graph panel has **Share item** and **Share scan** buttons at the bottom right. Each puts a chat link into the chat you were last typing in (whisper, party, raid, guild, officer or a channel), or the selected whisper tab, ready to send with Enter. Guild chat when that was say, yell or emote, or you have not typed yet this session.
 
 | Command | What it does |
 | --- | --- |
