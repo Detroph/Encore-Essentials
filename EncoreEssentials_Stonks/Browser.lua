@@ -103,6 +103,7 @@ local function fillTreeRow(row, d)
         row.bg:Hide()
         for _, t in ipairs(row.edge) do t:Hide() end
         row.text:SetFontObject("GameFontDisableSmall")
+        row.text:SetTextColor(0.5, 0.5, 0.5)
         row:EnableMouse(false)
         return
     end
@@ -110,8 +111,15 @@ local function fillTreeRow(row, d)
     row.bg:Show()
     for _, t in ipairs(row.edge) do t:Show() end
     row.bg:SetAlpha((d.depth or 0) > 0 and 0.7 or 1)
-    row.text:SetFontObject((d.depth or 0) > 0 and "GameFontHighlightSmall" or "GameFontNormalSmall")
-    if selected then row.text:SetTextColor(1, 1, 1) end
+    -- Auction house colours: gold categories, white subcategories, white for the selected entry.
+    -- Set every time: rows are recycled, and a font object doesn't undo an earlier SetTextColor.
+    if (d.depth or 0) > 0 then
+        row.text:SetFontObject("GameFontHighlightSmall")
+        row.text:SetTextColor(1, 1, 1)
+    else
+        row.text:SetFontObject("GameFontNormalSmall")
+        if selected then row.text:SetTextColor(1, 1, 1) else row.text:SetTextColor(1, 0.82, 0) end
+    end
 end
 
 local categoryCache
@@ -255,7 +263,7 @@ function renderResults(keepScroll)
     for _, key in ipairs(Stonks:AllKeys()) do
         local name = itemName(key)
         if (search == "" or name:lower():find(search, 1, true) or tostring(key) == search)
-            and (not match or match(key, name)) then
+            and (not match or match(key, name)) and ns.Filter.Pass(key) then
             found[#found + 1] = { key = key, name = name, samples = sampleCount(key), days = auctionatorDays(key) }
         end
     end
@@ -384,6 +392,7 @@ local function createWindow()
     listHolder:SetPoint("TOPLEFT", 0, -21)
     listHolder:SetPoint("BOTTOMRIGHT")
     results = createList(listHolder, "EncoreStonksResultRowTemplate", RESULT_ROW_H, fillResultRow)
+    ns.Filter.Attach(frame, searchBox, countText, function() renderResults() end) -- Filter.lua
 
     local credit = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     credit:SetPoint("BOTTOMLEFT", 16, 9)
