@@ -1,7 +1,7 @@
 -- Encore-Stonks guild sharing: chat links, WeakAuras style.
 -- "/stonksync link item <item>" or "/stonksync link scan" puts plain text like [Stonks: Black Lotus #i13468] into
--- the chat box (the server strips custom link codes, so plain text is what travels). Players with Stonks see it as
--- a clickable link; clicking asks to confirm, and only then is the data requested from the poster by whisper.
+-- the chat the player has open (whisper, party, raid, guild...). The server strips custom link codes, so plain
+-- text is what travels. Players with Stonks see it as a clickable link; clicking asks to confirm, and only then is the data requested from the poster by whisper.
 -- Anyone can share this way, at any rank, and nothing is ever imported without that click and confirmation.
 local _, ns = ...
 local Stonks = ns.Stonks
@@ -18,14 +18,28 @@ local posted = {} -- [kind .. arg] = time we posted it
 local answered = {} -- [asker] = time
 local expecting = {} -- [sender] = { kind, arg, untilTime }
 
--- Puts the link text in the chat box (guild chat when the box wasn't already open), ready to send with Enter.
+-- Chat types that make no sense for a shared link; for these we send to guild instead.
+local PUBLIC = { SAY = true, YELL = true, EMOTE = true }
+
+-- Puts the link text into the chat the player has open: whisper, party, raid, guild, officer or a channel,
+-- ready to send with Enter. Order: the box being typed in, then a box still open but unfocused (it lost focus
+-- when the player clicked somewhere), then the chat that Enter would open. Guild only when that chat is
+-- say, yell or emote, or nothing is known.
 local function insertChat(text)
     local box = ChatEdit_GetActiveWindow and ChatEdit_GetActiveWindow()
     if box then box:Insert(text); return end
+    box = ChatEdit_GetLastActiveWindow and ChatEdit_GetLastActiveWindow()
+    if box and box:IsShown() and ChatEdit_ActivateChat then
+        ChatEdit_ActivateChat(box)
+        box:Insert(text)
+        return
+    end
     if not ChatFrame_OpenChat then return end
-    ChatFrame_OpenChat(text)
+    ChatFrame_OpenChat(text, box and box.chatFrame or nil)
     box = ChatEdit_GetActiveWindow and ChatEdit_GetActiveWindow()
-    if box and IsInGuild() then
+    if not box then return end
+    local chatType = box:GetAttribute("chatType")
+    if (not chatType or PUBLIC[chatType]) and IsInGuild() then
         box:SetAttribute("chatType", "GUILD")
         if ChatEdit_UpdateHeader then ChatEdit_UpdateHeader(box) end
     end
