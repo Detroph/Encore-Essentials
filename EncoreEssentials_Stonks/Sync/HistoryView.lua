@@ -57,7 +57,9 @@ local function initRow(row)
     if row.built then return end
     row.built = true
     row:SetHeight(20)
-    _G.EncoreEssentials.Theme.AHRow(row) -- Auction House row stripe and hover glow
+    local hl = row:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetAllPoints()
+    hl:SetColorTexture(1, 0.9, 0.6, 0.08)
     local function cell(point, x, width, justify)
         local fs = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         fs:SetPoint(point, x, 0)
@@ -196,23 +198,23 @@ function View.Build(panel)
     icon:SetSize(30, 30)
     icon:SetPoint("TOPLEFT", 62, -28)
     icon:SetTexture(U.TEX.market)
-    local title = page:CreateFontString(nil, "OVERLAY", "EncoreTitleLarge")
+    local title = page:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", icon, "TOPRIGHT", 8, 0)
     title:SetText("Sync history")
-    local sub = page:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    local sub = page:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -3)
     sub:SetPoint("RIGHT", page, "RIGHT", -14, 0)
     sub:SetJustifyH("LEFT")
     sub:SetWordWrap(false)
     sub:SetText("When and from whom you received guild prices.")
-    U.setColor(sub, _G.EncoreEssentials.Theme.INK) -- on the parchment
+    U.setColor(sub, INK)
 
-    summary = page:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    summary = page:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     summary:SetPoint("TOPLEFT", 14, -68)
     summary:SetPoint("TOPRIGHT", -14, -68)
     summary:SetJustifyH("LEFT")
     summary:SetWordWrap(false)
-    U.setColor(summary, _G.EncoreEssentials.Theme.INK)
+    U.setColor(summary, INK)
 
     local x = 14
     for _, f in ipairs(FILTERS) do
@@ -227,7 +229,7 @@ function View.Build(panel)
         filterButtons[#filterButtons + 1] = b
     end
 
-    local pane = U.well(page, "auctionhouse-background-index")
+    local pane = U.well(page)
     pane:SetPoint("TOPLEFT", 10, -114)
     pane:SetPoint("BOTTOMRIGHT", -10, 28)
     local head = CreateFrame("Frame", nil, pane)
@@ -263,12 +265,12 @@ function View.Build(panel)
     page.empty:SetText("Nothing received yet. Guild scans, your login summary and prices shared by chat link show up here.")
     U.setColor(page.empty, DIM)
 
-    footer = page:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    footer = page:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     footer:SetPoint("BOTTOMLEFT", 16, 9)
     footer:SetPoint("RIGHT", page, "BOTTOMRIGHT", -100, 0)
     footer:SetJustifyH("LEFT")
     footer:SetWordWrap(false)
-    U.setColor(footer, _G.EncoreEssentials.Theme.DIM)
+    U.setColor(footer, DIM)
 
     local clear = U.ToggleButton(page, "Clear", 60)
     clear:SetPoint("BOTTOMRIGHT", -26, 4) -- clear of the resize grip
