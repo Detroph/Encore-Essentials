@@ -236,7 +236,7 @@ local function addTooltipLines(tooltip, itemID)
     local function line(label, avg)
         if not avg then return end
         local pct = st.last and (st.last / avg - 1) * 100 or nil
-        tooltip:AddDoubleLine("|cffeb9339Stonks|r " .. label, U.coinShort(avg) .. "  " .. U.pctColored(pct), 0.85, 0.75, 0.6, 1, 1, 1)
+        tooltip:AddDoubleLine("|cffeb9339Stonks|r " .. label, U.coinShort(avg) .. "  " .. U.pctColored(pct, true), 0.85, 0.75, 0.6, 1, 1, 1)
     end
     line("3-day avg", st.avg3)
     line("7-day avg", st.avg7)

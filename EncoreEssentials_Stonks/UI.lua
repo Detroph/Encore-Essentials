@@ -12,15 +12,22 @@ U.TEX = {
     questionMark = 134400,
 }
 
--- Colours from the Encore-DB mock-up
-U.TEAL = { 0.07, 0.78, 0.78 }
-U.TEAL_SOFT = { 0.48, 0.82, 0.80 }
-U.COPPER = { 0.92, 0.58, 0.22 }
-U.GOLD = { 1, 0.82, 0 }
-U.INK = { 0.95, 0.90, 0.81 }
-U.DIM = { 0.64, 0.57, 0.47 }
-U.GRID = { 0.92, 0.58, 0.22, 0.12 }
+-- Colours for the parchment look (EncoreEssentials\Theme.lua). The chart lines keep their meaning
+-- (teal: Stonks, copper: Auctionator, gold: the average) in shades dark enough to read on parchment.
+local Theme = _G.EncoreEssentials.Theme
+U.Theme = Theme
+U.TEAL = { 0.00, 0.47, 0.47 }
+U.TEAL_SOFT = { 0.00, 0.42, 0.42 }
+U.COPPER = { 0.70, 0.34, 0.06 }
+U.GOLD = { 0.58, 0.42, 0.00 }
+U.INK = Theme.INK
+U.DIM = Theme.DIM
+U.TITLE = Theme.TITLE
+U.EDGE = Theme.EDGE
+U.GRID = { 0.45, 0.28, 0.10, 0.16 }
 U.WHITE = CreateColor(1, 1, 1, 1)
+-- Tooltips stay dark, so text in them keeps the light colours.
+U.TIP = { GOLD = { 1, 0.82, 0 }, DIM = { 0.64, 0.57, 0.47 }, TEAL_SOFT = { 0.48, 0.82, 0.80 } }
 
 local GetItemInfo = (C_Item and C_Item.GetItemInfo) or _G.GetItemInfo
 local GetItemIconByID = (C_Item and C_Item.GetItemIconByID) or _G.GetItemIcon
@@ -47,12 +54,11 @@ function U.gradient(tex, orientation, r1, g1, b1, a1, r2, g2, b2, a2)
 end
 
 function U.gem(parent, point, x, y)
-    local COPPER, TEAL = U.COPPER, U.TEAL
     local f = CreateFrame("Frame", nil, parent)
     f:SetSize(18, 18)
     f:SetPoint("CENTER", parent, point, x, y)
     f:SetFrameLevel(parent:GetFrameLevel() + 30)
-    local sizes = { { 15, 0, 0, 0 }, { 13, COPPER[1], COPPER[2], COPPER[3] }, { 9, TEAL[1], TEAL[2], TEAL[3] } }
+    local sizes = { { 15, 0.25, 0.15, 0.05 }, { 13, 0.92, 0.58, 0.22 }, { 9, 0.07, 0.78, 0.78 } }
     for i, s in ipairs(sizes) do
         local t = f:CreateTexture(nil, "OVERLAY", nil, i)
         t:SetColorTexture(s[2], s[3], s[4], 1)
@@ -67,19 +73,10 @@ function U.gem(parent, point, x, y)
     shine:SetRotation(math.rad(45))
 end
 
--- A dark inset pane with a black edge and a faint copper inner edge.
+-- An inset pane on the parchment (a faint brown wash with a brown edge).
 function U.well(parent)
-    local COPPER = U.COPPER
     local f = CreateFrame("Frame", nil, parent)
-    local bg = f:CreateTexture(nil, "BACKGROUND")
-    bg:SetAllPoints()
-    bg:SetColorTexture(0.016, 0.012, 0.008, 0.72)
-    U.addBorder(f, 0, 0, 0, 1)
-    local inner = U.addBorder(f, COPPER[1], COPPER[2], COPPER[3], 0.22)
-    inner[1]:SetPoint("TOPLEFT", 1, -1); inner[1]:SetPoint("TOPRIGHT", -1, -1)
-    inner[2]:SetPoint("BOTTOMLEFT", 1, 1); inner[2]:SetPoint("BOTTOMRIGHT", -1, 1)
-    inner[3]:SetPoint("TOPLEFT", 1, -1); inner[3]:SetPoint("BOTTOMLEFT", 1, 1)
-    inner[4]:SetPoint("TOPRIGHT", -1, -1); inner[4]:SetPoint("BOTTOMRIGHT", -1, 1)
+    Theme.Well(f)
     return f
 end
 
@@ -122,11 +119,13 @@ function U.pctText(pct)
     return ("%+.0f%%"):format(pct)
 end
 
--- Coloured % text: copper when dearer, teal when cheaper.
-function U.pctColored(pct)
-    if not pct then return "|cff9a8a72-|r" end
-    if math.abs(pct) < 0.5 then return "|cff9a8a72=|r" end
-    return (pct > 0 and "|cffeb9339%+.0f%%|r" or "|cff7ad1cc%+.0f%%|r"):format(pct)
+-- Coloured % text: copper when dearer, teal when cheaper. tip = true for a (dark) tooltip, else for parchment.
+function U.pctColored(pct, tip)
+    local grey = tip and "|cff9a8a72" or "|cff6b5a44"
+    if not pct then return grey .. "-|r" end
+    if math.abs(pct) < 0.5 then return grey .. "=|r" end
+    if tip then return (pct > 0 and "|cffeb9339%+.0f%%|r" or "|cff7ad1cc%+.0f%%|r"):format(pct) end
+    return (pct > 0 and "|cffb35714%+.0f%%|r" or "|cff007878%+.0f%%|r"):format(pct)
 end
 
 ---------------------------------------------------------------------------
@@ -151,13 +150,11 @@ function U.itemName(key)
     return "Item " .. tostring(id or key)
 end
 
+-- Item name colour by quality, in shades that read on parchment.
 function U.itemQualityColor(key)
     local id = U.itemIDOf(key)
     local q = id and select(3, GetItemInfo(id))
-    if q and C_Item and C_Item.GetItemQualityColor then
-        local r, g, b = C_Item.GetItemQualityColor(q)
-        if r then return r, g, b end
-    end
+    if q then return Theme.QualityInk(q) end
     return U.INK[1], U.INK[2], U.INK[3]
 end
 
@@ -201,7 +198,8 @@ function U.SortHeader(head, columns, sort, onChange)
             if on then
                 if sort.desc then b.arrow:SetTexCoord(0, 0.5625, 0, 1) else b.arrow:SetTexCoord(0, 0.5625, 1, 0) end
             end
-            b.label:SetTextColor(on and 1 or 1, on and 0.92 or 0.82, on and 0.6 or 0)
+            local c = on and U.TITLE or U.DIM
+            b.label:SetTextColor(c[1], c[2], c[3])
         end
     end
     for _, col in ipairs(columns) do
@@ -210,7 +208,7 @@ function U.SortHeader(head, columns, sort, onChange)
         b:SetHeight(head:GetHeight() > 0 and head:GetHeight() or 18)
         b:SetWidth(col.width or 70)
         b:SetPoint(col.point, col.x, 0)
-        b.label = b:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        b.label = b:CreateFontString(nil, "OVERLAY", "EncoreTitleSmall")
         b.label:SetText(col.label)
         b.arrow = b:CreateTexture(nil, "OVERLAY")
         b.arrow:SetTexture("Interface\\Buttons\\UI-SortArrow")
@@ -226,7 +224,7 @@ function U.SortHeader(head, columns, sort, onChange)
         end
         local hl = b:CreateTexture(nil, "HIGHLIGHT")
         hl:SetAllPoints()
-        hl:SetColorTexture(1, 0.9, 0.6, 0.08)
+        hl:SetColorTexture(0.55, 0.34, 0.06, 0.14)
         b:SetScript("OnClick", function()
             if sort.id == col.id then sort.desc = not sort.desc else sort.id, sort.desc = col.id, col.desc and true or false end
             refresh()
@@ -356,11 +354,7 @@ function U.CreateWindow(opts)
         portrait:SetTexture(U.TEX.crest)
         portrait:SetTexCoord(0, 1, 0, 1)
     end
-    if frame.NineSlice then
-        for _, region in ipairs({ frame.NineSlice:GetRegions() }) do
-            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
-        end
-    end
+    Theme.ApplyWindow(frame) -- parchment, like every Encore window
     U.gem(frame, "BOTTOMLEFT", 3, 3)
 
     -- Resize grip, sized by hand from the cursor (StartSizing snaps to maximum size on some clients)
@@ -425,7 +419,7 @@ function U.ToggleButton(parent, label, width)
     b.bgOff = b:CreateTexture(nil, "BACKGROUND")
     b.bgOff:SetPoint("TOPLEFT", 1, -1); b.bgOff:SetPoint("BOTTOMRIGHT", -1, 1)
     U.gradient(b.bgOff, "VERTICAL", 0.09, 0.06, 0.04, 1, 0.17, 0.13, 0.09, 1)
-    U.addBorder(b, U.COPPER[1], U.COPPER[2], U.COPPER[3], 0.8)
+    U.addBorder(b, 0.92, 0.58, 0.22, 0.8) -- dark button with a copper edge, light text
     local hl = b:CreateTexture(nil, "HIGHLIGHT")
     hl:SetPoint("TOPLEFT", 1, -1); hl:SetPoint("BOTTOMRIGHT", -1, 1)
     hl:SetColorTexture(1, 0.9, 0.6, 0.08)

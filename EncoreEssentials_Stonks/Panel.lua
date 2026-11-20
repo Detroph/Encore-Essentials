@@ -6,6 +6,7 @@
 local _, ns = ...
 local Stonks = ns.Stonks
 local U = ns.UI
+local TIP = U.TIP -- light colours for text in (dark) tooltips
 
 local TEAL, TEAL_SOFT, COPPER, GOLD, INK, DIM, GRID, WHITE = U.TEAL, U.TEAL_SOFT, U.COPPER, U.GOLD, U.INK, U.DIM, U.GRID, U.WHITE
 local setColor, gradient, coin, coinShort, pctText = U.setColor, U.gradient, U.coin, U.coinShort, U.pctText
@@ -94,7 +95,7 @@ local function text(str, x, y, point, c, font)
         f = chart.canvas:CreateFontString(nil, "OVERLAY")
         pools.text[used.text] = f
     end
-    f:SetFontObject(font or "GameFontHighlightSmall")
+    f:SetFontObject(font or "EncoreInkSmall")
     f:ClearAllPoints()
     f:SetPoint(point or "CENTER", chart.canvas, "BOTTOMLEFT", x, y)
     f:SetText(str)
@@ -322,9 +323,9 @@ local function drawTimeline(points, profile, history)
                     tt:AddDoubleLine("Vs normal", pctText((pt.p / profile.normal - 1) * 100), 1, 1, 1, 1, 1, 1)
                 end
                 local avg = averageAt(pt.t)
-                if avg then tt:AddDoubleLine(state.avg .. "-day average", coin(avg), GOLD[1], GOLD[2], GOLD[3], 1, 1, 1) end
+                if avg then tt:AddDoubleLine(state.avg .. "-day average", coin(avg), TIP.GOLD[1], TIP.GOLD[2], TIP.GOLD[3], 1, 1, 1) end
                 if pt.src == "a" then
-                    tt:AddLine("Auctionator's lowest price that day (no time of day).", DIM[1], DIM[2], DIM[3], true)
+                    tt:AddLine("Auctionator's lowest price that day (no time of day).", TIP.DIM[1], TIP.DIM[2], TIP.DIM[3], true)
                 end
             end,
         }
@@ -435,12 +436,12 @@ local function drawBars(buckets, first, count, labels, profile, isMarket, descri
                 tt:AddDoubleLine("Vs normal", pctText(pct), 1, 1, 1, 1, 1, 1)
                 if not isMarket and price then
                     tt:AddDoubleLine("Typical price", coin(price), 1, 1, 1, 1, 1, 1)
-                    tt:AddDoubleLine("Normal price", coin(profile.normal), DIM[1], DIM[2], DIM[3], DIM[1], DIM[2], DIM[3])
+                    tt:AddDoubleLine("Normal price", coin(profile.normal), TIP.DIM[1], TIP.DIM[2], TIP.DIM[3], TIP.DIM[1], TIP.DIM[2], TIP.DIM[3])
                 end
                 local unit = isMarket and "items" or (describe == "hour" and "samples" or "days")
-                tt:AddDoubleLine("Based on", b.n .. " " .. unit, DIM[1], DIM[2], DIM[3], DIM[1], DIM[2], DIM[3])
+                tt:AddDoubleLine("Based on", b.n .. " " .. unit, TIP.DIM[1], TIP.DIM[2], TIP.DIM[3], TIP.DIM[1], TIP.DIM[2], TIP.DIM[3])
                 if not isMarket and b.n < 3 then
-                    tt:AddLine("Few samples: treat this as a hint.", DIM[1], DIM[2], DIM[3], true)
+                    tt:AddLine("Few samples: treat this as a hint.", TIP.DIM[1], TIP.DIM[2], TIP.DIM[3], true)
                 end
             end,
         }
@@ -464,20 +465,20 @@ local function initListRow(row)
     row:SetHeight(24)
     local hl = row:CreateTexture(nil, "HIGHLIGHT")
     hl:SetAllPoints()
-    hl:SetColorTexture(1, 0.9, 0.6, 0.08)
+    hl:SetColorTexture(0.55, 0.34, 0.06, 0.14)
     row.icon = row:CreateTexture(nil, "ARTWORK")
     row.icon:SetSize(18, 18)
     row.icon:SetPoint("LEFT", 4, 0)
-    row.name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    row.name = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
     row.name:SetPoint("LEFT", row.icon, "RIGHT", 6, 0)
     row.name:SetPoint("RIGHT", -190, 0)
     row.name:SetJustifyH("LEFT")
     row.name:SetWordWrap(false)
-    row.last = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    row.last = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
     row.last:SetPoint("RIGHT", -120, 0)
-    row.avg = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    row.avg = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
     row.avg:SetPoint("RIGHT", -50, 0)
-    row.trend = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    row.trend = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
     row.trend:SetPoint("RIGHT", -6, 0)
     row:SetScript("OnClick", function(self)
         if self.key then Stonks:ShowItem(self.key, { fromList = state.list }) end
@@ -485,7 +486,7 @@ local function initListRow(row)
     U.tooltip(row, function(tt, self)
         local link = self.key and linkFor(self.key)
         if link then tt:SetHyperlink(link) else tt:SetText(itemName(self.key)) end
-        tt:AddLine("Click to show its price history.", TEAL_SOFT[1], TEAL_SOFT[2], TEAL_SOFT[3])
+        tt:AddLine("Click to show its price history.", TIP.TEAL_SOFT[1], TIP.TEAL_SOFT[2], TIP.TEAL_SOFT[3])
     end)
 end
 
@@ -565,7 +566,7 @@ local function extremes(buckets, first, count, labels, normal)
         end
     end
     if not lowK or lowK == highK then return "" end
-    return ("Cheapest: |cff7ad1cc%s (%s)|r   Priciest: |cffeb9339%s (%s)|r"):format(labels[lowK], pctText(lowV), labels[highK], pctText(highV))
+    return ("Cheapest: |cff007878%s (%s)|r   Priciest: |cffb35714%s (%s)|r"):format(labels[lowK], pctText(lowV), labels[highK], pctText(highV))
 end
 
 function render()
@@ -639,8 +640,8 @@ function render()
     for _, pt in ipairs(points) do if pt.src == "s" then stonks = stonks + 1 end end
     header.sub:SetText(profile.normal and ("Normal %s.  %d prices (%d with the hour)."):format(coin(profile.normal), #points, stonks) or "No prices in this period.")
     if state.tab == "time" then
-        header.extra:SetText(state.avg and ("|cffffd100Gold line|r: %d-day average   |cff7ad1ccteal|r: Stonks   |cffeb9339copper|r: Auctionator daily low"):format(state.avg)
-            or "|cff7ad1ccTeal|r: Stonks (with hour)   |cffeb9339Copper|r: Auctionator daily low")
+        header.extra:SetText(state.avg and ("|cff947000Gold line|r: %d-day average   |cff007878teal|r: Stonks   |cffb35714copper|r: Auctionator daily low"):format(state.avg)
+            or "|cff007878Teal|r: Stonks (with hour)   |cffb35714Copper|r: Auctionator daily low")
         drawTimeline(points, profile, all)
     elseif state.tab == "week" then
         header.extra:SetText(extremes(profile.week, 1, 7, WEEKDAYS, profile.normal))
@@ -732,12 +733,12 @@ local function createPanel()
     header.icon = header:CreateTexture(nil, "ARTWORK")
     header.icon:SetSize(30, 30)
     header.icon:SetPoint("TOPLEFT", 0, 0)
-    header.name = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    header.name = header:CreateFontString(nil, "OVERLAY", "EncoreTitleLarge")
     header.name:SetPoint("TOPLEFT", header.icon, "TOPRIGHT", 8, 0)
     header.name:SetPoint("RIGHT", -96, 0)
     header.name:SetJustifyH("LEFT")
     header.name:SetWordWrap(false)
-    header.sub = header:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    header.sub = header:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
     header.sub:SetPoint("TOPLEFT", header.name, "BOTTOMLEFT", 0, -3)
     header.sub:SetPoint("RIGHT", 0, 0)
     header.sub:SetJustifyH("LEFT")
@@ -767,7 +768,7 @@ local function createPanel()
     header.stats:SetPoint("TOPLEFT", 14, -68)
     header.stats:SetPoint("TOPRIGHT", -14, -68)
     header.stats:SetHeight(14)
-    header.stats.text = header.stats:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    header.stats.text = header.stats:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
     header.stats.text:SetAllPoints()
     header.stats.text:SetJustifyH("LEFT")
     header.stats.text:SetWordWrap(false)
@@ -786,8 +787,8 @@ local function createPanel()
         if st.q25 and st.q75 then GameTooltip:AddDoubleLine("Middle 50%", coin(st.q25) .. " - " .. coin(st.q75), 1, 1, 1, 1, 1, 1) end
         row("Mean", st.mean)
         row("Standard deviation", st.sd)
-        GameTooltip:AddDoubleLine("Days seen", tostring(st.days), DIM[1], DIM[2], DIM[3], DIM[1], DIM[2], DIM[3])
-        GameTooltip:AddLine("Each day counts once with its lowest buyout. Averages move with each day seen; median and mean lean towards the last month. Prices more than 5x away from the 14-day average are ignored.", DIM[1], DIM[2], DIM[3], true)
+        GameTooltip:AddDoubleLine("Days seen", tostring(st.days), TIP.DIM[1], TIP.DIM[2], TIP.DIM[3], TIP.DIM[1], TIP.DIM[2], TIP.DIM[3])
+        GameTooltip:AddLine("Each day counts once with its lowest buyout. Averages move with each day seen; median and mean lean towards the last month. Prices more than 5x away from the 14-day average are ignored.", TIP.DIM[1], TIP.DIM[2], TIP.DIM[3], true)
         GameTooltip:Show()
     end)
     header.stats:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -824,11 +825,11 @@ local function createPanel()
         end)
         avgButtons[#avgButtons + 1] = b
     end
-    frame.avgLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    frame.avgLabel = frame:CreateFontString(nil, "OVERLAY", "EncoreTitleSmall")
     frame.avgLabel:SetPoint("RIGHT", prev, "LEFT", -6, 0)
     frame.avgLabel:SetText("Average")
 
-    header.extra = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    header.extra = frame:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
     header.extra:SetPoint("TOPLEFT", 14, -114)
     header.extra:SetPoint("TOPRIGHT", -14, -114)
     header.extra:SetJustifyH("LEFT")
@@ -848,14 +849,14 @@ local function createPanel()
     chart.canvas:SetScript("OnHide", function() GameTooltip:Hide() end)
     chart.guide = chart.canvas:CreateTexture(nil, "BORDER")
     chart.guide:SetWidth(1)
-    chart.guide:SetColorTexture(1, 0.9, 0.6, 0.25)
+    chart.guide:SetColorTexture(0.45, 0.28, 0.10, 0.35)
     chart.guide:Hide()
     chart.marker = chart.canvas:CreateTexture(nil, "OVERLAY", nil, 6)
     chart.marker:SetSize(9, 9)
-    chart.marker:SetColorTexture(1, 0.95, 0.8, 1)
+    chart.marker:SetColorTexture(0.30, 0.16, 0.04, 1)
     chart.marker:SetRotation(math.rad(45))
     chart.marker:Hide()
-    chart.message = chart.canvas:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    chart.message = chart.canvas:CreateFontString(nil, "OVERLAY", "EncoreInk")
     chart.message:SetPoint("CENTER")
     chart.message:SetWidth(360)
     setColor(chart.message, DIM)
@@ -877,7 +878,7 @@ local function createPanel()
     listHead:SetHeight(18)
     local headBg = listHead:CreateTexture(nil, "BACKGROUND")
     headBg:SetAllPoints()
-    gradient(headBg, "VERTICAL", 0.09, 0.06, 0.04, 1, 0.17, 0.13, 0.09, 1)
+    gradient(headBg, "VERTICAL", 0.42, 0.26, 0.08, 0.22, 0.42, 0.26, 0.08, 0.10)
     U.SortHeader(listHead, {
         { id = "name", label = "Item", point = "LEFT", x = 28, width = 150, tip = "Item name." },
         { id = "last", label = "Last", point = "RIGHT", x = -120, width = 64, desc = true, tip = "Lowest buyout on the last day seen." },
@@ -898,7 +899,7 @@ local function createPanel()
     ScrollUtil.InitScrollBoxListWithScrollBar(listBox, bar, view)
     listBox:Hide()
 
-    local credit = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local credit = frame:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
     credit:SetPoint("BOTTOMLEFT", 16, 9)
     credit:SetText("Prices from your Auctionator scans. Times in your computer's time zone.")
     setColor(credit, DIM)

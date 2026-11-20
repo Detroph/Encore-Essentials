@@ -1,5 +1,10 @@
 # Encore Essentials
 
+## Unreleased
+
+- All windows (main window, Encore-DB, Encore-Stonks): classic parchment look with brown ink text and a warm gold-brown border, using the game's own quest parchment.
+- Encore-DB: items always show at least two side by side, three or four as the window is stretched. Columns that don't fit (level, type, slot) are left out; the item tooltip still has them.
+
 ## 0.1.2-beta
 
 - Module window: modules show as tiles from left to right, starting a new row after four.
