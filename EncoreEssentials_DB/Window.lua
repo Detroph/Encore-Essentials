@@ -109,8 +109,8 @@ local TEAL = { 0.07, 0.78, 0.78 }
 local TEAL_SOFT = { 0.48, 0.82, 0.80 }
 local COPPER = { 0.92, 0.58, 0.22 }
 local GOLD = { 1, 0.82, 0 }
-local INK = { 0.95, 0.90, 0.81 }
-local DIM = { 0.64, 0.57, 0.47 }
+local INK = { 0.95, 0.90, 0.80 }
+local DIM = { 0.66, 0.565, 0.45 }
 local TAB_INK = { 0.84, 0.73, 0.54 }
 local TEAL_HEX = "|cff7ad1cc"
 
@@ -1180,7 +1180,7 @@ local function lootBlocks()
 end
 
 ---------------------------------------------------------------------------
--- Grid layout: columns that have values, 1-4 items side by side
+-- Grid layout: columns that have values, 2-4 items side by side (never fewer than two)
 ---------------------------------------------------------------------------
 local COLUMNS = {
     { key = "skill", w = 82, head = "Skill" },
@@ -1193,7 +1193,9 @@ local COLUMNS = {
     { key = "chance", w = 46, head = "Chance", right = true },
     { key = "from", w = 140, head = "From" },
 }
-local DROP_FIRST = { "req", "ilvl", "slot" } -- dropped in this order when the pane is too narrow
+-- Columns dropped in this order when the items side by side are too narrow for them (the item tooltip still
+-- shows them). Chance and price always stay.
+local DROP_FIRST = { "req", "ilvl", "from", "type", "standing", "slot", "skill" }
 
 local function listWidth()
     local w = lootList and lootList:GetWidth()
@@ -1221,15 +1223,25 @@ local function makeLayout(cells, width, heads)
         return f
     end
     local ICON_W = iconW()
+    local px = iconPx()
+    -- First column: the recipe a profession item is learned from (blank when a trainer teaches it)
+    local lead = 0
+    for _, c in ipairs(cells) do if c.recipe then lead = px + 6; break end end
+    -- Items side by side: always at least two, three or four as the pane gets wider. Counted from a
+    -- small item (icon, name, slot, skill, and chance or price), then columns that don't fit are dropped.
+    local keep = 0
+    for _, key in ipairs({ "slot", "skill", "chance", "cost" }) do
+        for _, col in ipairs(COLUMNS) do
+            if col.key == key and present[key] then keep = keep + col.w + COL_GAP end
+        end
+    end
+    local smallest = lead + ICON_W + NAME_MIN + 12 + keep + 4
+    local n = math.max(2, math.min(4, math.floor((width + TILE_GAP) / (smallest + TILE_GAP))))
+    local tileW = math.floor((width - (n - 1) * TILE_GAP) / n)
     for _, key in ipairs(DROP_FIRST) do
-        if width - ICON_W - fixedWidth() - 4 >= NAME_MIN then break end
+        if lead + ICON_W + NAME_MIN + 12 + fixedWidth() + 4 <= tileW then break end
         present[key] = nil
     end
-    local fixed = fixedWidth()
-    local minTile = ICON_W + NAME_MIN + 40 + fixed + 4
-    local n = math.floor((width + TILE_GAP) / (minTile + TILE_GAP))
-    n = math.max(1, math.min(4, n))
-    local tileW = math.floor((width - (n - 1) * TILE_GAP) / n)
     local cols, x = {}, tileW - 4
     for i = #COLUMNS, 1, -1 do
         local col = COLUMNS[i]
@@ -1239,10 +1251,6 @@ local function makeLayout(cells, width, heads)
             x = x - COL_GAP
         end
     end
-    local px = iconPx()
-    -- First column: the recipe a profession item is learned from (blank when a trainer teaches it)
-    local lead = 0
-    for _, c in ipairs(cells) do if c.recipe then lead = px + 6; break end end
     return { n = n, tileW = tileW, nameW = math.max(40, x - ICON_W - lead), cols = cols, lead = lead,
         iconW = ICON_W, icon = px, cellH = px + 4, rowH = px + 8 }
 end
@@ -1286,7 +1294,8 @@ local function packRows(blocks)
             if not key then key, desc = b.defaultSort, false end
             local known = key == "name"
             for _, col in ipairs(layout.cols) do if col.key == key then known = true end end
-            if key and known then b.cells = ns.SortCells(b.cells, key, desc) end
+            -- The list's own order (profession recipes by skill) still applies when its column is hidden
+            if key and (known or key == b.defaultSort) then b.cells = ns.SortCells(b.cells, key, desc) end
             layout.sortKey, layout.sortDesc = known and key or nil, desc
             rows[#rows + 1] = { kind = "cols", layout = layout }
             for i = 1, #b.cells, layout.n do
@@ -1484,15 +1493,11 @@ end
 local function initTreeRow(row, d)
     if not row.built then
         row.built = true
-        row.sel = row:CreateTexture(nil, "BACKGROUND")
-        row.sel:SetAllPoints()
-        gradient(row.sel, "HORIZONTAL", 1, 0.82, 0, 0.30, 1, 0.82, 0, 0)
+        -- Auction House category buttons (button art, hover and selection glow)
+        row.nav, row.sel = Encore.Theme.AHNavButton(row)
         row.selBar = row:CreateTexture(nil, "ARTWORK")
-        row.selBar:SetPoint("TOPLEFT"); row.selBar:SetPoint("BOTTOMLEFT"); row.selBar:SetWidth(2)
+        row.selBar:SetPoint("TOPLEFT", 0, -1); row.selBar:SetPoint("BOTTOMLEFT", 0, 1); row.selBar:SetWidth(2)
         row.selBar:SetColorTexture(GOLD[1], GOLD[2], GOLD[3], 1)
-        local hl = row:CreateTexture(nil, "HIGHLIGHT")
-        hl:SetAllPoints()
-        gradient(hl, "HORIZONTAL", 1, 0.82, 0, 0.16, 1, 0.82, 0, 0)
         row.pmEdge = row:CreateTexture(nil, "ARTWORK", nil, 1)
         row.pmEdge:SetSize(14, 14)
         row.pmEdge:SetPoint("LEFT", 4, 0)
@@ -1554,18 +1559,11 @@ end
 local function initSectionRow(row, d)
     if not row.built then
         row.built = true
-        row.bg = row:CreateTexture(nil, "BACKGROUND", nil, 1)
-        row.bg:SetPoint("TOPLEFT", 0, -1); row.bg:SetPoint("BOTTOMRIGHT", 0, 1)
-        gradient(row.bg, "VERTICAL", 0, 0, 0, 0.25, 1, 1, 1, 0.04)
-        row.sel = row:CreateTexture(nil, "BACKGROUND", nil, 2)
-        row.sel:SetPoint("TOPLEFT", 0, -1); row.sel:SetPoint("BOTTOMRIGHT", 0, 1)
-        gradient(row.sel, "VERTICAL", 0.30, 0.004, 0, 0.75, 0.70, 0.04, 0.03, 0.75)
+        -- Auction House list entry: row stripe, hover and selection glow
+        row.bg, row.sel = Encore.Theme.AHRow(row, 1)
         row.edge = addBorder(row, COPPER[1], COPPER[2], COPPER[3], 0.9, "ARTWORK")
         row.edge[1]:SetPoint("TOPLEFT", 0, -1); row.edge[1]:SetPoint("TOPRIGHT", 0, -1)
         row.edge[2]:SetPoint("BOTTOMLEFT", 0, 1); row.edge[2]:SetPoint("BOTTOMRIGHT", 0, 1)
-        local hl = row:CreateTexture(nil, "HIGHLIGHT")
-        hl:SetPoint("TOPLEFT", 0, -1); hl:SetPoint("BOTTOMRIGHT", 0, 1)
-        hl:SetColorTexture(1, 0.82, 0, 0.10)
         -- Round boss portrait on a dark disc
         row.portraitBg = row:CreateTexture(nil, "ARTWORK", nil, 1)
         local P = TEX.portraitSize
@@ -1834,18 +1832,13 @@ end
 local function newCell(row)
     local c = CreateFrame("Button", nil, row)
     c:SetHeight(22)
-    c.bg = c:CreateTexture(nil, "BACKGROUND", nil, 1)
-    c.bg:SetAllPoints()
-    c.bg:SetColorTexture(0, 0, 0, 0.32)
+    c.bg = Encore.Theme.AHRow(c) -- Auction House item row: stripe and hover glow
     c.tint = c:CreateTexture(nil, "BACKGROUND", nil, 2)
     c.tint:SetAllPoints()
     gradient(c.tint, "HORIZONTAL", TEAL[1], TEAL[2], TEAL[3], 0.16, TEAL[1], TEAL[2], TEAL[3], 0.01)
     c.stripe = c:CreateTexture(nil, "BACKGROUND", nil, 3)
     c.stripe:SetPoint("TOPLEFT"); c.stripe:SetPoint("BOTTOMLEFT"); c.stripe:SetWidth(2)
     c.stripe:SetColorTexture(TEAL[1], TEAL[2], TEAL[3], 0.7)
-    local hl = c:CreateTexture(nil, "HIGHLIGHT")
-    hl:SetAllPoints()
-    gradient(hl, "HORIZONTAL", 1, 0.82, 0, 0.16, 1, 0.82, 0, 0.03)
     c.iconEdge = c:CreateTexture(nil, "BORDER")
     c.iconEdge:SetPoint("LEFT", 3, 0)
     c.icon = c:CreateTexture(nil, "ARTWORK")
@@ -2237,7 +2230,8 @@ local function setRows(box, rows, keepScroll)
     box:SetDataProvider(CreateDataProvider(rows), keepScroll and ScrollBoxConstants.RetainScrollPosition or nil)
 end
 
-local function well(left, width)
+-- A pane in the Auction House style (atlas: its background art).
+local function well(left, width, atlas)
     local f = CreateFrame("Frame", nil, frame)
     f:SetPoint("TOPLEFT", left, PANE_TOP)
     if width then
@@ -2246,15 +2240,7 @@ local function well(left, width)
     else
         f:SetPoint("BOTTOMRIGHT", -12, PANE_BOTTOM)
     end
-    local bg = f:CreateTexture(nil, "BACKGROUND")
-    bg:SetAllPoints()
-    bg:SetColorTexture(0.016, 0.012, 0.008, 0.72)
-    addBorder(f, 0, 0, 0, 1)
-    local inner = addBorder(f, COPPER[1], COPPER[2], COPPER[3], 0.22)
-    inner[1]:SetPoint("TOPLEFT", 1, -1); inner[1]:SetPoint("TOPRIGHT", -1, -1)
-    inner[2]:SetPoint("BOTTOMLEFT", 1, 1); inner[2]:SetPoint("BOTTOMRIGHT", -1, 1)
-    inner[3]:SetPoint("TOPLEFT", 1, -1); inner[3]:SetPoint("BOTTOMLEFT", 1, 1)
-    inner[4]:SetPoint("TOPRIGHT", -1, -1); inner[4]:SetPoint("BOTTOMRIGHT", -1, 1)
+    Encore.Theme.AHPane(f, atlas)
     return f
 end
 
@@ -2490,11 +2476,8 @@ local function createWindow()
         portrait:SetTexCoord(0, 1, 0, 1)
     end
     -- Copper frame, as in the mock-up
-    if frame.NineSlice then
-        for _, region in ipairs({ frame.NineSlice:GetRegions() }) do
-            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
-        end
-    end
+    -- Parchment window with the red border and title bar; the panes inside are Auction House style
+    Encore.Theme.ApplyWindow(frame)
     gem(frame, "BOTTOMLEFT", 3, 3)
 
     -- Resize grip in the bottom-right corner
@@ -2563,7 +2546,7 @@ local function createWindow()
         gradient(b.bgOn, "VERTICAL", 0.23, 0.01, 0, 1, 0.76, 0.08, 0.05, 1)
         b.bgOff = b:CreateTexture(nil, "BACKGROUND")
         b.bgOff:SetPoint("TOPLEFT", 1, -1); b.bgOff:SetPoint("BOTTOMRIGHT", -1, 0)
-        gradient(b.bgOff, "VERTICAL", 0.09, 0.06, 0.04, 1, 0.17, 0.13, 0.09, 1)
+        gradient(b.bgOff, "VERTICAL", 0.094, 0.059, 0.031, 1, 0.18, 0.13, 0.094, 1)
         b.edge = addBorder(b, COPPER[1], COPPER[2], COPPER[3], 1)
         b.edge[2]:Hide()
         local hl = b:CreateTexture(nil, "HIGHLIGHT")
@@ -2583,7 +2566,7 @@ local function createWindow()
     tabLine:SetColorTexture(COPPER[1], COPPER[2], COPPER[3], 0.6)
 
     -- Filter strip
-    local qLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local qLabel = frame:CreateFontString(nil, "OVERLAY", "EncoreTitle")
     qLabel:SetPoint("TOPLEFT", 16, -72)
     qLabel:SetText("Quality")
     qualityDropdown = CreateFrame("DropdownButton", nil, frame, "WowStyle1DropdownTemplate")
@@ -2594,7 +2577,7 @@ local function createWindow()
         renderLoot()
     end)
 
-    local sLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local sLabel = frame:CreateFontString(nil, "OVERLAY", "EncoreTitle")
     sLabel:SetPoint("LEFT", qualityDropdown, "RIGHT", 14, 0)
     sLabel:SetText("Slot")
     slotDropdown = CreateFrame("DropdownButton", nil, frame, "WowStyle1DropdownTemplate")
@@ -2633,9 +2616,9 @@ local function createWindow()
     end)
 
     -- Panes
-    local treePane = well(12, TREE_W)
-    local secPane = well(12 + TREE_W + 6, SEC_W)
-    local lootPane = well(12 + TREE_W + 6 + SEC_W + 6, nil)
+    local treePane = well(12, TREE_W, "auctionhouse-background-categories")
+    local secPane = well(12 + TREE_W + 6, SEC_W, "auctionhouse-background-summarylist")
+    local lootPane = well(12 + TREE_W + 6 + SEC_W + 6, nil, "auctionhouse-background-index")
     measure = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     measure:SetWordWrap(true)
     measure:SetAlpha(0) -- never anchored, so never drawn; only measures wrapped text
@@ -2658,10 +2641,10 @@ local function createWindow()
     local credit = CreateFrame("Button", nil, frame)
     credit:SetPoint("BOTTOMRIGHT", -26, 8)
     credit:SetHeight(18)
-    credit.text = credit:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    credit.text = credit:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
     credit.text:SetPoint("RIGHT")
     credit.text:SetText(DB.Credit)
-    setColor(credit.text, DIM)
+    setColor(credit.text, Encore.Theme.DIM) -- on the parchment
     credit:SetWidth(credit.text:GetStringWidth() + 4)
     credit:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
@@ -2674,22 +2657,22 @@ local function createWindow()
     end)
     credit:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-    legend = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    legend = frame:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
     legend:SetPoint("RIGHT", credit, "LEFT", -18, 0)
     legend:SetText("New or changed in WoW Forever")
-    setColor(legend, TEAL_SOFT)
+    setColor(legend, Encore.Theme.TEAL)
     legendGem = frame:CreateTexture(nil, "OVERLAY")
     legendGem:SetSize(7, 7)
     legendGem:SetPoint("RIGHT", legend, "LEFT", -6, 0)
-    legendGem:SetColorTexture(TEAL_SOFT[1], TEAL_SOFT[2], TEAL_SOFT[3], 1)
+    legendGem:SetColorTexture(Encore.Theme.TEAL[1], Encore.Theme.TEAL[2], Encore.Theme.TEAL[3], 1)
     legendGem:SetRotation(math.rad(45))
 
-    statusText = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    statusText = frame:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
     statusText:SetPoint("LEFT", frame, "BOTTOMLEFT", 16, 17)
     statusText:SetPoint("RIGHT", legendGem, "LEFT", -20, 0)
     statusText:SetJustifyH("LEFT")
     statusText:SetWordWrap(false)
-    setColor(statusText, DIM)
+    setColor(statusText, Encore.Theme.DIM)
 
     createPopup()
     createResolver()

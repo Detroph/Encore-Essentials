@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- All windows: parchment background with the red border and title bar; lists, panes, rows and category buttons in the style of the Auction House. The module window uses the same look.
+- Encore-DB: items always show at least two side by side, three or four as the window is stretched. Columns that don't fit (level, type, slot) are left out; the item tooltip still has them.
 - Encore-Stonks: the graph window has two tabs in its title bar, Graphs and History. History lists every guild sync you received: hourly guild scans, your login summary, and items or scans shared by chat link, with when, from whom, how many prices came in and how many were kept. Columns sort on click; click a shared item to see its graph. Also `/stonksync history`.
 
 ## 0.1.2-beta
