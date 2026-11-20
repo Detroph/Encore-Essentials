@@ -56,6 +56,9 @@ const WH_NONE_KILLS = 1000; // no drop in this many kills contradicts a fill-in 
 const WH_ALSO_PCT = 1; // Wowhead drops added to a boss from this rate (random drops below WH_OWN_PCT)
 const WH_OWN_PCT = 2; // own loot from this rate when rare or better, or from WH_OWN_ANY_PCT for any item
 const WH_OWN_ANY_PCT = 10;
+// Boss and trash tables show this quality and up (2 = Uncommon), plus quest items and recipes (Det, 2026-11-20):
+// white and grey items (cloth, food, potions, vendor trash) are left out.
+const BOSS_MIN_QUALITY = 2;
 const WH_MOVE_PCT = 2; // trash loot a boss drops at this rate or more moves to the boss
 const RECIPE_RE = /^(Plans|Pattern|Formula|Design|Schematic|Recipe|Manual|Technique):/;
 
@@ -335,7 +338,7 @@ for (const I of instances.values()) for (const B of I.bosses) for (const e of B.
 const whWorldIds = new Set(Object.values(whd?.world || {}).flatMap((l) => (l.items || []).map((x) => x.id)));
 const bossInsts = new Map(); // item ID -> instances where any boss lists it
 for (const I of instances.values()) for (const B of I.bosses) for (const id of B.items.keys()) (bossInsts.get(id) || bossInsts.set(id, new Set()).get(id)).add(I.key);
-let levelRangeDropped = 0;
+let levelRangeDropped = 0, lowQualityDropped = 0;
 const levelRangeIds = new Set(); // taken off the bosses: rare or better ones join the world drops
 for (const I of instances.values()) {
   for (const B of I.bosses) {
@@ -361,6 +364,10 @@ for (const I of instances.values()) {
     }
     // Random drops are not shown under the boss (Det, 2026-11-20): only its own loot stays.
     for (const [id, e] of [...B.items]) if (e.random) { B.items.delete(id); levelRangeIds.add(id); levelRangeDropped++; }
+    for (const id of [...B.items.keys()]) {
+      const it = items[id];
+      if (it && it.quality != null && it.quality < BOSS_MIN_QUALITY && !it.recipe && it.bind !== 'Quest Item') { B.items.delete(id); lowQualityDropped++; }
+    }
   }
   // A fill-in "boss" named after its only item (e.g. Defias Gunpowder) is trash loot.
   for (const B of I.bosses) {
@@ -584,7 +591,7 @@ const report = {
 };
 writeJson('out/loot-report.json', report);
 const noDetails = Object.values(items).filter((w) => w.quality == null).length;
-console.log(`${levelRangeDropped} random and level-range drops taken off the bosses (${world.size} world drops in all)`);
+console.log(`${levelRangeDropped} random and level-range drops taken off the bosses (${world.size} world drops in all), ${lowQualityDropped} white/grey boss drops left out`);
 console.log(`${order.length} instances, ${Object.keys(items).length} items (${noDetails} without Wowhead details yet), ${whChances} chances from Wowhead, ${leftOut} fill-in entries left out (not on Wowhead Forever)`);
 if (notFetched.size) console.log(`WARNING: ${notFetched.size} fill-in items not fetched from Wowhead yet, left out: run node tools/loot/wowhead-items.mjs, then build again`);
 if (dj) console.log(`Dungeon Journal ${dj.version}: ${djStats.bosses} bosses (${djStats.matched} matched to ForeverDB by NPC/alias), ${djStats.own} own and ${djStats.random} random entries`);
