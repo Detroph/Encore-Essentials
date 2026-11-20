@@ -1,5 +1,10 @@
 # Encore Essentials
 
+## 0.1.1
+
+- Minimap button: right-click to unlock and drag it anywhere on screen, lock it, or reattach it to the minimap.
+- Minimap button: optional large square style with a resize knob (24 to 72 px).
+
 ## 0.1.0
 
 First public release.
