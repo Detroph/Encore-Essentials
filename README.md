@@ -144,6 +144,7 @@ tools/                   data-extraction scripts for the Encore-DB database
   - The dungeon pages of [foreverchanges.pro](https://foreverchanges.pro/dungeons) add bosses, items and instances that ForeverDB has no Forever drops for yet.
   - The item pages of foreverchanges.pro add recipe sources that ForeverDB lacks.
   - Its Classic drop chances and "in Classic" entries are not used.
+  - [Wowhead Forever](https://www.wowhead.com/forever) gives item details (name, quality, icon, slot and levels), boss drops and drop chances ForeverDB has not seen, reputation rewards, world drops (rare and epic only) and quest details QuestieDB leaves blank. Every recipe is also checked against it.
 - **Boss levels:** [QuestieDB](https://github.com/Questie/QuestieDB) (GPL-3.0), its WoW Forever NPC data, for the level on each boss portrait. Bosses without a known level show none.
 - **Recipe data from the client:** the WoW Forever client's own data tables (product `wowf` on [wago.tools](https://wago.tools/)), compared with the Classic Era client, for the profession tools in `tools/`.
 - **Boss portraits:** pictures from Dungeon Journal (ForeverDungeonJournal) by Exehn, photographed from the game's own portraits. They are renamed to each boss's NPC ID by `tools/import-dj-portraits.mjs`. Bosses without a picture get the game's live portrait.

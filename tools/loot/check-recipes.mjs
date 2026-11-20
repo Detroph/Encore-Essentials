@@ -23,8 +23,9 @@ const ids = [...new Set(list.flatMap((r) => [r.item, r.makes]).filter(Boolean))]
 if (process.argv.includes('--fetch') && !fs.existsSync(path.join(DIR, 'wowhead-items.mjs'))) {
   console.log('skipped --fetch: wowhead-items.mjs comes from the separate encore-data-tools project');
 } else if (process.argv.includes('--fetch')) {
-  const idFile = writeJson('out/recipe-item-ids.json', ids);
-  const r = spawnSync(process.execPath, [path.join(DIR, 'wowhead-items.mjs'), idFile, '--missing'], { stdio: 'inherit' });
+  writeJson('out/recipe-item-ids.json', ids);
+  // wowhead-items.mjs reads its ID file relative to tools/, so pass the relative path (an absolute one breaks on Windows).
+  const r = spawnSync(process.execPath, [path.join(DIR, 'wowhead-items.mjs'), 'out/recipe-item-ids.json', '--missing'], { stdio: 'inherit' });
   if (r.status) process.exit(r.status);
 }
 let wh = {};

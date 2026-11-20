@@ -27,8 +27,8 @@ const npc = (v) => { const i = n(Array.isArray(v) ? v[0] : v?.id ?? v); return i
 
 export function load(ctx = {}) {
   const source = {
-    id, name: 'Quest fill-in', url: null,
-    credit: null,
+    id, name: 'Wowhead Forever', url: 'https://www.wowhead.com/forever',
+    credit: 'Quest details filled in from Wowhead Forever (https://www.wowhead.com/forever)',
     version: new Date().toISOString().slice(0, 10), priority,
   };
   if (!fs.existsSync(FILE)) {

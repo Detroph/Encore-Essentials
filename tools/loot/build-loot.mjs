@@ -19,7 +19,7 @@
 //     - profession recipes that drop from bosses in two or more instances are the level range's shared recipe drops:
 //       listed once per instance (recipes), not under every boss;
 //     - reputation rewards (faction pages) for factions ForeverDB players have not seen yet, and the world drops.
-// Each boss gets two lists: items (its own loot) and also (random world drops players saw from it).
+// Each boss lists only its own loot. Random and level-range drops are taken off the bosses; rare or better ones are world drops.
 // Usage: node tools/loot/build-loot.mjs
 import fs from 'node:fs';
 import path from 'node:path';
@@ -56,6 +56,9 @@ const WH_NONE_KILLS = 1000; // no drop in this many kills contradicts a fill-in 
 const WH_ALSO_PCT = 1; // Wowhead drops added to a boss from this rate (random drops below WH_OWN_PCT)
 const WH_OWN_PCT = 2; // own loot from this rate when rare or better, or from WH_OWN_ANY_PCT for any item
 const WH_OWN_ANY_PCT = 10;
+// Boss and trash tables show this quality and up (2 = Uncommon), plus quest items and recipes (Det, 2026-11-20):
+// white and grey items (cloth, food, potions, vendor trash) are left out.
+const BOSS_MIN_QUALITY = 2;
 const WH_MOVE_PCT = 2; // trash loot a boss drops at this rate or more moves to the boss
 const RECIPE_RE = /^(Plans|Pattern|Formula|Design|Schematic|Recipe|Manual|Technique):/;
 
@@ -327,6 +330,16 @@ for (const I of instances.values()) for (const B of I.bosses) for (const e of B.
   if (w && !w.unknown && w.droppedBy && (norm(w.droppedBy) === norm(B.name) || B.aliases.has(norm(w.droppedBy)))) e.src.add('wh');
   if (e.src.has('fc') || e.src.has('tbc') || e.src.has('wh') || e.whOwn || e.djOwn) (confirmedIn.get(e.id) || confirmedIn.set(e.id, new Set()).get(e.id)).add(I.key);
 }
+// Level-range drops (Det, 2026-11-20): items that drop anywhere in a level range, not from one boss. A boss's table shows only
+// its own loot; these go to the World Epics / World Rares lists instead (rare or better), and the rest are left out.
+// An item is a level-range drop when Wowhead Forever's world lists have it (dropped with no NPC, boss or instance named),
+// or players saw it in two or more instances, unless a fill-in site, Wowhead's tooltip or the Journal's own loot ties it
+// to this boss. Recipes are left alone here: the shared-recipe step below lists those once per instance.
+const whWorldIds = new Set(Object.values(whd?.world || {}).flatMap((l) => (l.items || []).map((x) => x.id)));
+const bossInsts = new Map(); // item ID -> instances where any boss lists it
+for (const I of instances.values()) for (const B of I.bosses) for (const id of B.items.keys()) (bossInsts.get(id) || bossInsts.set(id, new Set()).get(id)).add(I.key);
+let levelRangeDropped = 0, lowQualityDropped = 0;
+const levelRangeIds = new Set(); // taken off the bosses: rare or better ones join the world drops
 for (const I of instances.values()) {
   for (const B of I.bosses) {
     for (const [id, e] of B.items) {
@@ -344,6 +357,23 @@ for (const I of instances.values()) {
         ((seenIn.get(id)?.size || 0) < 2 && (it.bind === 'Binds when picked up' || it.bind === 'Quest Item' || (it.quality ?? 0) >= 3 || it.recipe));
       // The Journal's own loot stays own loot; its probable and shared drops are random unless another source ties them here.
       e.random = e.djOwn ? false : e.djRandom && !e.whOwn && !e.src.has('fc') && !e.src.has('tbc') && !e.src.has('wh') ? true : !own || (!!e.whNone && !e.whOwn);
+      // A drop in 10% or more of this boss's looted kills is its own too (e.g. Corruptor's Scourgestone from Gandling).
+      const lowQuality = it.quality != null && it.quality < BOSS_MIN_QUALITY;
+      const tied = e.djOwn || e.src.has('fc') || e.src.has('tbc') || e.src.has('wh') || ((e.chance ?? 0) >= WH_OWN_ANY_PCT && !lowQuality);
+      const levelRange = !it.recipe && !tied &&
+        (whWorldIds.has(id) || (seenIn.get(id)?.size || 0) >= 2 || (bossInsts.get(id)?.size || 0) >= 2);
+      if (levelRange) e.random = true;
+    }
+    // Random drops are not shown under the boss (Det, 2026-11-20): only its own loot stays.
+    for (const [id, e] of [...B.items]) if (e.random) { B.items.delete(id); levelRangeIds.add(id); levelRangeDropped++; }
+    // Quest items, quest starters (e.g. An Unsent Letter), recipes and drops in 10%+ of kills stay whatever their quality.
+    for (const [id, e] of [...B.items]) {
+      const it = items[id];
+      const keep = !it || it.quality == null || it.quality >= BOSS_MIN_QUALITY || it.recipe || it.bind === 'Quest Item' ||
+        it.startsQuest || it.type === 'Quest' ||
+        // a white item a boss drops often and nothing else drops (a quest starter Wowhead doesn't mark); not cloth or food
+        ((e.chance ?? 0) >= WH_OWN_ANY_PCT && (seenIn.get(id)?.size || 0) < 2 && (bossInsts.get(id)?.size || 0) < 2);
+      if (!keep) { B.items.delete(id); lowQualityDropped++; }
     }
   }
   // A fill-in "boss" named after its only item (e.g. Defias Gunpowder) is trash loot.
@@ -394,7 +424,9 @@ vendors.sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'pvp' ? 1 : -1) || a.
 for (const v of vendors) for (const e of v.items) if (!items[e.id]) items[e.id] = itemOf(e.id);
 // World drops from Wowhead Forever: dropped items no boss, NPC or instance is named for, rare or better only, no quest items
 // (project rule: uncommon and common world drops are not in the addon). Items an instance or a vendor lists are left out here.
-const listed = new Set(Object.keys(items).map(Number));
+const listed = new Set();
+for (const I of instances.values()) { for (const B of I.bosses) for (const id of B.items.keys()) listed.add(id); for (const id of I.recipes || []) listed.add(id); }
+for (const v of vendors) for (const e of v.items) listed.add(e.id);
 const world = new Map();
 // Quest items and quest starters are left out too (project rule): the Quest item lists, Quest Item binding, quest-starter tooltips.
 const questIds = new Set(Object.entries(whd?.world || {}).filter(([k]) => k.startsWith('quest/')).flatMap(([, l]) => (l.items || []).map((x) => x.id)));
@@ -408,6 +440,17 @@ for (const l of Object.values(whd?.world || {})) for (const x of l.items || []) 
   if (it.ilvl == null && x.ilvl) it.ilvl = x.ilvl;
   if (it.req == null && x.req) it.req = x.req;
 }
+
+// Level-range drops taken off the bosses join the world drops too: rare or better, not quest items, not listed elsewhere.
+for (const id of levelRangeIds) {
+  if (listed.has(id) || world.has(id) || questIds.has(id)) continue;
+  const it = items[id] || itemOf(id);
+  if ((it.quality ?? 0) < 3 || it.bind === 'Quest Item' || it.startsQuest || it.type === 'Quest') continue;
+  world.set(id, { id, name: it.name, quality: it.quality, ilvl: it.ilvl, req: it.req });
+  items[id] = it;
+}
+// Item details only for the items some list uses (the random drops taken off the bosses are gone).
+for (const id of Object.keys(items)) if (!listed.has(+id) && !world.has(+id)) delete items[id];
 
 // 4. Lua output.
 const q = (s) => JSON.stringify(s ?? '').replace(/\\u([0-9a-f]{4})/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
@@ -461,7 +504,8 @@ L.push(`-- Data from ForeverDB.net (https://foreverdb.net), data version ${FL.ve
 L.push('-- with drop rates per looted kill, and the reputation and PvP vendors players saw. Its Classic data and clues are left out.');
 if (dj) L.push(`-- Boss loot first from Dungeon Journal (ForeverDungeonJournal) ${dj.version || ''} by Exehn: its hand-kept boss and loot lists.`);
 const fills = [fc.length && 'foreverchanges.pro', tbc.length && 'wowtbc.gg'].filter(Boolean);
-L.push(`-- ${fills.length ? `Filled in from ${fills.join(' and ')}; i` : 'I'}tem details from the game client.`);
+L.push(`-- ${fills.length ? `Filled in from ${fills.join(' and ')}. ` : ''}${Object.keys(wh).length ? 'Item details from Wowhead Forever (https://www.wowhead.com/forever) and the game client.' : 'Item details from the game client.'}`);
+if (whd) L.push('-- Boss drops, drop chances, reputation rewards and world drops filled in from Wowhead Forever (https://www.wowhead.com/forever).');
 if (npcLevels) L.push(`-- Boss levels from QuestieDB (https://github.com/Questie/QuestieDB, GPL-3.0), ${npcLevels.source}: its WoW Forever NPC data, which is Questie's Classic data with Forever corrections. No other Classic or emulator data.`);
 else L.push('-- No Classic or emulator data.');
 L.push("-- Licence: GPL-3.0 with ForeverDB.net's attribution term; see NOTICE.txt in this addon.");
@@ -481,7 +525,7 @@ for (const id of Object.keys(items).map(Number).sort((a, b) => a - b)) {
 L.push('}');
 L.push('-- Instance: key, name, kind, size, levels, new (added in Forever), open (ForeverDB lists it as open), foreverdb (its ID), bosses.');
 L.push('-- Instance recipes: profession recipes any boss here can drop (shared by the bosses of this level range).');
-L.push('-- Boss: name, rare (a rare spawn), level (-1: boss level, shown as a skull), npc, kills (most looted kills recorded), items (its own loot), also (random drops seen from it).');
+L.push('-- Boss: name, rare (a rare spawn), level (-1: boss level, shown as a skull), npc, kills (most looted kills recorded), items (its own loot only; level-range drops are in ns.Loot.world).');
 L.push('-- A list entry is an item ID, or { itemID, drop chance in % } (per looted kill in Forever).');
 L.push('ns.Loot.instances = {');
 for (const I of order) {
@@ -554,6 +598,7 @@ const report = {
 };
 writeJson('out/loot-report.json', report);
 const noDetails = Object.values(items).filter((w) => w.quality == null).length;
+console.log(`${levelRangeDropped} random and level-range drops taken off the bosses (${world.size} world drops in all), ${lowQualityDropped} white/grey boss drops left out`);
 console.log(`${order.length} instances, ${Object.keys(items).length} items (${noDetails} without Wowhead details yet), ${whChances} chances from Wowhead, ${leftOut} fill-in entries left out (not on Wowhead Forever)`);
 if (notFetched.size) console.log(`WARNING: ${notFetched.size} fill-in items not fetched from Wowhead yet, left out: run node tools/loot/wowhead-items.mjs, then build again`);
 if (dj) console.log(`Dungeon Journal ${dj.version}: ${djStats.bosses} bosses (${djStats.matched} matched to ForeverDB by NPC/alias), ${djStats.own} own and ${djStats.random} random entries`);
