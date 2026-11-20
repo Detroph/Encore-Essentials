@@ -5,7 +5,7 @@
 -- Anyone can share this way, at any rank, and nothing is ever imported without that click and confirmation.
 local _, ns = ...
 local Stonks = ns.Stonks
-local Codec, Comm, Sync = Stonks.SyncCodec, Stonks.SyncComm, Stonks.Sync
+local Codec, Comm, Sync, Log = Stonks.SyncCodec, Stonks.SyncComm, Stonks.Sync, Stonks.SyncLog
 local Links = {}
 Sync.Links = Links
 
@@ -164,7 +164,10 @@ Comm.On("R", function(body, sender, channel)
     local e = expecting[sender]
     if channel ~= "WHISPER" or not e or e.kind ~= "i" or time() > e.untilTime then return end
     expecting[sender] = nil
-    if Sync.AddSummary(body, sender) then
+    local rec = Codec.decodeSummary(body)
+    local ok = Sync.AddSummary(body, sender)
+    Log.Add("item", sender, nil, { got = rec and 1 or 0, kept = ok and 1 or 0, id = rec and rec.id or tonumber(e.arg), med = rec and rec.med, done = true })
+    if ok then
         print(P .. "imported price history from " .. Codec.safeText(sender) .. ".")
         Sync.Touched()
     else
@@ -173,9 +176,17 @@ Comm.On("R", function(body, sender, channel)
 end)
 
 Comm.On("E", function(body, sender, channel)
+    local f = Codec.fields(body, 2)
+    local hour, count = f and Codec.dec(f[1]), f and Codec.dec(f[2] or "")
+    if channel == "GUILD" then
+        -- End of an hourly guild scan: close its sync history entry.
+        if hour then Log.Finish("hourly", sender, hour, { expected = count }) end
+        return
+    end
     local e = expecting[sender]
     if channel == "WHISPER" and e and e.kind == "s" and body:match("^([^,]+)") == e.arg then
         expecting[sender] = nil
+        if hour then Log.Finish("scan", sender, hour, { expected = count }) end
         print(P .. "imported the scan from " .. Codec.safeText(sender) .. ".")
     end
 end)

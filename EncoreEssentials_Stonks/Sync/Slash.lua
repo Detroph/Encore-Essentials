@@ -76,12 +76,14 @@ SlashCmdList.ENCORESTONKSSYNC = function(input)
         if what == "scan" then Stonks.Sync.Links.PostScan()
         elseif what == "item" then Stonks.Sync.Links.PostItem(arg)
         else print(P .. "usage: /stonksync link scan  or  /stonksync link item <shift-click an item>") end
+    elseif cmd == "history" then
+        Stonks:ShowPage("history")
     elseif cmd == "perf" then
         perf()
     elseif cmd == "status" then
         status()
     else
-        print(P .. "guild sharing: /stonksync off | receive | share | status | perf | lowend | mute <name> | unmute <name> | link scan | link item <item>")
+        print(P .. "guild sharing: /stonksync off | receive | share | status | perf | lowend | mute <name> | unmute <name> | link scan | link item <item> | history")
         status()
     end
 end
