@@ -94,6 +94,7 @@ In game:
 - `/encore db` opens the Encore-DB window.
 - `/encore stonks` opens the Encore-Stonks browser.
 - The Encore crest button sits on the minimap ring just below the day/night indicator, at the same size, and keeps that size at any resolution or UI scale. Left-click it to open the **Encore Essentials window** in the middle of the screen, which lists the modules. Right-click it for options: addon info, the login-message setting and *Hide minimap button*. `/encore minimap` shows or hides it. The game's addon list button on the minimap (Addon Compartment) also opens the window.
+- Right-click the button and choose *Unlock button* to drag it anywhere on screen, or *Use large square button* for a larger rounded-square version. While it's unlocked, the square button has a resize knob at its bottom-right corner (up to 72 px, the width of two standard icons). Right-click again to *Lock button position*, switch between round and square, or *Reattach to minimap*. These settings are saved account-wide.
 - The button is not a LibDBIcon button and is not attached to the minimap frame, so minimap button collectors (EnhanceQoL's button sink, MinimapButtonBag) do not pick it up.
 
 After changing Lua files, `/reload` is enough. After changing `.toc` files, restart the game.
