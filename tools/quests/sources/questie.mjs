@@ -74,6 +74,10 @@ export function load() {
   const npcs = new Map(Object.entries(data.npcs).map(([k, v]) => [num(k), v]));
   const areaToMap = new Map(Object.entries(data.areaToMap).map(([k, v]) => [num(k), v]));
   const zoneNames = data.zoneNames || {};
+  // [quest] = the item IDs it rewards (QuestieDB's items list the quests that reward them; it does not say which are
+  // a choice, and has no XP or money: Wowhead Forever fills those).
+  const rewardItems = new Map(Object.entries(data.questRewards || {}).map(([k, v]) => [num(k), list(v).map(Number)]));
+  const itemNames = data.itemNames || {};
   const instances = knownInstances();
   const byFlat = new Map(instances.map((I) => [flat(I.name), I]));
 
@@ -176,6 +180,11 @@ export function load() {
     Q.finish = who(q, 'finishedBy');
     Q.prev = [...(prev.get(qid) || [])].sort((a, b) => a - b);
     Q.next = [...(next.get(qid) || [])].sort((a, b) => a - b);
+    const ri = rewardItems.get(qid);
+    if (ri?.length) Q.rewardItems = ri;
+    const rep = (Array.isArray(q.reputationReward) ? q.reputationReward : [])
+      .filter((r) => Array.isArray(r) && r[0] > 0 && r[1]).map((r) => [Number(r[0]), Number(r[1])]);
+    if (rep.length) Q.rep = rep;
     out[qid] = Q;
     for (const n of [...Q.prev, ...Q.next]) if (!out[n]) todo.push(n);
   }
@@ -194,7 +203,8 @@ export function load() {
     },
     instances: [...byInstance.values()],
     quests: out,
-    items: {},
+    items: Object.fromEntries([...new Set(Object.values(out).flatMap((Q) => Q.rewardItems || []))]
+      .filter((i) => itemNames[`#${i}`]).map((i) => [i, [itemNames[`#${i}`], null]])),
     left: [...how].filter(([, h]) => h === 'text').map(([qid]) => `${qid} ${forever.get(qid).name}: placed by the instance name in its text`),
   };
 }

@@ -110,9 +110,42 @@ local function rewardCells(q)
             cells[#cells + 1] = U.cellFromInfo(id, info, { from = label })
         end
     end
-    add(q.rewards, "You get")
-    add(q.choice, "Choose one")
+    if q.rewards or q.choice or q.seen then
+        add(q.rewards, "You get")
+        add(q.choice, "Choose one")
+    else
+        -- QuestieDB's reward items, not split into given and pick-one yet
+        add(q.rewardItems, "Quest reward")
+    end
     return cells
+end
+
+-- Reward items as shown: the split lists, or the unsplit list while nothing has split it.
+local function rewardCount(q)
+    if q.rewards or q.choice or q.seen then return #(q.rewards or {}) + #(q.choice or {}) end
+    return #(q.rewardItems or {})
+end
+
+local function factionName(id)
+    if C_Reputation and C_Reputation.GetFactionDataByID then
+        local d = C_Reputation.GetFactionDataByID(id)
+        if d and d.name then return d.name end
+    end
+    if GetFactionInfoByID then
+        local name = GetFactionInfoByID(id)
+        if name then return name end
+    end
+    return "Faction #" .. id
+end
+
+-- "+250 Thunder Bluff", reputation rewards in one line
+local function repText(q)
+    local parts = {}
+    for _, r in ipairs(q.rep or {}) do
+        local amount = r[2] or 0
+        parts[#parts + 1] = (amount >= 0 and "+" or "") .. number(amount) .. " " .. factionName(r[1])
+    end
+    return #parts > 0 and table.concat(parts, ", ") or nil
 end
 
 local function details(rows, q, id)
@@ -143,15 +176,27 @@ local function details(rows, q, id)
     elseif f then
         rows[#rows + 1] = { kind = "qtext", indent = INDENT, text = "|cffffd100Ends:|r back at the same place" }
     end
+    if q.minLevel then
+        rows[#rows + 1] = { kind = "qtext", indent = INDENT, text = "|cffffd100Needs level|r " .. q.minLevel }
+    end
     local facts = {}
-    if q.minLevel then facts[#facts + 1] = "Needs level " .. q.minLevel end
     if q.xp then facts[#facts + 1] = number(q.xp) .. " XP" end
     if money(q.money) then facts[#facts + 1] = money(q.money) end
+    local rep = repText(q)
+    if rep then facts[#facts + 1] = rep end
+    local cells = rewardCells(q)
     if #facts > 0 then
         rows[#rows + 1] = { kind = "qtext", indent = INDENT, text = "|cffffd100Rewards:|r " .. table.concat(facts, "  ·  ") }
+    elseif #cells > 0 then
+        rows[#rows + 1] = { kind = "qtext", indent = INDENT, text = "|cffffd100Rewards:|r" }
     end
-    local cells = rewardCells(q)
-    if #cells > 0 then rows[#rows + 1] = U.grid(cells, { from = "Reward" }) end
+    if #cells > 0 then
+        if not (q.rewards or q.choice or q.seen) and #cells > 1 then
+            rows[#rows + 1] = { kind = "qtext", indent = INDENT, dim = true,
+                text = "Some of these may be a choice: take the quest to see which." }
+        end
+        rows[#rows + 1] = U.grid(cells, { from = "Reward" })
+    end
     rows[#rows + 1] = { kind = "qtext", indent = INDENT, text = " ", gap = true }
 end
 
@@ -174,7 +219,8 @@ local function questRow(id, opts)
     local giver = whoText(q.start)
     if giver then sub[#sub + 1] = giver end
     if q.xp then sub[#sub + 1] = number(q.xp) .. " XP" end
-    local nRewards = #(q.rewards or {}) + #(q.choice or {})
+    if money(q.money) then sub[#sub + 1] = money(q.money) end
+    local nRewards = rewardCount(q)
     if nRewards > 0 then sub[#sub + 1] = nRewards .. (nRewards == 1 and " reward" or " rewards") end
     local tags = {}
     if q.new and U.highlightOn() then tags[#tags + 1] = U.colors.TEAL_HEX .. "New in Forever|r" end
