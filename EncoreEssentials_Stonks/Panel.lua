@@ -877,7 +877,7 @@ local function createPanel()
     listHead:SetHeight(18)
     local headBg = listHead:CreateTexture(nil, "BACKGROUND")
     headBg:SetAllPoints()
-    gradient(headBg, "VERTICAL", 0.09, 0.06, 0.04, 1, 0.17, 0.13, 0.09, 1)
+    gradient(headBg, "VERTICAL", 0.094, 0.059, 0.031, 1, 0.18, 0.13, 0.094, 1)
     U.SortHeader(listHead, {
         { id = "name", label = "Item", point = "LEFT", x = 28, width = 150, tip = "Item name." },
         { id = "last", label = "Last", point = "RIGHT", x = -120, width = 64, desc = true, tip = "Lowest buyout on the last day seen." },

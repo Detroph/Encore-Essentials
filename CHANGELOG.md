@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- All windows: the dark look is a little warmer and browner (window background, panes, rows, border).
 - Encore-DB: items always show at least two side by side, three or four as the window is stretched. Columns that don't fit (level, type, slot) are left out; the item tooltip still has them.
 
 ## 0.1.2-beta

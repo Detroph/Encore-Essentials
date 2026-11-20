@@ -13,6 +13,25 @@ Encore.version = (tocVersion and not tocVersion:find("@", 1, true)) and tocVersi
 Encore.tocInterface = 16001
 Encore.SCHEMA = 1
 
+-- Encore window colour (Det's pick, 2026-11-20: the dark look, slightly warmer and browner).
+-- The template's grey stone background and title bar get a warm brown tint, the border a copper tint
+-- (NineSlice on newer clients, separate border textures on older ones).
+function Encore.WarmFrame(frame)
+    if frame.Bg and frame.Bg.SetVertexColor then frame.Bg:SetVertexColor(1, 0.91, 0.80) end
+    if frame.TitleBg and frame.TitleBg.SetVertexColor then frame.TitleBg:SetVertexColor(1, 0.90, 0.78) end
+    local regions = {}
+    if frame.NineSlice then
+        for _, r in ipairs({ frame.NineSlice:GetRegions() }) do regions[#regions + 1] = r end
+    end
+    for _, key in ipairs({ "PortraitFrame", "TopRightCorner", "TopLeftCorner", "TopBorder", "BotLeftCorner",
+        "BotRightCorner", "BottomBorder", "LeftBorder", "RightBorder" }) do
+        if frame[key] then regions[#regions + 1] = frame[key] end
+    end
+    for _, r in ipairs(regions) do
+        if r.SetVertexColor then r:SetVertexColor(1, 0.75, 0.46) end
+    end
+end
+
 local CHAT_PREFIX = "|cffeb9339Encore|r: "
 function Encore:Print(fmt, ...)
     DEFAULT_CHAT_FRAME:AddMessage(CHAT_PREFIX .. (select("#", ...) > 0 and fmt:format(...) or fmt))

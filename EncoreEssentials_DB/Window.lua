@@ -109,8 +109,8 @@ local TEAL = { 0.07, 0.78, 0.78 }
 local TEAL_SOFT = { 0.48, 0.82, 0.80 }
 local COPPER = { 0.92, 0.58, 0.22 }
 local GOLD = { 1, 0.82, 0 }
-local INK = { 0.95, 0.90, 0.81 }
-local DIM = { 0.64, 0.57, 0.47 }
+local INK = { 0.95, 0.90, 0.80 }
+local DIM = { 0.66, 0.565, 0.45 }
 local TAB_INK = { 0.84, 0.73, 0.54 }
 local TEAL_HEX = "|cff7ad1cc"
 
@@ -1565,7 +1565,7 @@ local function initSectionRow(row, d)
         row.built = true
         row.bg = row:CreateTexture(nil, "BACKGROUND", nil, 1)
         row.bg:SetPoint("TOPLEFT", 0, -1); row.bg:SetPoint("BOTTOMRIGHT", 0, 1)
-        gradient(row.bg, "VERTICAL", 0, 0, 0, 0.25, 1, 1, 1, 0.04)
+        gradient(row.bg, "VERTICAL", 0.11, 0.055, 0.016, 0.30, 1, 0.90, 0.75, 0.05)
         row.sel = row:CreateTexture(nil, "BACKGROUND", nil, 2)
         row.sel:SetPoint("TOPLEFT", 0, -1); row.sel:SetPoint("BOTTOMRIGHT", 0, 1)
         gradient(row.sel, "VERTICAL", 0.30, 0.004, 0, 0.75, 0.70, 0.04, 0.03, 0.75)
@@ -1845,7 +1845,7 @@ local function newCell(row)
     c:SetHeight(22)
     c.bg = c:CreateTexture(nil, "BACKGROUND", nil, 1)
     c.bg:SetAllPoints()
-    c.bg:SetColorTexture(0, 0, 0, 0.32)
+    c.bg:SetColorTexture(0.118, 0.063, 0.024, 0.34)
     c.tint = c:CreateTexture(nil, "BACKGROUND", nil, 2)
     c.tint:SetAllPoints()
     gradient(c.tint, "HORIZONTAL", TEAL[1], TEAL[2], TEAL[3], 0.16, TEAL[1], TEAL[2], TEAL[3], 0.01)
@@ -2257,7 +2257,7 @@ local function well(left, width)
     end
     local bg = f:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints()
-    bg:SetColorTexture(0.016, 0.012, 0.008, 0.72)
+    bg:SetColorTexture(0.063, 0.035, 0.016, 0.70)
     addBorder(f, 0, 0, 0, 1)
     local inner = addBorder(f, COPPER[1], COPPER[2], COPPER[3], 0.22)
     inner[1]:SetPoint("TOPLEFT", 1, -1); inner[1]:SetPoint("TOPRIGHT", -1, -1)
@@ -2499,11 +2499,7 @@ local function createWindow()
         portrait:SetTexCoord(0, 1, 0, 1)
     end
     -- Copper frame, as in the mock-up
-    if frame.NineSlice then
-        for _, region in ipairs({ frame.NineSlice:GetRegions() }) do
-            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
-        end
-    end
+    Encore.WarmFrame(frame)
     gem(frame, "BOTTOMLEFT", 3, 3)
 
     -- Resize grip in the bottom-right corner
@@ -2572,7 +2568,7 @@ local function createWindow()
         gradient(b.bgOn, "VERTICAL", 0.23, 0.01, 0, 1, 0.76, 0.08, 0.05, 1)
         b.bgOff = b:CreateTexture(nil, "BACKGROUND")
         b.bgOff:SetPoint("TOPLEFT", 1, -1); b.bgOff:SetPoint("BOTTOMRIGHT", -1, 0)
-        gradient(b.bgOff, "VERTICAL", 0.09, 0.06, 0.04, 1, 0.17, 0.13, 0.09, 1)
+        gradient(b.bgOff, "VERTICAL", 0.094, 0.059, 0.031, 1, 0.18, 0.13, 0.094, 1)
         b.edge = addBorder(b, COPPER[1], COPPER[2], COPPER[3], 1)
         b.edge[2]:Hide()
         local hl = b:CreateTexture(nil, "HIGHLIGHT")

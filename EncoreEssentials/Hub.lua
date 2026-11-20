@@ -66,7 +66,7 @@ local function createRow(parent, module, index)
 
     local bg = row:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints()
-    bg:SetColorTexture(0, 0, 0, 0.35)
+    bg:SetColorTexture(0.12, 0.065, 0.025, 0.38)
     local hl = row:CreateTexture(nil, "HIGHLIGHT")
     hl:SetAllPoints()
     hl:SetColorTexture(0.92, 0.58, 0.2, 0.15) -- Encore gold
@@ -144,11 +144,7 @@ local function createWindow()
         portrait:SetTexCoord(0, 1, 0, 1)
     end
     -- Copper frame, like the Encore-DB window
-    if frame.NineSlice then
-        for _, region in ipairs({ frame.NineSlice:GetRegions() }) do
-            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
-        end
-    end
+    Encore.WarmFrame(frame)
 
     local heading = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     heading:SetPoint("TOPLEFT", 70, -36)
