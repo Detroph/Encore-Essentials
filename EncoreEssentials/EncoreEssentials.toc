@@ -13,3 +13,4 @@ Locales\enUS.lua
 Core.lua
 Hub.lua
 Minimap.lua
+QuestRewards.lua

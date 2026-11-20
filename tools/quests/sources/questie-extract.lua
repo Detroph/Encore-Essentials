@@ -123,6 +123,39 @@ for _, p in ipairs({
     { "src/corrections/Forever/foreverNPCFixes.lua", "ForeverNpcFixes" },
 }) do apply(npcs, provider(p[1], p[2])) end
 
+-- Items, only for the quests that reward them (questRewards, with the Forever layers' questRewards_add).
+local items = {}
+if scope == "full" then
+    baseData("data/Forever/foreverItemDB.lua", "itemKeys", "itemData", items)
+    apply(items, provider("src/corrections/Forever/legacy/classicItemFixes.lua", "QuestieItemFixes"))
+end
+for _, p in ipairs({
+    { "src/corrections/Forever/generated/foreverBaseItem.lua", "ForeverBaseItem" },
+    { "src/corrections/Forever/traces/foreverItemTraces.lua", "ForeverItemTraces" },
+    { "src/corrections/Forever/foreverItemFixes.lua", "ForeverItemFixes" },
+}) do apply(items, provider(p[1], p[2])) end
+-- [quest] = { item IDs it rewards }, in item ID order
+local questRewards, itemNames = {}, {}
+do
+    local ids = {}
+    for id in pairs(items) do ids[#ids + 1] = id end
+    table.sort(ids)
+    for _, id in ipairs(ids) do
+        local it, seen = items[id], {}
+        for _, k in ipairs({ "questRewards", "questRewards_add" }) do
+            if type(it[k]) == "table" then
+                for _, q in pairs(it[k]) do
+                    if type(q) == "number" and not seen[q] then
+                        seen[q] = true
+                        questRewards[q] = questRewards[q] or {}
+                        itemNames[id] = it.name
+                        table.insert(questRewards[q], id)
+                    end
+                end
+            end
+        end
+    end
+end
 -- AreaTable ID -> uiMap (Forever client DBC relationships)
 local areaToMap = {}
 do
@@ -221,6 +254,6 @@ for id in pairs(wantNpc) do
     if n then slimNpcs[id] = { name = n.name, spawns = n.spawns, zoneID = n.zoneID, questStarts = n.questStarts,
         questEnds = n.questEnds, questStarts_add = n.questStarts_add, questEnds_add = n.questEnds_add } end
 end
-local out = json({ scope = scope, quests = byId(quests), npcs = byId(slimNpcs), areaToMap = byId(areaToMap), zoneNames = zoneNames, dungeons = dungeons })
+local out = json({ scope = scope, quests = byId(quests), questRewards = byId(questRewards), itemNames = byId(itemNames), npcs = byId(slimNpcs), areaToMap = byId(areaToMap), zoneNames = zoneNames, dungeons = dungeons })
 if io and io.write then io.write(out) end
 return out

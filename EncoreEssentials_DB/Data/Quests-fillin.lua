@@ -11,7 +11,8 @@ table.insert(ns.QuestSources, {
   instances = {
   },
   -- [quest] = { title, level, minLevel, side ("A"/"H", nil = both or unknown), objective, text, start, finish,
-  --   prev, next (quests before and after it), xp, money (copper), rewards, choice (item, or { item, count }), new }
+  --   prev, next (quests before and after it), xp, money (copper), rewards, choice (item, or { item, count }), new,
+  --   rewardItems (reward items not split into given and choice), rep ({ faction, amount } reputation rewards) }
   -- start, finish: { kind ("npc", "object", "item"), id, name, map (uiMap), x, y }
   quests = {
   },
