@@ -53,9 +53,21 @@ local function initTreeRow(row)
     if row.built then return end
     row.built = true
     row:SetHeight(TREE_ROW_H)
-    -- The auction house's own category buttons
-    row.bg, row.sel = _G.EncoreEssentials.Theme.AHNavButton(row)
-    row.edge = {}
+    row.bg = row:CreateTexture(nil, "BACKGROUND")
+    row.bg:SetPoint("TOPLEFT", 0, -1)
+    row.bg:SetPoint("BOTTOMRIGHT", 0, 1)
+    gradient(row.bg, "VERTICAL", 0.16, 0.11, 0.07, 1, 0.30, 0.22, 0.14, 1)
+    row.edge = U.addBorder(row, 0.45, 0.33, 0.2, 0.9)
+    row.edge[1]:SetPoint("TOPLEFT", 0, -1); row.edge[1]:SetPoint("TOPRIGHT", 0, -1)
+    row.edge[2]:SetPoint("BOTTOMLEFT", 0, 1); row.edge[2]:SetPoint("BOTTOMRIGHT", 0, 1)
+    row.sel = row:CreateTexture(nil, "ARTWORK")
+    row.sel:SetPoint("TOPLEFT", 1, -2)
+    row.sel:SetPoint("BOTTOMRIGHT", -1, 2)
+    gradient(row.sel, "HORIZONTAL", 0.55, 0.75, 1, 0.55, 0.35, 0.55, 1, 0.15)
+    local hl = row:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetPoint("TOPLEFT", 1, -2)
+    hl:SetPoint("BOTTOMRIGHT", -1, 2)
+    hl:SetColorTexture(1, 0.9, 0.6, 0.12)
     row.text = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     row.text:SetPoint("RIGHT", -4, 0)
     row.text:SetJustifyH("LEFT")
@@ -91,6 +103,7 @@ local function fillTreeRow(row, d)
         row.bg:Hide()
         for _, t in ipairs(row.edge) do t:Hide() end
         row.text:SetFontObject("GameFontDisableSmall")
+        row.text:SetTextColor(0.5, 0.5, 0.5)
         row:EnableMouse(false)
         return
     end
@@ -98,8 +111,15 @@ local function fillTreeRow(row, d)
     row.bg:Show()
     for _, t in ipairs(row.edge) do t:Show() end
     row.bg:SetAlpha((d.depth or 0) > 0 and 0.7 or 1)
-    row.text:SetFontObject((d.depth or 0) > 0 and "GameFontHighlightSmall" or "GameFontNormalSmall")
-    if selected then row.text:SetTextColor(1, 1, 1) end
+    -- Auction house colours: gold categories, white subcategories, white for the selected entry.
+    -- Set every time: rows are recycled, and a font object doesn't undo an earlier SetTextColor.
+    if (d.depth or 0) > 0 then
+        row.text:SetFontObject("GameFontHighlightSmall")
+        row.text:SetTextColor(1, 1, 1)
+    else
+        row.text:SetFontObject("GameFontNormalSmall")
+        if selected then row.text:SetTextColor(1, 1, 1) else row.text:SetTextColor(1, 0.82, 0) end
+    end
 end
 
 local categoryCache
@@ -175,8 +195,15 @@ local function initResultRow(row)
     if row.built then return end
     row.built = true
     row:SetHeight(RESULT_ROW_H)
-    -- The auction house's own item rows (stripe, hover and selection glow)
-    row.stripe, row.sel = _G.EncoreEssentials.Theme.AHRow(row)
+    row.stripe = row:CreateTexture(nil, "BACKGROUND")
+    row.stripe:SetAllPoints()
+    row.stripe:SetColorTexture(1, 1, 1, 0.03)
+    row.sel = row:CreateTexture(nil, "BACKGROUND", nil, 1)
+    row.sel:SetAllPoints()
+    gradient(row.sel, "HORIZONTAL", 0.76, 0.08, 0.05, 0.55, 0.23, 0.01, 0, 0.15)
+    local hl = row:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetAllPoints()
+    hl:SetColorTexture(1, 0.9, 0.6, 0.08)
     row.icon = row:CreateTexture(nil, "ARTWORK")
     row.icon:SetSize(20, 20)
     row.icon:SetPoint("LEFT", 4, 0)
@@ -236,7 +263,7 @@ function renderResults(keepScroll)
     for _, key in ipairs(Stonks:AllKeys()) do
         local name = itemName(key)
         if (search == "" or name:lower():find(search, 1, true) or tostring(key) == search)
-            and (not match or match(key, name)) then
+            and (not match or match(key, name)) and ns.Filter.Pass(key) then
             found[#found + 1] = { key = key, name = name, samples = sampleCount(key), days = auctionatorDays(key) }
         end
     end
@@ -313,7 +340,7 @@ local function createWindow()
     })
 
     -- Search, like the auction house's Name box
-    local label = frame:CreateFontString(nil, "OVERLAY", "EncoreTitleSmall")
+    local label = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     label:SetPoint("TOPLEFT", 70, -34)
     label:SetText("Name")
     searchBox = CreateFrame("EditBox", "EncoreStonksSearchBox", frame, "SearchBoxTemplate")
@@ -328,22 +355,22 @@ local function createWindow()
             renderResults()
         end
     end)
-    countText = frame:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    countText = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     countText:SetPoint("LEFT", searchBox, "RIGHT", 14, 0)
     countText:SetPoint("RIGHT", -40, 0)
     countText:SetJustifyH("LEFT")
     countText:SetWordWrap(false)
-    setColor(countText, _G.EncoreEssentials.Theme.DIM)
+    setColor(countText, DIM)
 
     -- Category tree
-    local treePane = U.well(frame, "auctionhouse-background-categories")
+    local treePane = U.well(frame)
     treePane:SetPoint("TOPLEFT", 12, -62)
     treePane:SetPoint("BOTTOMLEFT", 12, 28)
     treePane:SetWidth(TREE_W)
     tree = createList(treePane, "EncoreStonksTreeRowTemplate", TREE_ROW_H, fillTreeRow)
 
     -- Results with a column header
-    local resultPane = U.well(frame, "auctionhouse-background-index")
+    local resultPane = U.well(frame)
     resultPane:SetPoint("TOPLEFT", 12 + TREE_W + 6, -62)
     resultPane:SetPoint("BOTTOMRIGHT", -12, 28)
     local head = CreateFrame("Frame", nil, resultPane)
@@ -352,7 +379,7 @@ local function createWindow()
     head:SetHeight(18)
     local headBg = head:CreateTexture(nil, "BACKGROUND")
     headBg:SetAllPoints()
-    gradient(headBg, "VERTICAL", 0.094, 0.059, 0.031, 1, 0.18, 0.13, 0.094, 1)
+    gradient(headBg, "VERTICAL", 0.09, 0.06, 0.04, 1, 0.17, 0.13, 0.09, 1)
     local sort = settingsSort()
     U.SortHeader(head, {
         { id = "name", label = "Item", point = "LEFT", x = 30, width = 160, tip = "Item name." },
@@ -365,11 +392,12 @@ local function createWindow()
     listHolder:SetPoint("TOPLEFT", 0, -21)
     listHolder:SetPoint("BOTTOMRIGHT")
     results = createList(listHolder, "EncoreStonksResultRowTemplate", RESULT_ROW_H, fillResultRow)
+    ns.Filter.Attach(frame, searchBox, countText, function() renderResults() end) -- Filter.lua
 
-    local credit = frame:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    local credit = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     credit:SetPoint("BOTTOMLEFT", 16, 9)
     credit:SetText("Only items with recorded prices are listed. Prices from your Auctionator scans.")
-    setColor(credit, _G.EncoreEssentials.Theme.DIM)
+    setColor(credit, DIM)
 
     local namesPending = false
     local watcher = CreateFrame("Frame", nil, frame)

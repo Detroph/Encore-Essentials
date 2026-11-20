@@ -5,11 +5,14 @@
 --   { id, name, url, credit, version, priority,
 --     instances = { [instance key] = { quest IDs } },
 --     quests = { [quest ID] = { title, level, minLevel, side, objective, text, start, finish, prev, next,
---                               xp, money, rewards, choice, new } },
+--                               xp, money, rewards, choice, rewardItems, rep, new } },
 --     items = { [item ID] = { name, quality } } }
 -- Sources come from Data\*.lua (ns.QuestSources) and from any other addon that fills the global
 -- EncoreEssentials_QuestSources before Encore-DB loads (a separate data addon can update quests on its own).
 -- When two sources know the same quest, the one with the higher priority wins field by field.
+-- rewards/choice are the reward items split into given and pick-one; rewardItems (QuestieDB) is the same items
+-- unsplit, for quests no source has split yet. Above every source sit the rewards your own game showed you
+-- (EncoreEssentials/QuestRewards.lua, saved per account): exact XP, money and items.
 local _, ns = ...
 local DB = ns.DB
 
@@ -83,11 +86,41 @@ local function merge(self)
         end
     end
     self.merged = { quests = quests, instances = instances, items = items, where = where }
+    self.gameDone = nil
     return self.merged
 end
 
+-- What the game showed for this quest (quest giver or quest log), laid over the sources' data. XP seen more than
+-- five levels above the quest is less than full, so it only counts when no source has XP.
+local seenVersion
+local function overlayGame(self)
+    local QR = _G.EncoreEssentials and _G.EncoreEssentials.QuestRewards
+    if not QR then return end
+    if seenVersion == QR.version and self.gameDone then return end
+    seenVersion, self.gameDone = QR.version, true
+    local quests = self.merged.quests
+    for id, g in pairs(QR:All()) do
+        local q = quests[id]
+        if q and type(g) == "table" then
+            q.base = q.base or { xp = q.xp, money = q.money, rewards = q.rewards, choice = q.choice }
+            local b = q.base
+            local full = g.xp and (not q.level or not g.lvl or g.lvl <= q.level + 5)
+            q.xp = (full and g.xp) or b.xp or g.xp
+            q.money = g.money or b.money
+            if g.rewards or g.choice then
+                q.rewards, q.choice, q.seen = g.rewards, g.choice, true
+            else
+                -- The game showed no reward items, which is exact: the unsplit rewardItems list is not shown.
+                q.rewards, q.choice, q.seen = nil, nil, true
+            end
+        end
+    end
+end
+
 function Quests:Get(id)
-    return merge(self).quests[id]
+    local data = merge(self)
+    overlayGame(self)
+    return data.quests[id]
 end
 
 -- The instance keys whose quest lists hold this quest (nil when none).

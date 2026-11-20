@@ -15,6 +15,7 @@ Browse.lua
 Templates.xml
 UI.lua
 Panel.lua
+Filter.lua
 Browser.lua
 Hooks.lua
 Sync\Codec.lua

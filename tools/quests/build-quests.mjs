@@ -58,7 +58,8 @@ for (const sourceId of sourceIds) {
   }
   L.push('  },');
   L.push('  -- [quest] = { title, level, minLevel, side ("A"/"H", nil = both or unknown), objective, text, start, finish,');
-  L.push('  --   prev, next (quests before and after it), xp, money (copper), rewards, choice (item, or { item, count }), new }');
+  L.push('  --   prev, next (quests before and after it), xp, money (copper), rewards, choice (item, or { item, count }), new,');
+  L.push('  --   rewardItems (reward items not split into given and choice), rep ({ faction, amount } reputation rewards) }');
   L.push('  -- start, finish: { kind ("npc", "object", "item"), id, name, map (uiMap), x, y }');
   L.push('  quests = {');
   for (const id of Object.keys(model.quests).map(Number).sort((a, b) => a - b)) {
@@ -79,6 +80,8 @@ for (const sourceId of sourceIds) {
     if (Q.money) f.push(`money = ${Q.money}`);
     if (Q.rewards?.length) f.push(`rewards = ${items(Q.rewards)}`);
     if (Q.choice?.length) f.push(`choice = ${items(Q.choice)}`);
+    if (Q.rewardItems?.length) f.push(`rewardItems = ${list(Q.rewardItems)}`);
+    if (Q.rep?.length) f.push(`rep = { ${Q.rep.map(([fa, v]) => `{ ${fa}, ${v} }`).join(', ')} }`);
     L.push(`    [${id}] = { ${f.join(', ')} },`);
   }
   L.push('  },');
@@ -86,7 +89,7 @@ for (const sourceId of sourceIds) {
   L.push('  items = {');
   for (const id of Object.keys(model.items).map(Number).sort((a, b) => a - b)) {
     const [name, quality] = model.items[id];
-    L.push(`    [${id}] = { ${q(name)}, ${quality} },`);
+    L.push(`    [${id}] = { ${q(name)}${quality != null ? `, ${quality}` : ''} },`);
   }
   L.push('  },');
   L.push('})');

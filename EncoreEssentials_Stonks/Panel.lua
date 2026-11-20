@@ -571,7 +571,7 @@ local function extremes(buckets, first, count, labels, normal)
         end
     end
     if not lowK or lowK == highK then return "" end
-    return ("Cheapest: |cff007878%s (%s)|r   Priciest: |cffb35714%s (%s)|r"):format(labels[lowK], pctText(lowV), labels[highK], pctText(highV))
+    return ("Cheapest: |cff7ad1cc%s (%s)|r   Priciest: |cffeb9339%s (%s)|r"):format(labels[lowK], pctText(lowV), labels[highK], pctText(highV))
 end
 
 function render()
@@ -598,7 +598,7 @@ function render()
     if state.view == "list" then
         header.icon:SetTexture(U.TEX.market)
         header.name:SetText(state.list)
-        setColor(header.name, _G.EncoreEssentials.Theme.TITLE)
+        setColor(header.name, GOLD)
         local n = renderList()
         header.sub:SetText(("Auctionator shopping list: %d items with prices. Click one for its history."):format(n))
         return
@@ -607,7 +607,7 @@ function render()
     if state.view == "market" then
         header.icon:SetTexture(U.TEX.market)
         header.name:SetText("Whole market")
-        setColor(header.name, _G.EncoreEssentials.Theme.TITLE)
+        setColor(header.name, GOLD)
         if state.tab == "time" then state.tab = "week"; updateButtons() end
         local m = Stonks:CachedMarket()
         if not m then
@@ -636,7 +636,7 @@ function render()
     local profile = Stonks.Profile(points, state.range == 0 and Stonks:ItemAgg(key) or nil)
     header.icon:SetTexture(itemIcon(key))
     header.name:SetText(itemName(key))
-    header.name:SetTextColor(_G.EncoreEssentials.Theme.QualityInk(select(3, GetItemInfo(U.itemIDOf(key) or 0)) or 1)) -- on parchment
+    header.name:SetTextColor(itemQualityColor(key))
     if #all == 0 and profile.folded == 0 then
         header.sub:SetText("")
         return message("Stonks has no prices for this item yet. Scan it with Auctionator and it appears here.")
@@ -645,8 +645,8 @@ function render()
     for _, pt in ipairs(points) do if pt.src == "s" then stonks = stonks + 1 end end
     header.sub:SetText(profile.normal and ("Normal %s.  %d prices (%d with the hour)."):format(coin(profile.normal), #points, stonks) or "No prices in this period.")
     if state.tab == "time" then
-        header.extra:SetText(state.avg and ("|cff947000Gold line|r: %d-day average   |cff007878teal|r: Stonks   |cffb35714copper|r: Auctionator daily low"):format(state.avg)
-            or "|cff007878Teal|r: Stonks (with hour)   |cffb35714Copper|r: Auctionator daily low")
+        header.extra:SetText(state.avg and ("|cffffd100Gold line|r: %d-day average   |cff7ad1ccteal|r: Stonks   |cffeb9339copper|r: Auctionator daily low"):format(state.avg)
+            or "|cff7ad1ccTeal|r: Stonks (with hour)   |cffeb9339Copper|r: Auctionator daily low")
         drawTimeline(points, profile, all)
     elseif state.tab == "week" then
         header.extra:SetText(extremes(profile.week, 1, 7, WEEKDAYS, profile.normal))
@@ -787,17 +787,17 @@ local function createPanel()
     header.icon = header:CreateTexture(nil, "ARTWORK")
     header.icon:SetSize(30, 30)
     header.icon:SetPoint("TOPLEFT", 0, 0)
-    header.name = header:CreateFontString(nil, "OVERLAY", "EncoreTitleLarge")
+    header.name = header:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     header.name:SetPoint("TOPLEFT", header.icon, "TOPRIGHT", 8, 0)
     header.name:SetPoint("RIGHT", -96, 0)
     header.name:SetJustifyH("LEFT")
     header.name:SetWordWrap(false)
-    header.sub = header:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    header.sub = header:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     header.sub:SetPoint("TOPLEFT", header.name, "BOTTOMLEFT", 0, -3)
     header.sub:SetPoint("RIGHT", 0, 0)
     header.sub:SetJustifyH("LEFT")
     header.sub:SetWordWrap(false)
-    setColor(header.sub, _G.EncoreEssentials.Theme.INK)
+    setColor(header.sub, INK)
     local iconButton = CreateFrame("Button", nil, header)
     iconButton:SetAllPoints(header.icon)
     iconButton:SetScript("OnClick", function()
@@ -822,11 +822,11 @@ local function createPanel()
     header.stats:SetPoint("TOPLEFT", 14, -68)
     header.stats:SetPoint("TOPRIGHT", -14, -68)
     header.stats:SetHeight(14)
-    header.stats.text = header.stats:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    header.stats.text = header.stats:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     header.stats.text:SetAllPoints()
     header.stats.text:SetJustifyH("LEFT")
     header.stats.text:SetWordWrap(false)
-    setColor(header.stats.text, _G.EncoreEssentials.Theme.INK)
+    setColor(header.stats.text, INK)
     header.stats:SetScript("OnEnter", function(self)
         local st = self.data
         if not st then return end
@@ -879,19 +879,19 @@ local function createPanel()
         end)
         avgButtons[#avgButtons + 1] = b
     end
-    frame.avgLabel = graphs:CreateFontString(nil, "OVERLAY", "EncoreTitleSmall")
+    frame.avgLabel = graphs:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     frame.avgLabel:SetPoint("RIGHT", prev, "LEFT", -6, 0)
     frame.avgLabel:SetText("Average")
 
-    header.extra = graphs:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    header.extra = graphs:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     header.extra:SetPoint("TOPLEFT", 14, -114)
     header.extra:SetPoint("TOPRIGHT", -14, -114)
     header.extra:SetJustifyH("LEFT")
     header.extra:SetWordWrap(false)
-    setColor(header.extra, _G.EncoreEssentials.Theme.DIM)
+    setColor(header.extra, DIM)
 
     -- Chart well
-    local pane = U.well(graphs, "auctionhouse-background-index")
+    local pane = U.well(graphs)
     pane:SetPoint("TOPLEFT", 10, -130)
     pane:SetPoint("BOTTOMRIGHT", -10, 28)
     chart = CreateFrame("Frame", nil, pane)
@@ -932,7 +932,7 @@ local function createPanel()
     listHead:SetHeight(18)
     local headBg = listHead:CreateTexture(nil, "BACKGROUND")
     headBg:SetAllPoints()
-    gradient(headBg, "VERTICAL", 0.094, 0.059, 0.031, 1, 0.18, 0.13, 0.094, 1)
+    gradient(headBg, "VERTICAL", 0.09, 0.06, 0.04, 1, 0.17, 0.13, 0.09, 1)
     U.SortHeader(listHead, {
         { id = "name", label = "Item", point = "LEFT", x = 28, width = 150, tip = "Item name." },
         { id = "last", label = "Last", point = "RIGHT", x = -120, width = 64, desc = true, tip = "Lowest buyout on the last day seen." },
@@ -953,10 +953,10 @@ local function createPanel()
     ScrollUtil.InitScrollBoxListWithScrollBar(listBox, bar, view)
     listBox:Hide()
 
-    local credit = graphs:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    local credit = graphs:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     credit:SetPoint("BOTTOMLEFT", 16, 9)
     credit:SetText("Prices from your Auctionator scans. Times in your computer's time zone.")
-    setColor(credit, _G.EncoreEssentials.Theme.DIM)
+    setColor(credit, DIM)
 
     -- Item names arrive from the server a moment after they are asked for.
     local namesPending = false

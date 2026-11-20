@@ -17,8 +17,8 @@ U.TEAL = { 0.07, 0.78, 0.78 }
 U.TEAL_SOFT = { 0.48, 0.82, 0.80 }
 U.COPPER = { 0.92, 0.58, 0.22 }
 U.GOLD = { 1, 0.82, 0 }
-U.INK = { 0.95, 0.90, 0.80 }
-U.DIM = { 0.66, 0.565, 0.45 }
+U.INK = { 0.95, 0.90, 0.81 }
+U.DIM = { 0.64, 0.57, 0.47 }
 U.GRID = { 0.92, 0.58, 0.22, 0.12 }
 U.WHITE = CreateColor(1, 1, 1, 1)
 
@@ -68,9 +68,18 @@ function U.gem(parent, point, x, y)
 end
 
 -- A dark inset pane with a black edge and a faint copper inner edge.
-function U.well(parent, atlas)
+function U.well(parent)
+    local COPPER = U.COPPER
     local f = CreateFrame("Frame", nil, parent)
-    _G.EncoreEssentials.Theme.AHPane(f, atlas) -- an Auction House-style pane
+    local bg = f:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(0.016, 0.012, 0.008, 0.72)
+    U.addBorder(f, 0, 0, 0, 1)
+    local inner = U.addBorder(f, COPPER[1], COPPER[2], COPPER[3], 0.22)
+    inner[1]:SetPoint("TOPLEFT", 1, -1); inner[1]:SetPoint("TOPRIGHT", -1, -1)
+    inner[2]:SetPoint("BOTTOMLEFT", 1, 1); inner[2]:SetPoint("BOTTOMRIGHT", -1, 1)
+    inner[3]:SetPoint("TOPLEFT", 1, -1); inner[3]:SetPoint("BOTTOMLEFT", 1, 1)
+    inner[4]:SetPoint("TOPRIGHT", -1, -1); inner[4]:SetPoint("BOTTOMRIGHT", -1, 1)
     return f
 end
 
@@ -352,7 +361,11 @@ function U.CreateWindow(opts)
         portrait:SetTexture(U.TEX.crest)
         portrait:SetTexCoord(0, 1, 0, 1)
     end
-    _G.EncoreEssentials.Theme.ApplyWindow(frame) -- parchment, red border and title bar
+    if frame.NineSlice then
+        for _, region in ipairs({ frame.NineSlice:GetRegions() }) do
+            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
+        end
+    end
     U.gem(frame, "BOTTOMLEFT", 3, 3)
 
     -- Resize grip, sized by hand from the cursor (StartSizing snaps to maximum size on some clients)
@@ -416,7 +429,7 @@ function U.ToggleButton(parent, label, width)
     U.gradient(b.bgOn, "VERTICAL", 0.23, 0.01, 0, 1, 0.76, 0.08, 0.05, 1)
     b.bgOff = b:CreateTexture(nil, "BACKGROUND")
     b.bgOff:SetPoint("TOPLEFT", 1, -1); b.bgOff:SetPoint("BOTTOMRIGHT", -1, 1)
-    U.gradient(b.bgOff, "VERTICAL", 0.094, 0.059, 0.031, 1, 0.18, 0.13, 0.094, 1)
+    U.gradient(b.bgOff, "VERTICAL", 0.09, 0.06, 0.04, 1, 0.17, 0.13, 0.09, 1)
     U.addBorder(b, U.COPPER[1], U.COPPER[2], U.COPPER[3], 0.8)
     local hl = b:CreateTexture(nil, "HIGHLIGHT")
     hl:SetPoint("TOPLEFT", 1, -1); hl:SetPoint("BOTTOMRIGHT", -1, 1)
