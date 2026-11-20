@@ -1,8 +1,12 @@
 # Encore Essentials
 
-## Unreleased
+## 0.1.2-beta
 
 - Module window: modules show as tiles from left to right, starting a new row after four.
+- Encore-DB: data refresh (ForeverDB 2026-11-20, QuestieDB, foreverchanges.pro, Wowhead Forever): 28 instances, 2,926 items, 913 quests, 2,458 recipes.
+- Encore-DB: bosses list only their own loot. Random and level-range drops come off the bosses; the rare and epic ones are under World Epics and World Rares.
+- Encore-DB: white and grey items are left off boss and trash tables, except quest items and recipes.
+- Credits: Wowhead Forever is now credited in NOTICE, README and the in-game credit tooltip.
 
 ## 0.1.1
 
