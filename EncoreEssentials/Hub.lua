@@ -37,7 +37,6 @@ local TOP = 64      -- room for the title bar and portrait
 local BOTTOM = 36   -- room for the footer hint
 local MIN_WIDTH = 340
 local ICON_SIZE = 56
-local PANE_PAD = 8  -- space between the pane's edge and the tiles
 
 local frame
 
@@ -58,17 +57,19 @@ end
 local function createRow(parent, module, index)
     local col = (index - 1) % COLUMNS
     local line = math.floor((index - 1) / COLUMNS)
-    -- parent is the Auction House-style pane; center the grid in it
-    local left = math.max(PANE_PAD, (parent:GetWidth() - gridWidth()) / 2)
+    -- Center the grid when the window is wider than the tiles need
+    local left = math.max(SIDE, (parent:GetWidth() - gridWidth()) / 2)
 
     local row = CreateFrame("Button", nil, parent)
     row:SetSize(TILE_W, TILE_H)
-    row:SetPoint("TOPLEFT", left + col * (TILE_W + TILE_GAP), -(PANE_PAD + line * (TILE_H + TILE_GAP)))
+    row:SetPoint("TOPLEFT", left + col * (TILE_W + TILE_GAP), -(TOP + line * (TILE_H + TILE_GAP)))
 
-    -- Each module is a tile drawn like an auction house list entry: a row stripe, the gold hover glow
-    -- and a thin gold frame
-    Encore.Theme.AHRow(row)
-    Encore.Theme.Border(row, { 0.72, 0.56, 0.30 }, 0.45)
+    local bg = row:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(0, 0, 0, 0.35)
+    local hl = row:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetAllPoints()
+    hl:SetColorTexture(0.92, 0.58, 0.2, 0.15) -- Encore gold
 
     local icon = row:CreateTexture(nil, "ARTWORK")
     icon:SetSize(ICON_SIZE, ICON_SIZE)
@@ -142,25 +143,24 @@ local function createWindow()
         portrait:SetTexture(CREST)
         portrait:SetTexCoord(0, 1, 0, 1)
     end
-    -- Parchment window with the red border and title bar; the modules sit in an Auction House-style pane
-    Encore.Theme.ApplyWindow(frame)
+    -- Copper frame, like the Encore-DB window
+    if frame.NineSlice then
+        for _, region in ipairs({ frame.NineSlice:GetRegions() }) do
+            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
+        end
+    end
 
-    local heading = frame:CreateFontString(nil, "OVERLAY", "EncoreTitle")
+    local heading = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     heading:SetPoint("TOPLEFT", 70, -36)
     heading:SetText(L.HUB_MODULES)
 
-    local pane = CreateFrame("Frame", nil, frame)
-    pane:SetPoint("TOPLEFT", SIDE - PANE_PAD, -(TOP - PANE_PAD))
-    pane:SetPoint("BOTTOMRIGHT", -(SIDE - PANE_PAD), BOTTOM - PANE_PAD)
-    Encore.Theme.AHPane(pane, "auctionhouse-background-index")
-
     frame.rows = {}
     for i, module in ipairs(Encore.MODULE_LIST) do
-        frame.rows[i] = createRow(pane, module, i)
+        frame.rows[i] = createRow(frame, module, i)
     end
 
-    local hint = frame:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
-    hint:SetPoint("BOTTOM", 0, 10)
+    local hint = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+    hint:SetPoint("BOTTOM", 0, 14)
     hint:SetText(L.HUB_HINT)
 
     frame:SetScript("OnShow", function(self)

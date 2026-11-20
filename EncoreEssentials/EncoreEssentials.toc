@@ -11,6 +11,5 @@
 
 Locales\enUS.lua
 Core.lua
-Theme.lua
 Hub.lua
 Minimap.lua
