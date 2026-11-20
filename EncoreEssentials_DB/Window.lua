@@ -104,16 +104,15 @@ end
 -- Item flags in Loot.lua
 local F_NEW, F_RECIPE, F_QUEST, F_CHANGED = 1, 2, 4, 8
 
--- Colours for the parchment look (EncoreEssentials\Theme.lua). GOLD is the heading ink, COPPER the edge lines.
--- TAB_INK is for the dark tab buttons. Tooltips stay dark and use the game's own light colours.
-local TEAL = Encore.Theme.TEAL
-local TEAL_SOFT = Encore.Theme.TEAL_SOFT
-local COPPER = Encore.Theme.EDGE
-local GOLD = Encore.Theme.TITLE
-local INK = Encore.Theme.INK
-local DIM = Encore.Theme.DIM
+-- Colours from the mock-up
+local TEAL = { 0.07, 0.78, 0.78 }
+local TEAL_SOFT = { 0.48, 0.82, 0.80 }
+local COPPER = { 0.92, 0.58, 0.22 }
+local GOLD = { 1, 0.82, 0 }
+local INK = { 0.95, 0.90, 0.81 }
+local DIM = { 0.64, 0.57, 0.47 }
 local TAB_INK = { 0.84, 0.73, 0.54 }
-local TEAL_HEX = Encore.Theme.TEAL_HEX
+local TEAL_HEX = "|cff7ad1cc"
 
 local GetItemInfo = (C_Item and C_Item.GetItemInfo) or _G.GetItemInfo
 local GetItemInfoInstant = (C_Item and C_Item.GetItemInfoInstant) or _G.GetItemInfoInstant
@@ -170,10 +169,8 @@ local function isForever(flags)
     return hasFlag(flags, F_NEW) or hasFlag(flags, F_CHANGED)
 end
 
--- Item quality colour: ink that reads on parchment, or the game's own colour (tip = true) for tooltips and icon edges.
-local function qualityColor(q, tip)
+local function qualityColor(q)
     q = q or 1
-    if not tip then return Encore.Theme.QualityInk(q) end
     if C_Item and C_Item.GetItemQualityColor then
         local r, g, b = C_Item.GetItemQualityColor(q)
         if r then return r, g, b end
@@ -428,7 +425,7 @@ local function learnSkill(r)
 end
 
 local function skillText(r)
-    return ("|cffb04a10%s|r |cff8a7400%d|r |cff207a20%d|r |cff6b6155%d|r"):format(learnSkill(r), r[4] or 0, r[5] or 0, r[6] or 0)
+    return ("|cffff8040%s|r |cffffff00%d|r |cff40bf40%d|r |cff9d9d9d%d|r"):format(learnSkill(r), r[4] or 0, r[5] or 0, r[6] or 0)
 end
 
 -- "Enchant Bracer - Agility" -> "Bracer"
@@ -450,7 +447,7 @@ local function recipeCell(r, prof)
             icon = (GetSpellTexture and GetSpellTexture(r[1])) or TEX.questionMark }
     end
     c.name = r[2] or c.name or ("Spell " .. r[1])
-    if r[8] and r[8] > 1 then c.name = c.name .. " |cff6b5a44x" .. r[8] .. "|r" end
+    if r[8] and r[8] > 1 then c.name = c.name .. " |cffc8b898x" .. r[8] .. "|r" end
     c.skill = skillText(r)
     c.sortv = { skill = r[3] or 9999 }
     if type(r[10]) == "number" then c.recipeItem = r[10] end -- learned from this recipe item
@@ -567,7 +564,7 @@ local function sourceText(s)
     local t = s.type
     local text, onClick
     if t == "vendor" then
-        text = "Sold by |cff331f0d" .. (s.name or "a vendor") .. "|r"
+        text = "Sold by |cffffffff" .. (s.name or "a vendor") .. "|r"
         local zone = mapName(s.map) or s.where
         if zone then text = text .. " in " .. zone end
         if s.x and s.y then
@@ -582,7 +579,7 @@ local function sourceText(s)
         if s.limited then text = text .. "  ·  limited supply" end
     elseif t == "drop" then
         if s.name then
-            text = "Drops from |cff331f0d" .. s.name .. "|r"
+            text = "Drops from |cffffffff" .. s.name .. "|r"
             if s.sources and s.sources > 1 then text = text .. (" and %d other creatures"):format(s.sources - 1) end
         else
             text = "Drops from creatures"
@@ -590,18 +587,18 @@ local function sourceText(s)
         if s.where then text = text .. " in " .. s.where end
         if s.rate then text = text .. "  ·  " .. s.rate end
     elseif t == "quest" then
-        text = "Quest reward" .. (s.name and (": |cff331f0d" .. s.name .. "|r") or "")
+        text = "Quest reward" .. (s.name and (": |cffffffff" .. s.name .. "|r") or "")
     elseif t == "reputation" then
-        text = "Reputation: |cff331f0d" .. (s.name or "?") .. "|r, " .. (s.standing and standingLabel(s.standing) or "?")
+        text = "Reputation: |cffffffff" .. (s.name or "?") .. "|r, " .. (s.standing and standingLabel(s.standing) or "?")
     elseif t == "seen" then
         text = ("Players saw it drop %d times (%d players)"):format(s.drops or 0, s.players or 0)
     elseif t == "container" then
-        text = "Found in |cff331f0d" .. (s.name or "a container") .. "|r"
+        text = "Found in |cffffffff" .. (s.name or "a container") .. "|r"
         if s.rate then text = text .. "  ·  " .. s.rate end
     else
         text = tostring(t or "Source") .. (s.name and (": " .. s.name) or "")
     end
-    if s.from then text = text .. "  |cff6b6155(" .. s.from .. ")|r" end
+    if s.from then text = text .. "  |cff9d9d9d(" .. s.from .. ")|r" end
     if onClick then text = text .. "  " .. TEAL_HEX .. "[map pin]|r" end
     return text, onClick
 end
@@ -610,18 +607,18 @@ local function recipePopupEntries(r)
     local e = {}
     local cell = recipeCell(r)
     local qr, qg, qb = qualityColor(cell.quality)
-    e[#e + 1] = { icon = cell.icon, iconSize = 24, text = r[2] or "?", font = "EncoreTitleLarge", color = { qr, qg, qb },
+    e[#e + 1] = { icon = cell.icon, iconSize = 24, text = r[2] or "?", font = "GameFontNormalLarge", color = { qr, qg, qb },
         itemID = r[7], after = 6 }
     if highlightOn() and r.new then
         e[#e + 1] = { text = "New in WoW Forever", color = TEAL_SOFT }
     elseif highlightOn() and r.changed then
         e[#e + 1] = { text = "Changed in WoW Forever", color = TEAL_SOFT }
     end
-    e[#e + 1] = { text = ("Learned at |cffb04a10%s|r.  Turns |cff8a7400yellow|r at %d, |cff207a20green|r at %d, |cff6b6155grey|r at %d.")
+    e[#e + 1] = { text = ("Learned at |cffff8040%s|r.  Turns |cffffff00yellow|r at %d, |cff40bf40green|r at %d, |cff9d9d9dgrey|r at %d.")
         :format(learnSkill(r), r[4] or 0, r[5] or 0, r[6] or 0), color = DIM }
     if r[8] and r[8] > 1 then e[#e + 1] = { text = ("Makes %d."):format(r[8]), color = DIM } end
 
-    e[#e + 1] = { text = "Reagents", font = "EncoreTitle", color = GOLD, gap = 6 }
+    e[#e + 1] = { text = "Reagents", font = "GameFontNormal", color = GOLD, gap = 6 }
     local reagents = r[9]
     if type(reagents) == "table" and #reagents > 0 then
         for i = 1, #reagents, 2 do
@@ -629,14 +626,14 @@ local function recipePopupEntries(r)
             if id then
                 local info = itemInfo(id)
                 local rr, rg, rb = qualityColor(info.quality)
-                e[#e + 1] = { icon = info.icon, text = info.name .. "  |cff331f0dx" .. (n or 1) .. "|r", color = { rr, rg, rb }, itemID = id }
+                e[#e + 1] = { icon = info.icon, text = info.name .. "  |cffffffffx" .. (n or 1) .. "|r", color = { rr, rg, rb }, itemID = id }
             end
         end
     else
         e[#e + 1] = { text = "No reagents.", color = DIM }
     end
 
-    e[#e + 1] = { text = "How to learn it", font = "EncoreTitle", color = GOLD, gap = 6 }
+    e[#e + 1] = { text = "How to learn it", font = "GameFontNormal", color = GOLD, gap = 6 }
     local l = r[10]
     if l == "t" then
         e[#e + 1] = { text = "From a profession trainer" .. (r.trainerCost and (" for " .. coin(r.trainerCost)) or "") .. "." }
@@ -660,7 +657,7 @@ local function recipePopupEntries(r)
         e[#e + 1] = { text = "How it is learned is not known yet.", color = DIM }
     end
     if r.favor then e[#e + 1] = { text = ("Costs %d Merchant's Favor."):format(r.favor) } end
-    if r.faction then e[#e + 1] = { text = "Needs reputation with |cff331f0d" .. factionName(r.faction) .. "|r." } end
+    if r.faction then e[#e + 1] = { text = "Needs reputation with |cffffffff" .. factionName(r.faction) .. "|r." } end
     return e
 end
 
@@ -1007,13 +1004,13 @@ local function searchBlocks()
     if #cells > 0 then
         blocks[#blocks + 1] = grid(cells, { from = "Found in" })
     else
-        blocks[#blocks + 1] = textLine("|cff6b6155No items match.|r")
+        blocks[#blocks + 1] = textLine("|cff9d9d9dNo items match.|r")
     end
     blocks[#blocks + 1] = heading(("Recipes (%d)"):format(#recipeCells) .. (#recipeCells >= MAX and ", first " .. MAX .. " shown" or ""))
     if #recipeCells > 0 then
         blocks[#blocks + 1] = grid(recipeCells, { from = "Profession" })
     else
-        blocks[#blocks + 1] = textLine("|cff6b6155No recipes match.|r")
+        blocks[#blocks + 1] = textLine("|cff9d9d9dNo recipes match.|r")
     end
     return blocks, ("Search: %d items, %d recipes"):format(#cells, #recipeCells)
 end
@@ -1060,7 +1057,7 @@ local function lootBlocks()
         for _, other in ipairs(ns.AttachedBosses and ns.AttachedBosses(inst, boss) or {}) do
             blocks[#blocks + 1] = heading(other.name)
             local n, t = addList(other.items)
-            if t > 0 and n == 0 then blocks[#blocks + 1] = textLine("|cff6b6155None match the filters.|r") end
+            if t > 0 and n == 0 then blocks[#blocks + 1] = textLine("|cff9d9d9dNone match the filters.|r") end
             shown = shown + n
         end
         if boss.also and #boss.also > 0 then
@@ -1078,7 +1075,7 @@ local function lootBlocks()
             }
             if open then
                 local alsoShown = addList(boss.also)
-                if alsoShown == 0 then blocks[#blocks + 1] = textLine("|cff6b6155None match the filters.|r") end
+                if alsoShown == 0 then blocks[#blocks + 1] = textLine("|cff9d9d9dNone match the filters.|r") end
                 shown = shown + alsoShown
             end
         end
@@ -1097,7 +1094,7 @@ local function lootBlocks()
             }
             if open then
                 local n = addList(inst.recipes)
-                if n == 0 then blocks[#blocks + 1] = textLine("|cff6b6155None match the filters.|r") end
+                if n == 0 then blocks[#blocks + 1] = textLine("|cff9d9d9dNone match the filters.|r") end
                 shown = shown + n
             end
         end
@@ -1238,11 +1235,11 @@ local function makeLayout(cells, width, heads)
             if col.key == key and present[key] then keep = keep + col.w + COL_GAP end
         end
     end
-    local smallest = lead + ICON_W + NAME_MIN + 40 + keep + 4
+    local smallest = lead + ICON_W + NAME_MIN + 12 + keep + 4
     local n = math.max(2, math.min(4, math.floor((width + TILE_GAP) / (smallest + TILE_GAP))))
     local tileW = math.floor((width - (n - 1) * TILE_GAP) / n)
     for _, key in ipairs(DROP_FIRST) do
-        if lead + ICON_W + NAME_MIN + 40 + fixedWidth() + 4 <= tileW then break end
+        if lead + ICON_W + NAME_MIN + 12 + fixedWidth() + 4 <= tileW then break end
         present[key] = nil
     end
     local cols, x = {}, tileW - 4
@@ -1349,7 +1346,7 @@ local function makePip(row)
     e[2]:SetPoint("BOTTOMLEFT", row.pipBg); e[2]:SetPoint("BOTTOMRIGHT", row.pipBg)
     e[3]:SetPoint("TOPLEFT", row.pipBg); e[3]:SetPoint("BOTTOMLEFT", row.pipBg)
     e[4]:SetPoint("TOPRIGHT", row.pipBg); e[4]:SetPoint("BOTTOMRIGHT", row.pipBg)
-    row.pipText = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    row.pipText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     row.pipText:SetPoint("CENTER", row.pipBg, "CENTER", 0, 0)
     setColor(row.pipText, TEAL_SOFT)
 end
@@ -1371,7 +1368,7 @@ local function gem(parent, point, x, y)
     f:SetSize(18, 18)
     f:SetPoint("CENTER", parent, point, x, y)
     f:SetFrameLevel(parent:GetFrameLevel() + 30)
-    local sizes = { { 15, 0.25, 0.15, 0.05 }, { 13, 0.92, 0.58, 0.22 }, { 9, 0.07, 0.78, 0.78 } }
+    local sizes = { { 15, 0, 0, 0 }, { 13, COPPER[1], COPPER[2], COPPER[3] }, { 9, TEAL[1], TEAL[2], TEAL[3] } }
     for i, s in ipairs(sizes) do
         local t = f:CreateTexture(nil, "OVERLAY", nil, i)
         t:SetColorTexture(s[2], s[3], s[4], 1)
@@ -1498,13 +1495,13 @@ local function initTreeRow(row, d)
         row.built = true
         row.sel = row:CreateTexture(nil, "BACKGROUND")
         row.sel:SetAllPoints()
-        gradient(row.sel, "HORIZONTAL", 0.55, 0.34, 0.06, 0.30, 0.55, 0.34, 0.06, 0)
+        gradient(row.sel, "HORIZONTAL", 1, 0.82, 0, 0.30, 1, 0.82, 0, 0)
         row.selBar = row:CreateTexture(nil, "ARTWORK")
         row.selBar:SetPoint("TOPLEFT"); row.selBar:SetPoint("BOTTOMLEFT"); row.selBar:SetWidth(2)
         row.selBar:SetColorTexture(GOLD[1], GOLD[2], GOLD[3], 1)
         local hl = row:CreateTexture(nil, "HIGHLIGHT")
         hl:SetAllPoints()
-        gradient(hl, "HORIZONTAL", 0.55, 0.34, 0.06, 0.16, 0.55, 0.34, 0.06, 0)
+        gradient(hl, "HORIZONTAL", 1, 0.82, 0, 0.16, 1, 0.82, 0, 0)
         row.pmEdge = row:CreateTexture(nil, "ARTWORK", nil, 1)
         row.pmEdge:SetSize(14, 14)
         row.pmEdge:SetPoint("LEFT", 4, 0)
@@ -1519,10 +1516,10 @@ local function initTreeRow(row, d)
         row.icon:SetSize(24, 24)
         row.icon:SetPoint("LEFT", 20, 0)
         row.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-        row.label = row:CreateFontString(nil, "OVERLAY", "EncoreTitle")
+        row.label = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         row.label:SetJustifyH("LEFT")
         row.label:SetWordWrap(false)
-        row.right = row:CreateFontString(nil, "OVERLAY", "EncoreFaintSmall")
+        row.right = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
         row.right:SetJustifyH("RIGHT")
         makePip(row)
         row:SetScript("OnClick", onRowClick)
@@ -1535,11 +1532,11 @@ local function initTreeRow(row, d)
     row.icon:SetShown(d.icon ~= nil)
     if d.icon then row.icon:SetTexture(d.icon) end
 
-    row.label:SetFontObject(cat and "EncoreTitle" or "EncoreInk")
+    row.label:SetFontObject(cat and "GameFontNormal" or "GameFontHighlight")
     if cat then
         setColor(row.label, GOLD)
     elseif d.selected then
-        setColor(row.label, GOLD)
+        row.label:SetTextColor(1, 1, 1)
     elseif d.isNew and highlightOn() then
         setColor(row.label, TEAL_SOFT)
     else
@@ -1568,16 +1565,16 @@ local function initSectionRow(row, d)
         row.built = true
         row.bg = row:CreateTexture(nil, "BACKGROUND", nil, 1)
         row.bg:SetPoint("TOPLEFT", 0, -1); row.bg:SetPoint("BOTTOMRIGHT", 0, 1)
-        gradient(row.bg, "VERTICAL", 0.42, 0.26, 0.08, 0.14, 0.42, 0.26, 0.08, 0.03)
+        gradient(row.bg, "VERTICAL", 0, 0, 0, 0.25, 1, 1, 1, 0.04)
         row.sel = row:CreateTexture(nil, "BACKGROUND", nil, 2)
         row.sel:SetPoint("TOPLEFT", 0, -1); row.sel:SetPoint("BOTTOMRIGHT", 0, 1)
-        gradient(row.sel, "VERTICAL", 0.55, 0.34, 0.06, 0.34, 0.55, 0.34, 0.06, 0.16)
+        gradient(row.sel, "VERTICAL", 0.30, 0.004, 0, 0.75, 0.70, 0.04, 0.03, 0.75)
         row.edge = addBorder(row, COPPER[1], COPPER[2], COPPER[3], 0.9, "ARTWORK")
         row.edge[1]:SetPoint("TOPLEFT", 0, -1); row.edge[1]:SetPoint("TOPRIGHT", 0, -1)
         row.edge[2]:SetPoint("BOTTOMLEFT", 0, 1); row.edge[2]:SetPoint("BOTTOMRIGHT", 0, 1)
         local hl = row:CreateTexture(nil, "HIGHLIGHT")
         hl:SetPoint("TOPLEFT", 0, -1); hl:SetPoint("BOTTOMRIGHT", 0, 1)
-        hl:SetColorTexture(0.55, 0.34, 0.06, 0.14)
+        hl:SetColorTexture(1, 0.82, 0, 0.10)
         -- Round boss portrait on a dark disc
         row.portraitBg = row:CreateTexture(nil, "ARTWORK", nil, 1)
         local P = TEX.portraitSize
@@ -1617,10 +1614,10 @@ local function initSectionRow(row, d)
         row.levelSkull:SetTexture(TEX.skull)
         row.levelSkull:SetSize(16, 16)
         row.levelSkull:SetPoint("CENTER", row.levelRing, "CENTER", 0, 0)
-        row.label = row:CreateFontString(nil, "OVERLAY", "EncoreTitleLarge")
+        row.label = row:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
         row.label:SetJustifyH("LEFT")
         row.label:SetWordWrap(false)
-        row.sub = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+        row.sub = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.sub:SetJustifyH("LEFT")
         row.sub:SetWordWrap(false)
         makePip(row)
@@ -1689,12 +1686,12 @@ local function initHeadRow(row, d)
     if not row.built then
         row.built = true
         row:EnableMouse(false)
-        row.title = row:CreateFontString(nil, "OVERLAY", "EncoreTitleLarge")
+        row.title = row:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
         row.title:SetPoint("TOPLEFT", 8, -8)
         row.title:SetPoint("TOPRIGHT", -8, -8)
         row.title:SetJustifyH("LEFT")
         row.title:SetWordWrap(false)
-        row.meta = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+        row.meta = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.meta:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -4)
         row.meta:SetPoint("TOPRIGHT", row.title, "BOTTOMRIGHT", 0, -4)
         row.meta:SetJustifyH("LEFT")
@@ -1726,7 +1723,7 @@ local function initColsRow(row, d)
         if i <= L.n then
             if not h then
                 h = { cols = {} }
-                h.name = row:CreateFontString(nil, "OVERLAY", "EncoreTitleSmall")
+                h.name = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
                 h.name:SetJustifyH("LEFT")
                 row.heads[i] = h
             end
@@ -1769,7 +1766,7 @@ local function initColsRow(row, d)
             end
             for _, b in pairs(h.btn or {}) do b:Hide() end
             if L.lead > 0 then
-                h.lead = h.lead or row:CreateFontString(nil, "OVERLAY", "EncoreTitleSmall")
+                h.lead = h.lead or row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
                 h.lead:ClearAllPoints()
                 h.lead:SetPoint("BOTTOMLEFT", row, "BOTTOMLEFT", x0, 4)
                 h.lead:SetText("Rec.")
@@ -1783,7 +1780,7 @@ local function initColsRow(row, d)
             for _, col in ipairs(L.cols) do
                 local fs = h.cols[col.key]
                 if not fs then
-                    fs = row:CreateFontString(nil, "OVERLAY", "EncoreTitleSmall")
+                    fs = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
                     fs:SetWordWrap(false)
                     h.cols[col.key] = fs
                 end
@@ -1809,21 +1806,21 @@ local function cellEnter(self)
     elseif d.spell and GameTooltip.SetSpellByID then
         GameTooltip:SetSpellByID(d.spell)
     else
-        GameTooltip:SetText(d.name or "", qualityColor(d.quality, true))
+        GameTooltip:SetText(d.name or "", qualityColor(d.quality))
     end
     if highlightOn() then
         if d.isNew then
-            GameTooltip:AddLine("New in WoW Forever", 0.48, 0.82, 0.80)
+            GameTooltip:AddLine("New in WoW Forever", TEAL_SOFT[1], TEAL_SOFT[2], TEAL_SOFT[3])
         elseif d.changed then
-            GameTooltip:AddLine("Changed in WoW Forever", 0.48, 0.82, 0.80)
+            GameTooltip:AddLine("Changed in WoW Forever", TEAL_SOFT[1], TEAL_SOFT[2], TEAL_SOFT[3])
         end
     end
     if d.recipe then
-        GameTooltip:AddLine("Click to see the reagents and how to learn it.", 1, 0.82, 0, true)
+        GameTooltip:AddLine("Click to see the reagents and how to learn it.", GOLD[1], GOLD[2], GOLD[3], true)
     elseif d.where then
-        GameTooltip:AddLine("Click to open " .. d.where.text .. ".", 1, 0.82, 0, true)
+        GameTooltip:AddLine("Click to open " .. d.where.text .. ".", GOLD[1], GOLD[2], GOLD[3], true)
     end
-    if isItem or d.spell then GameTooltip:AddLine("Shift-click to link it in chat.", 0.64, 0.57, 0.47) end
+    if isItem or d.spell then GameTooltip:AddLine("Shift-click to link it in chat.", DIM[1], DIM[2], DIM[3]) end
     GameTooltip:Show()
 end
 
@@ -1848,7 +1845,7 @@ local function newCell(row)
     c:SetHeight(22)
     c.bg = c:CreateTexture(nil, "BACKGROUND", nil, 1)
     c.bg:SetAllPoints()
-    c.bg:SetColorTexture(0.42, 0.26, 0.08, 0.10)
+    c.bg:SetColorTexture(0, 0, 0, 0.32)
     c.tint = c:CreateTexture(nil, "BACKGROUND", nil, 2)
     c.tint:SetAllPoints()
     gradient(c.tint, "HORIZONTAL", TEAL[1], TEAL[2], TEAL[3], 0.16, TEAL[1], TEAL[2], TEAL[3], 0.01)
@@ -1857,7 +1854,7 @@ local function newCell(row)
     c.stripe:SetColorTexture(TEAL[1], TEAL[2], TEAL[3], 0.7)
     local hl = c:CreateTexture(nil, "HIGHLIGHT")
     hl:SetAllPoints()
-    gradient(hl, "HORIZONTAL", 0.55, 0.34, 0.06, 0.20, 0.55, 0.34, 0.06, 0.05)
+    gradient(hl, "HORIZONTAL", 1, 0.82, 0, 0.16, 1, 0.82, 0, 0.03)
     c.iconEdge = c:CreateTexture(nil, "BORDER")
     c.iconEdge:SetPoint("LEFT", 3, 0)
     c.icon = c:CreateTexture(nil, "ARTWORK")
@@ -1866,7 +1863,7 @@ local function newCell(row)
     c.gem = c:CreateTexture(nil, "OVERLAY")
     c.gem:SetPoint("CENTER", c.iconEdge, "TOPLEFT", 1, -1)
     c.gem:SetRotation(math.rad(45))
-    c.name = c:CreateFontString(nil, "OVERLAY", "EncoreInk")
+    c.name = c:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     c.name:SetJustifyH("LEFT")
     -- First column: the recipe item this is learned from, with its tooltip
     c.lead = CreateFrame("Button", nil, c)
@@ -1877,7 +1874,7 @@ local function newCell(row)
         if not self.item then return end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetItemByID(self.item)
-        GameTooltip:AddLine("Shift-click to link it in chat.", 0.64, 0.57, 0.47)
+        GameTooltip:AddLine("Shift-click to link it in chat.", DIM[1], DIM[2], DIM[3])
         GameTooltip:Show()
     end)
     c.lead:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -1908,7 +1905,7 @@ local function fillCell(c, d, L)
         c.iconEdge:SetSize(px + 2, px + 2)
         c.icon:SetSize(px, px)
         c.gem:SetSize(px >= ICON_SIZES.normal and 10 or 6, px >= ICON_SIZES.normal and 10 or 6)
-        c.name:SetFontObject(px >= ICON_SIZES.normal and "EncoreInkLarge" or "EncoreInk")
+        c.name:SetFontObject(px >= ICON_SIZES.normal and "GameFontHighlightLarge" or "GameFontHighlight")
         c.name:SetWordWrap(px >= ICON_SIZES.normal)
         if c.name.SetMaxLines then c.name:SetMaxLines(px >= ICON_SIZES.normal and 2 or 1) end
         c.name:ClearAllPoints()
@@ -1921,9 +1918,8 @@ local function fillCell(c, d, L)
         local _, _, _, _, _, _, _, _, _, tex = GetItemInfo(ri)
         c.lead.icon:SetTexture(tex or (GetItemIcon and GetItemIcon(ri)) or TEX.questionMark)
     end
-    local r, g, b = qualityColor(d.quality, true)
+    local r, g, b = qualityColor(d.quality)
     c.iconEdge:SetColorTexture(r, g, b, 0.85)
-    r, g, b = qualityColor(d.quality)
     c.icon:SetTexture(d.icon or TEX.questionMark)
     c.name:SetWidth(L.nameW)
     c.name:SetText(d.name or "")
@@ -1932,7 +1928,7 @@ local function fillCell(c, d, L)
     for _, col in ipairs(L.cols) do
         local fs = c.colText[col.key]
         if not fs then
-            fs = c:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+            fs = c:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
             fs:SetWordWrap(false)
             c.colText[col.key] = fs
         end
@@ -1979,19 +1975,19 @@ local function initCellsRow(row, d)
     end
 end
 
-local LINE_FONTS = { heading = "EncoreTitle", text = "EncoreInkSmall", empty = "EncoreFaint" }
+local LINE_FONTS = { heading = "GameFontNormal", text = "GameFontHighlightSmall", empty = "GameFontDisable" }
 
 local function initLineRow(row, d)
     if not row.built then
         row.built = true
         row:EnableMouse(false)
-        row.text = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+        row.text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.line = row:CreateTexture(nil, "ARTWORK")
         row.line:SetPoint("BOTTOMLEFT", 6, 2); row.line:SetPoint("BOTTOMRIGHT", -6, 2); row.line:SetHeight(1)
         row.line:SetColorTexture(COPPER[1], COPPER[2], COPPER[3], 0.35)
     end
     row.data = d
-    row.text:SetFontObject(LINE_FONTS[d.kind] or "EncoreInkSmall")
+    row.text:SetFontObject(LINE_FONTS[d.kind] or "GameFontHighlightSmall")
     row.text:ClearAllPoints()
     row.line:SetShown(d.kind == "heading")
     if d.kind == "empty" then
@@ -2022,7 +2018,7 @@ local function initToggleRow(row, d)
         row.built = true
         local hl = row:CreateTexture(nil, "HIGHLIGHT")
         hl:SetPoint("TOPLEFT", 2, -3); hl:SetPoint("BOTTOMRIGHT", -2, 2)
-        gradient(hl, "HORIZONTAL", 0.55, 0.34, 0.06, 0.16, 0.55, 0.34, 0.06, 0)
+        gradient(hl, "HORIZONTAL", 1, 0.82, 0, 0.14, 1, 0.82, 0, 0)
         row.pmEdge = row:CreateTexture(nil, "ARTWORK", nil, 1)
         row.pmEdge:SetSize(14, 14)
         row.pmEdge:SetPoint("BOTTOMLEFT", 8, 6)
@@ -2033,7 +2029,7 @@ local function initToggleRow(row, d)
         gradient(row.pmFill, "VERTICAL", 0.14, 0.08, 0.04, 1, 0.36, 0.23, 0.11, 1)
         row.pmText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         row.pmText:SetPoint("CENTER", row.pmEdge, "CENTER", 0, 1)
-        row.text = row:CreateFontString(nil, "OVERLAY", "EncoreTitle")
+        row.text = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         row.text:SetPoint("LEFT", row.pmEdge, "RIGHT", 7, 0)
         row.text:SetPoint("RIGHT", row, "RIGHT", -8, 0)
         row.text:SetJustifyH("LEFT")
@@ -2083,12 +2079,12 @@ local function popupLine(i)
     l.icon = l:CreateTexture(nil, "ARTWORK")
     l.icon:SetPoint("TOPLEFT", 0, 0)
     l.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-    l.text = l:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    l.text = l:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     l.text:SetJustifyH("LEFT")
     l.text:SetWordWrap(true)
     local hl = l:CreateTexture(nil, "HIGHLIGHT")
     hl:SetPoint("TOPLEFT", -3, 1); hl:SetPoint("BOTTOMRIGHT", 3, -1)
-    hl:SetColorTexture(0.55, 0.34, 0.06, 0.14)
+    hl:SetColorTexture(1, 0.82, 0, 0.10)
     l:RegisterForClicks("LeftButtonUp")
     l:SetScript("OnClick", function(self)
         local e = self.entry
@@ -2104,7 +2100,7 @@ local function popupLine(i)
         if not (e and e.itemID and itemExists(e.itemID)) then return end
         GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
         GameTooltip:SetItemByID(e.itemID)
-        GameTooltip:AddLine("Shift-click to link it in chat.", 0.64, 0.57, 0.47)
+        GameTooltip:AddLine("Shift-click to link it in chat.", DIM[1], DIM[2], DIM[3])
         GameTooltip:Show()
     end)
     l:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -2121,7 +2117,7 @@ local function layoutPopup(entries)
         if e.gap then y = y - e.gap end
         l:ClearAllPoints()
         l:SetPoint("TOPLEFT", popup, "TOPLEFT", 12, y)
-        l.text:SetFontObject(e.font or "EncoreInkSmall")
+        l.text:SetFontObject(e.font or "GameFontHighlightSmall")
         local x, iconSize = 0, e.iconSize or 14
         if e.icon then
             l.icon:SetTexture(e.icon)
@@ -2158,7 +2154,8 @@ local function createPopup()
     popup:SetClampedToScreen(true)
     popup:EnableMouse(true)
     popup:SetBackdrop(POPUP_BACKDROP)
-    Encore.Theme.ApplyPopup(popup)
+    popup:SetBackdropColor(0.07, 0.05, 0.03, 0.97)
+    popup:SetBackdropBorderColor(COPPER[1], COPPER[2], COPPER[3], 1)
     popup.lines = {}
     popup:Hide()
     local close = CreateFrame("Button", nil, popup, "UIPanelCloseButtonNoScripts")
@@ -2230,7 +2227,7 @@ local function createList(pane, textWidth)
         if d.kind == "sec" and d.npc == nil then return 56 end -- no boss portrait: the shorter row
         local kind = ROW_KINDS[d.kind] or ROW_KINDS.text
         if kind[3] then return kind[3] end
-        measure:SetFontObject(LINE_FONTS[d.kind] or "EncoreInkSmall")
+        measure:SetFontObject(LINE_FONTS[d.kind] or "GameFontHighlightSmall")
         measure:SetWidth(textWidth(box) - (d.indent or 0))
         measure:SetText(d.text or "")
         local h = measure:GetStringHeight() + 8
@@ -2258,7 +2255,15 @@ local function well(left, width)
     else
         f:SetPoint("BOTTOMRIGHT", -12, PANE_BOTTOM)
     end
-    Encore.Theme.Well(f)
+    local bg = f:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(0.016, 0.012, 0.008, 0.72)
+    addBorder(f, 0, 0, 0, 1)
+    local inner = addBorder(f, COPPER[1], COPPER[2], COPPER[3], 0.22)
+    inner[1]:SetPoint("TOPLEFT", 1, -1); inner[1]:SetPoint("TOPRIGHT", -1, -1)
+    inner[2]:SetPoint("BOTTOMLEFT", 1, 1); inner[2]:SetPoint("BOTTOMRIGHT", -1, 1)
+    inner[3]:SetPoint("TOPLEFT", 1, -1); inner[3]:SetPoint("BOTTOMLEFT", 1, 1)
+    inner[4]:SetPoint("TOPRIGHT", -1, -1); inner[4]:SetPoint("BOTTOMRIGHT", -1, 1)
     return f
 end
 
@@ -2271,7 +2276,7 @@ local function updateTabs()
         b:SetHeight(on and 27 or 24)
         b.bgOn:SetShown(on); b.bgOff:SetShown(not on)
         if on then
-            b.text:SetTextColor(1, 0.82, 0)
+            setColor(b.text, GOLD)
         elseif b.soon then
             b.text:SetTextColor(0.5, 0.46, 0.4)
         else
@@ -2493,8 +2498,12 @@ local function createWindow()
         portrait:SetTexture(TEX.crest)
         portrait:SetTexCoord(0, 1, 0, 1)
     end
-    -- Parchment and a warm gold-brown border, like every Encore window
-    Encore.Theme.ApplyWindow(frame)
+    -- Copper frame, as in the mock-up
+    if frame.NineSlice then
+        for _, region in ipairs({ frame.NineSlice:GetRegions() }) do
+            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
+        end
+    end
     gem(frame, "BOTTOMLEFT", 3, 3)
 
     -- Resize grip in the bottom-right corner
@@ -2583,7 +2592,7 @@ local function createWindow()
     tabLine:SetColorTexture(COPPER[1], COPPER[2], COPPER[3], 0.6)
 
     -- Filter strip
-    local qLabel = frame:CreateFontString(nil, "OVERLAY", "EncoreTitle")
+    local qLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     qLabel:SetPoint("TOPLEFT", 16, -72)
     qLabel:SetText("Quality")
     qualityDropdown = CreateFrame("DropdownButton", nil, frame, "WowStyle1DropdownTemplate")
@@ -2594,7 +2603,7 @@ local function createWindow()
         renderLoot()
     end)
 
-    local sLabel = frame:CreateFontString(nil, "OVERLAY", "EncoreTitle")
+    local sLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     sLabel:SetPoint("LEFT", qualityDropdown, "RIGHT", 14, 0)
     sLabel:SetText("Slot")
     slotDropdown = CreateFrame("DropdownButton", nil, frame, "WowStyle1DropdownTemplate")
@@ -2636,7 +2645,7 @@ local function createWindow()
     local treePane = well(12, TREE_W)
     local secPane = well(12 + TREE_W + 6, SEC_W)
     local lootPane = well(12 + TREE_W + 6 + SEC_W + 6, nil)
-    measure = frame:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    measure = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     measure:SetWordWrap(true)
     measure:SetAlpha(0) -- never anchored, so never drawn; only measures wrapped text
     treeList = createList(treePane, function() return TREE_W - 40 end)
@@ -2658,7 +2667,7 @@ local function createWindow()
     local credit = CreateFrame("Button", nil, frame)
     credit:SetPoint("BOTTOMRIGHT", -26, 8)
     credit:SetHeight(18)
-    credit.text = credit:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    credit.text = credit:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     credit.text:SetPoint("RIGHT")
     credit.text:SetText(DB.Credit)
     setColor(credit.text, DIM)
@@ -2669,12 +2678,12 @@ local function createWindow()
         GameTooltip:AddLine(DB.Credit, 1, 1, 1, true)
         GameTooltip:AddLine("Filled in from foreverchanges.pro, Wowhead Forever and the game itself.", 1, 1, 1, true)
         GameTooltip:AddLine("Boss portraits from Dungeon Journal by Exehn.", 1, 1, 1, true)
-        GameTooltip:AddLine("Only what players saw in WoW Forever. No Classic or emulator data.", 0.64, 0.57, 0.47, true)
+        GameTooltip:AddLine("Only what players saw in WoW Forever. No Classic or emulator data.", DIM[1], DIM[2], DIM[3], true)
         GameTooltip:Show()
     end)
     credit:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-    legend = frame:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    legend = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     legend:SetPoint("RIGHT", credit, "LEFT", -18, 0)
     legend:SetText("New or changed in WoW Forever")
     setColor(legend, TEAL_SOFT)
@@ -2684,7 +2693,7 @@ local function createWindow()
     legendGem:SetColorTexture(TEAL_SOFT[1], TEAL_SOFT[2], TEAL_SOFT[3], 1)
     legendGem:SetRotation(math.rad(45))
 
-    statusText = frame:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    statusText = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     statusText:SetPoint("LEFT", frame, "BOTTOMLEFT", 16, 17)
     statusText:SetPoint("RIGHT", legendGem, "LEFT", -20, 0)
     statusText:SetJustifyH("LEFT")

@@ -64,12 +64,12 @@ local function createRow(parent, module, index)
     row:SetSize(TILE_W, TILE_H)
     row:SetPoint("TOPLEFT", left + col * (TILE_W + TILE_GAP), -(TOP + line * (TILE_H + TILE_GAP)))
 
-    -- A recessed box on the parchment
-    Encore.Theme.Well(row)
+    local bg = row:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(0, 0, 0, 0.35)
     local hl = row:CreateTexture(nil, "HIGHLIGHT")
     hl:SetAllPoints()
-    local H = Encore.Theme.HOVER
-    hl:SetColorTexture(H[1], H[2], H[3], 0.18)
+    hl:SetColorTexture(0.92, 0.58, 0.2, 0.15) -- Encore gold
 
     local icon = row:CreateTexture(nil, "ARTWORK")
     icon:SetSize(ICON_SIZE, ICON_SIZE)
@@ -77,7 +77,7 @@ local function createRow(parent, module, index)
     icon:SetTexture(module.icon)
     row.icon = icon
 
-    local name = row:CreateFontString(nil, "OVERLAY", "EncoreTitleLarge")
+    local name = row:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     name:SetPoint("TOP", icon, "BOTTOM", 0, -6)
     name:SetWidth(TILE_W - 12)
     name:SetJustifyH("CENTER")
@@ -85,7 +85,7 @@ local function createRow(parent, module, index)
     name:SetText(module.name)
     row.name = name
 
-    local desc = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    local desc = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     desc:SetPoint("TOP", name, "BOTTOM", 0, -4)
     desc:SetPoint("BOTTOM", 0, 6)
     desc:SetWidth(TILE_W - 12)
@@ -111,8 +111,7 @@ local function refreshRows()
         local installed = isInstalled(row.module)
         row.icon:SetDesaturated(not installed)
         row.icon:SetAlpha(installed and 1 or 0.5)
-        local c = installed and Encore.Theme.TITLE or Encore.Theme.FAINT
-        row.name:SetTextColor(c[1], c[2], c[3])
+        row.name:SetTextColor(installed and 1 or 0.5, installed and 0.82 or 0.5, installed and 0 or 0.5)
         row.desc:SetText(installed and (row.module.desc or "") or L.MODULE_MISSING)
     end
 end
@@ -144,10 +143,14 @@ local function createWindow()
         portrait:SetTexture(CREST)
         portrait:SetTexCoord(0, 1, 0, 1)
     end
-    -- Parchment, like every Encore window
-    Encore.Theme.ApplyWindow(frame)
+    -- Copper frame, like the Encore-DB window
+    if frame.NineSlice then
+        for _, region in ipairs({ frame.NineSlice:GetRegions() }) do
+            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
+        end
+    end
 
-    local heading = frame:CreateFontString(nil, "OVERLAY", "EncoreInk")
+    local heading = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     heading:SetPoint("TOPLEFT", 70, -36)
     heading:SetText(L.HUB_MODULES)
 
@@ -156,7 +159,7 @@ local function createWindow()
         frame.rows[i] = createRow(frame, module, i)
     end
 
-    local hint = frame:CreateFontString(nil, "OVERLAY", "EncoreFaintSmall")
+    local hint = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
     hint:SetPoint("BOTTOM", 0, 14)
     hint:SetText(L.HUB_HINT)
 

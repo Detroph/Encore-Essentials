@@ -13,7 +13,7 @@ local ACTIVE_ICON = "Interface\\GossipFrame\\ActiveQuestIcon"
 local DONE_ICON = "Interface\\RaidFrame\\ReadyCheck-Ready"
 local INDENT = 44 -- details lines start under the quest title
 local KEEP = 2 -- chain steps out in the world shown next to the dungeon's own before the rest fold away
-local SIDES = { A = { "Alliance", "|cff1a55b0" }, H = { "Horde", "|cffb02020" } }
+local SIDES = { A = { "Alliance", "|cff4a9bff" }, H = { "Horde", "|cffff4d4d" } }
 
 local function ui() return ns.UI end
 
@@ -119,7 +119,7 @@ local function details(rows, q, id)
     local U = ui()
     local C = U.colors
     if q.objective then
-        rows[#rows + 1] = { kind = "qtext", indent = INDENT, text = "|cff662e05Objective:|r " .. q.objective }
+        rows[#rows + 1] = { kind = "qtext", indent = INDENT, text = "|cffffd100Objective:|r " .. q.objective }
     end
     if q.text then
         rows[#rows + 1] = { kind = "qtext", indent = INDENT, text = q.text, dim = true }
@@ -128,7 +128,7 @@ local function details(rows, q, id)
         local text = whoText(w)
         if not text then return end
         local map, x, y = whoPlace(w)
-        local line = { kind = "qtext", indent = INDENT, text = "|cff662e05" .. label .. "|r " .. text }
+        local line = { kind = "qtext", indent = INDENT, text = "|cffffd100" .. label .. "|r " .. text }
         if map and x and y and x > 0 then
             line.text = line.text .. (" (%.1f, %.1f)  %s[map pin]|r"):format(x, y, C.TEAL_HEX)
             local name = w.name or w[3] or title(id)
@@ -141,14 +141,14 @@ local function details(rows, q, id)
     if f and not (s and (s.id or s[2]) == (f.id or f[2]) and (s.kind or s[1]) == (f.kind or f[1])) then
         place("Ends:", f)
     elseif f then
-        rows[#rows + 1] = { kind = "qtext", indent = INDENT, text = "|cff662e05Ends:|r back at the same place" }
+        rows[#rows + 1] = { kind = "qtext", indent = INDENT, text = "|cffffd100Ends:|r back at the same place" }
     end
     local facts = {}
     if q.minLevel then facts[#facts + 1] = "Needs level " .. q.minLevel end
     if q.xp then facts[#facts + 1] = number(q.xp) .. " XP" end
     if money(q.money) then facts[#facts + 1] = money(q.money) end
     if #facts > 0 then
-        rows[#rows + 1] = { kind = "qtext", indent = INDENT, text = "|cff662e05Rewards:|r " .. table.concat(facts, "  ·  ") }
+        rows[#rows + 1] = { kind = "qtext", indent = INDENT, text = "|cffffd100Rewards:|r " .. table.concat(facts, "  ·  ") }
     end
     local cells = rewardCells(q)
     if #cells > 0 then rows[#rows + 1] = U.grid(cells, { from = "Reward" }) end
@@ -170,7 +170,7 @@ local function questRow(id, opts)
     local U = ui()
     local done, active = isDone(id), inLog(id)
     local sub = {}
-    if not opts.inside then sub[#sub + 1] = "|cff6b6155" .. elsewhere(id) .. "|r" end
+    if not opts.inside then sub[#sub + 1] = "|cff9d9d9d" .. elsewhere(id) .. "|r" end
     local giver = whoText(q.start)
     if giver then sub[#sub + 1] = giver end
     if q.xp then sub[#sub + 1] = number(q.xp) .. " XP" end
@@ -180,9 +180,9 @@ local function questRow(id, opts)
     if q.new and U.highlightOn() then tags[#tags + 1] = U.colors.TEAL_HEX .. "New in Forever|r" end
     if SIDES[q.side] then tags[#tags + 1] = SIDES[q.side][2] .. SIDES[q.side][1] .. "|r" end
     if done then
-        tags[#tags + 1] = "|cff207a20Done|r"
+        tags[#tags + 1] = "|cff20ff20Done|r"
     elseif active then
-        tags[#tags + 1] = "|cff662e05In your log|r"
+        tags[#tags + 1] = "|cffffd100In your log|r"
     end
     local open = U.state.questOpen and U.state.questOpen[id]
     return {
@@ -318,7 +318,7 @@ local function initFilterRow(row)
     if not row.built then
         row.built = true
         row:EnableMouse(false)
-        row.label = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+        row.label = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.label:SetPoint("LEFT", 10, 0)
         row.label:SetText("Show")
         setColor(row.label, C.DIM)
@@ -327,7 +327,7 @@ local function initFilterRow(row)
         for i, f in ipairs(FILTERS) do
             local b = CreateFrame("Button", nil, row)
             b:SetHeight(20)
-            b.text = b:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+            b.text = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
             b.text:SetPoint("CENTER", 0, 1)
             b.text:SetText(f.text)
             b:SetWidth(b.text:GetStringWidth() + 16)
@@ -339,7 +339,7 @@ local function initFilterRow(row)
             b.line:SetColorTexture(C.COPPER[1], C.COPPER[2], C.COPPER[3], 1)
             local hl = b:CreateTexture(nil, "HIGHLIGHT")
             hl:SetAllPoints()
-            hl:SetColorTexture(0.55, 0.34, 0.06, 0.14)
+            hl:SetColorTexture(1, 0.82, 0, 0.10)
             b:SetScript("OnClick", function()
                 U.state.questSide = (f.key == "auto") and nil or f.key
                 U.renderLoot(true)
@@ -358,7 +358,7 @@ local function initFilterRow(row)
         done.check:SetSize(16, 16)
         done.check:SetPoint("CENTER", done.box, "CENTER", 1, 1)
         done.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
-        done.text = done:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+        done.text = done:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         done.text:SetPoint("LEFT", done.box, "RIGHT", 5, 0)
         done.text:SetText("Hide finished")
         done:SetWidth(done.text:GetStringWidth() + 20)
@@ -374,7 +374,7 @@ local function initFilterRow(row)
     local current = U.state.questSide
     for _, b in ipairs(row.buttons) do
         local on = (b.key == "auto" and current == nil) or (b.key ~= "auto" and b.key == current)
-        b.bg:SetColorTexture(on and 0.55 or 0.42, on and 0.34 or 0.26, on and 0.06 or 0.08, on and 0.30 or 0.08)
+        b.bg:SetColorTexture(on and 0.45 or 0, on and 0.25 or 0, on and 0.08 or 0, on and 0.6 or 0.3)
         b.line:SetShown(on)
         if on then setColor(b.text, C.GOLD) else setColor(b.text, C.INK, 0.85) end
     end
@@ -391,16 +391,16 @@ local function initChainRow(row, d)
         row:EnableMouse(false)
         row.bg = row:CreateTexture(nil, "BACKGROUND")
         row.bg:SetPoint("TOPLEFT", 4, -6); row.bg:SetPoint("BOTTOMRIGHT", -4, 0)
-        ui().gradient(row.bg, "HORIZONTAL", 0.45, 0.26, 0.08, 0.25, 0.45, 0.26, 0.08, 0)
+        ui().gradient(row.bg, "HORIZONTAL", 0.45, 0.26, 0.08, 0.45, 0.45, 0.26, 0.08, 0)
         row.icon = row:CreateTexture(nil, "ARTWORK")
         row.icon:SetSize(16, 16)
         row.icon:SetPoint("LEFT", 12, -3)
         row.icon:SetTexture("Interface\\QuestFrame\\UI-QuestLog-BookIcon")
-        row.text = row:CreateFontString(nil, "OVERLAY", "EncoreTitle")
+        row.text = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         row.text:SetPoint("LEFT", row.icon, "RIGHT", 6, 0)
         row.text:SetJustifyH("LEFT")
         row.text:SetWordWrap(false)
-        row.meta = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+        row.meta = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.meta:SetPoint("RIGHT", -10, -3)
         row.meta:SetJustifyH("RIGHT")
         row.text:SetPoint("RIGHT", row.meta, "LEFT", -8, 0)
@@ -419,13 +419,13 @@ local function initQuestRow(row, d)
         row.built = true
         row.tint = row:CreateTexture(nil, "BACKGROUND", nil, 1)
         row.tint:SetPoint("TOPLEFT", 4, -1); row.tint:SetPoint("BOTTOMRIGHT", -4, 1)
-        U.gradient(row.tint, "HORIZONTAL", 0.55, 0.34, 0.06, 0.14, 0.55, 0.34, 0.06, 0.0)
+        U.gradient(row.tint, "HORIZONTAL", 1, 0.82, 0, 0.10, 1, 0.82, 0, 0.0)
         row.open = row:CreateTexture(nil, "BACKGROUND", nil, 2)
         row.open:SetPoint("TOPLEFT", 4, -1); row.open:SetPoint("BOTTOMRIGHT", -4, 1)
-        row.open:SetColorTexture(0.42, 0.26, 0.08, 0.12)
+        row.open:SetColorTexture(0, 0, 0, 0.35)
         local hl = row:CreateTexture(nil, "HIGHLIGHT")
         hl:SetPoint("TOPLEFT", 4, -1); hl:SetPoint("BOTTOMRIGHT", -4, 1)
-        U.gradient(hl, "HORIZONTAL", 0.55, 0.34, 0.06, 0.18, 0.55, 0.34, 0.06, 0.03)
+        U.gradient(hl, "HORIZONTAL", 1, 0.82, 0, 0.16, 1, 0.82, 0, 0.02)
         -- Rail: line above and below the step marker
         row.railTop = row:CreateTexture(nil, "ARTWORK", nil, 1)
         row.railTop:SetWidth(2)
@@ -441,8 +441,8 @@ local function initQuestRow(row, d)
         row.nodeFill = row:CreateTexture(nil, "ARTWORK", nil, 3)
         row.nodeFill:SetSize(20, 20)
         row.nodeFill:SetPoint("CENTER", row.nodeEdge)
-        U.gradient(row.nodeFill, "VERTICAL", 0.86, 0.76, 0.56, 1, 0.98, 0.93, 0.80, 1)
-        row.nodeText = row:CreateFontString(nil, "OVERLAY", "EncoreTitleSmall")
+        U.gradient(row.nodeFill, "VERTICAL", 0.14, 0.08, 0.04, 1, 0.36, 0.23, 0.11, 1)
+        row.nodeText = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         row.nodeText:SetPoint("CENTER", row.nodeEdge, "CENTER", 0, 0)
         row.marker = row:CreateTexture(nil, "OVERLAY")
         row.marker:SetSize(20, 20)
@@ -451,15 +451,15 @@ local function initQuestRow(row, d)
         row.check:SetSize(16, 16)
         row.check:SetPoint("CENTER", row.nodeEdge, "BOTTOMRIGHT", -2, 2)
         row.check:SetTexture(DONE_ICON)
-        row.title = row:CreateFontString(nil, "OVERLAY", "EncoreTitle")
+        row.title = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         row.title:SetPoint("BOTTOMLEFT", row, "LEFT", INDENT, 2)
         row.title:SetJustifyH("LEFT")
         row.title:SetWordWrap(false)
-        row.sub = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+        row.sub = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.sub:SetPoint("TOPLEFT", row, "LEFT", INDENT, -3)
         row.sub:SetJustifyH("LEFT")
         row.sub:SetWordWrap(false)
-        row.tags = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+        row.tags = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.tags:SetPoint("RIGHT", -30, 0)
         row.tags:SetJustifyH("RIGHT")
         row.pmEdge = row:CreateTexture(nil, "ARTWORK", nil, 1)
@@ -510,7 +510,7 @@ local function initQuestRow(row, d)
     if d.level then lv = hex(levelColor(d.level)) .. "[" .. d.level .. "]|r " end
     row.title:SetText(lv .. d.title)
     if d.done then
-        row.title:SetTextColor(0.42, 0.40, 0.38)
+        row.title:SetTextColor(0.62, 0.62, 0.62)
     elseif d.inside then
         setColor(row.title, C.INK)
     else
@@ -527,15 +527,15 @@ local function initTextRow(row, d)
     local C = ui().colors
     if not row.built then
         row.built = true
-        row.text = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+        row.text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.text:SetJustifyH("LEFT")
         row.text:SetWordWrap(true)
         row.hl = row:CreateTexture(nil, "HIGHLIGHT")
         row.hl:SetAllPoints()
-        row.hl:SetColorTexture(0.55, 0.34, 0.06, 0.12)
+        row.hl:SetColorTexture(1, 0.82, 0, 0.08)
         row.bg = row:CreateTexture(nil, "BACKGROUND")
         row.bg:SetPoint("TOPLEFT", 4, 0); row.bg:SetPoint("BOTTOMRIGHT", -4, 0)
-        row.bg:SetColorTexture(0.42, 0.26, 0.08, 0.10)
+        row.bg:SetColorTexture(0, 0, 0, 0.35)
         row:SetScript("OnClick", ui().onRowClick)
     end
     row.data = d

@@ -5,7 +5,6 @@
 local _, ns = ...
 local Stonks = ns.Stonks
 local U = ns.UI
-local TIP = U.TIP -- light colours for text in (dark) tooltips
 local Browse = ns.Browse
 
 local TEAL_SOFT, COPPER, GOLD, INK, DIM = U.TEAL_SOFT, U.COPPER, U.GOLD, U.INK, U.DIM
@@ -57,19 +56,19 @@ local function initTreeRow(row)
     row.bg = row:CreateTexture(nil, "BACKGROUND")
     row.bg:SetPoint("TOPLEFT", 0, -1)
     row.bg:SetPoint("BOTTOMRIGHT", 0, 1)
-    gradient(row.bg, "VERTICAL", 0.42, 0.26, 0.08, 0.20, 0.42, 0.26, 0.08, 0.06)
-    row.edge = U.addBorder(row, 0.45, 0.28, 0.10, 0.55)
+    gradient(row.bg, "VERTICAL", 0.16, 0.11, 0.07, 1, 0.30, 0.22, 0.14, 1)
+    row.edge = U.addBorder(row, 0.45, 0.33, 0.2, 0.9)
     row.edge[1]:SetPoint("TOPLEFT", 0, -1); row.edge[1]:SetPoint("TOPRIGHT", 0, -1)
     row.edge[2]:SetPoint("BOTTOMLEFT", 0, 1); row.edge[2]:SetPoint("BOTTOMRIGHT", 0, 1)
     row.sel = row:CreateTexture(nil, "ARTWORK")
     row.sel:SetPoint("TOPLEFT", 1, -2)
     row.sel:SetPoint("BOTTOMRIGHT", -1, 2)
-    gradient(row.sel, "HORIZONTAL", 0.55, 0.34, 0.06, 0.38, 0.55, 0.34, 0.06, 0.10)
+    gradient(row.sel, "HORIZONTAL", 0.55, 0.75, 1, 0.55, 0.35, 0.55, 1, 0.15)
     local hl = row:CreateTexture(nil, "HIGHLIGHT")
     hl:SetPoint("TOPLEFT", 1, -2)
     hl:SetPoint("BOTTOMRIGHT", -1, 2)
-    hl:SetColorTexture(0.55, 0.34, 0.06, 0.16)
-    row.text = row:CreateFontString(nil, "OVERLAY", "EncoreTitleSmall")
+    hl:SetColorTexture(1, 0.9, 0.6, 0.12)
+    row.text = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     row.text:SetPoint("RIGHT", -4, 0)
     row.text:SetJustifyH("LEFT")
     row.text:SetWordWrap(false)
@@ -103,7 +102,7 @@ local function fillTreeRow(row, d)
     if d.heading then
         row.bg:Hide()
         for _, t in ipairs(row.edge) do t:Hide() end
-        row.text:SetFontObject("EncoreFaintSmall")
+        row.text:SetFontObject("GameFontDisableSmall")
         row:EnableMouse(false)
         return
     end
@@ -111,8 +110,8 @@ local function fillTreeRow(row, d)
     row.bg:Show()
     for _, t in ipairs(row.edge) do t:Show() end
     row.bg:SetAlpha((d.depth or 0) > 0 and 0.7 or 1)
-    row.text:SetFontObject((d.depth or 0) > 0 and "EncoreInkSmall" or "EncoreTitleSmall")
-    if selected then setColor(row.text, U.TITLE) end
+    row.text:SetFontObject((d.depth or 0) > 0 and "GameFontHighlightSmall" or "GameFontNormalSmall")
+    if selected then row.text:SetTextColor(1, 1, 1) end
 end
 
 local categoryCache
@@ -190,28 +189,28 @@ local function initResultRow(row)
     row:SetHeight(RESULT_ROW_H)
     row.stripe = row:CreateTexture(nil, "BACKGROUND")
     row.stripe:SetAllPoints()
-    row.stripe:SetColorTexture(0.42, 0.26, 0.08, 0.06)
+    row.stripe:SetColorTexture(1, 1, 1, 0.03)
     row.sel = row:CreateTexture(nil, "BACKGROUND", nil, 1)
     row.sel:SetAllPoints()
-    gradient(row.sel, "HORIZONTAL", 0.55, 0.34, 0.06, 0.32, 0.55, 0.34, 0.06, 0.08)
+    gradient(row.sel, "HORIZONTAL", 0.76, 0.08, 0.05, 0.55, 0.23, 0.01, 0, 0.15)
     local hl = row:CreateTexture(nil, "HIGHLIGHT")
     hl:SetAllPoints()
-    hl:SetColorTexture(0.55, 0.34, 0.06, 0.14)
+    hl:SetColorTexture(1, 0.9, 0.6, 0.08)
     row.icon = row:CreateTexture(nil, "ARTWORK")
     row.icon:SetSize(20, 20)
     row.icon:SetPoint("LEFT", 4, 0)
-    row.name = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    row.name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     row.name:SetPoint("LEFT", row.icon, "RIGHT", 6, 0)
     row.name:SetPoint("RIGHT", -250, 0)
     row.name:SetJustifyH("LEFT")
     row.name:SetWordWrap(false)
-    row.last = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    row.last = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     row.last:SetPoint("RIGHT", -180, 0)
-    row.avg = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    row.avg = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     row.avg:SetPoint("RIGHT", -100, 0)
-    row.trend = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    row.trend = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     row.trend:SetPoint("RIGHT", -46, 0)
-    row.days = row:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    row.days = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     row.days:SetPoint("RIGHT", -6, 0)
     setColor(row.days, DIM)
     row:SetScript("OnClick", function(self)
@@ -227,8 +226,8 @@ local function initResultRow(row)
         local link = self.key and linkFor(self.key)
         if link then tt:SetHyperlink(link) else tt:SetText(itemName(self.key)) end
         tt:AddLine(" ")
-        tt:AddLine(("%d Stonks samples, %d Auctionator days"):format(self.samples or 0, self.adays or 0), TIP.TEAL_SOFT[1], TIP.TEAL_SOFT[2], TIP.TEAL_SOFT[3])
-        tt:AddLine("Click to show its price history.", TIP.DIM[1], TIP.DIM[2], TIP.DIM[3])
+        tt:AddLine(("%d Stonks samples, %d Auctionator days"):format(self.samples or 0, self.adays or 0), TEAL_SOFT[1], TEAL_SOFT[2], TEAL_SOFT[3])
+        tt:AddLine("Click to show its price history.", DIM[1], DIM[2], DIM[3])
     end)
 end
 
@@ -333,7 +332,7 @@ local function createWindow()
     })
 
     -- Search, like the auction house's Name box
-    local label = frame:CreateFontString(nil, "OVERLAY", "EncoreTitleSmall")
+    local label = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     label:SetPoint("TOPLEFT", 70, -34)
     label:SetText("Name")
     searchBox = CreateFrame("EditBox", "EncoreStonksSearchBox", frame, "SearchBoxTemplate")
@@ -348,7 +347,7 @@ local function createWindow()
             renderResults()
         end
     end)
-    countText = frame:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    countText = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     countText:SetPoint("LEFT", searchBox, "RIGHT", 14, 0)
     countText:SetPoint("RIGHT", -40, 0)
     countText:SetJustifyH("LEFT")
@@ -372,7 +371,7 @@ local function createWindow()
     head:SetHeight(18)
     local headBg = head:CreateTexture(nil, "BACKGROUND")
     headBg:SetAllPoints()
-    gradient(headBg, "VERTICAL", 0.42, 0.26, 0.08, 0.22, 0.42, 0.26, 0.08, 0.10)
+    gradient(headBg, "VERTICAL", 0.09, 0.06, 0.04, 1, 0.17, 0.13, 0.09, 1)
     local sort = settingsSort()
     U.SortHeader(head, {
         { id = "name", label = "Item", point = "LEFT", x = 30, width = 160, tip = "Item name." },
@@ -386,7 +385,7 @@ local function createWindow()
     listHolder:SetPoint("BOTTOMRIGHT")
     results = createList(listHolder, "EncoreStonksResultRowTemplate", RESULT_ROW_H, fillResultRow)
 
-    local credit = frame:CreateFontString(nil, "OVERLAY", "EncoreInkSmall")
+    local credit = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     credit:SetPoint("BOTTOMLEFT", 16, 9)
     credit:SetText("Only items with recorded prices are listed. Prices from your Auctionator scans.")
     setColor(credit, DIM)
