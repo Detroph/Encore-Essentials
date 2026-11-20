@@ -21,7 +21,12 @@ local EMPTY_TEXT = "Select an item or a shopping list to display historic data."
 
 local frame, chart, header, listBox, listHead, backButton
 local modeButtons, avgButtons = {}, {}
-local render
+local render, applyPage, createTabs
+local PAGES = {
+    { "graphs", "Graphs", 58, "Price history of the selected item, shopping list or the whole market." },
+    { "history", "History", 58, "Sync history: when and from whom you received guild scans, login summaries and shared items or scans." },
+}
+local pageTabs, pages = {}, {}
 
 local state = {
     view = nil,    -- nil (nothing selected), "item", "list" or "market"
@@ -29,6 +34,7 @@ local state = {
     list = nil,    -- shopping list name
     fromList = nil,
     tab = "time",
+    page = "graphs", -- title-bar tab: "graphs" or "history"
     avg = 7,       -- moving average shown on the trend (3, 7, 14 or nil)
     range = 0,
 }
@@ -715,6 +721,48 @@ local function openOptions(owner)
     end)
 end
 
+---------------------------------------------------------------------------
+-- Title-bar tabs: Graphs and History
+---------------------------------------------------------------------------
+function applyPage(id)
+    if id == "history" and not pages.history then
+        local view = ns.SyncHistoryView
+        pages.history = view and view.Build(frame) or nil
+        if not pages.history then id = "graphs" end
+    end
+    state.page = id
+    frame.graphPage:SetShown(id == "graphs")
+    if pages.history then pages.history:SetShown(id == "history") end
+    for _, b in ipairs(pageTabs) do b:SetOn(b.page == id) end
+end
+
+local function setPage(id)
+    if not frame then return end
+    local was = state.page
+    GameTooltip:Hide()
+    applyPage(id)
+    if state.page == "graphs" and was ~= "graphs" then render() end
+end
+
+function createTabs()
+    local x = 60
+    for _, p in ipairs(PAGES) do
+        local b = U.ToggleButton(frame, p[2], p[3])
+        b:SetHeight(18)
+        b.page = p[1]
+        b:SetPoint("TOPLEFT", x, -2)
+        x = x + p[3] + 3
+        b:SetScript("OnClick", function() setPage(p[1]) end)
+        U.tooltip(b, function(tt)
+            tt:SetText(p[2])
+            tt:AddLine(p[4], 1, 1, 1, true)
+        end)
+        frame:KeepOnTop(b)
+        pageTabs[#pageTabs + 1] = b
+    end
+    applyPage("graphs")
+end
+
 local function createPanel()
     frame = U.CreateWindow({
         name = "EncoreStonksPanel", title = "Encore-Stonks", width = 560, height = 470, minW = 470, minH = 400,
@@ -725,7 +773,14 @@ local function createPanel()
     if saved.tab == "time" or saved.tab == "week" or saved.tab == "hour" then state.tab = saved.tab end
     if saved.avg == false then state.avg = nil elseif tonumber(saved.avg) then state.avg = tonumber(saved.avg) end
 
-    header = CreateFrame("Frame", nil, frame)
+    -- Everything below the title bar belongs to a page: Graphs (built here) or History (the sync history,
+    -- built by Sync/HistoryView.lua the first time its tab is clicked). The tabs sit in the title bar, left of the title.
+    local graphs = CreateFrame("Frame", nil, frame)
+    graphs:SetAllPoints()
+    frame.graphPage = graphs
+    createTabs()
+
+    header = CreateFrame("Frame", nil, graphs)
     header:SetPoint("TOPLEFT", 62, -28)
     header:SetPoint("TOPRIGHT", -12, -28)
     header:SetHeight(36)
@@ -758,12 +813,12 @@ local function createPanel()
     end)
     iconButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-    backButton = U.ToggleButton(frame, "Back to list", 90)
+    backButton = U.ToggleButton(graphs, "Back to list", 90)
     backButton:SetPoint("TOPRIGHT", -12, -30)
     backButton:SetScript("OnClick", function() if state.fromList then Stonks:ShowList(state.fromList) end end)
 
     -- Statistics line (hover for the full Auctioneer-style breakdown)
-    header.stats = CreateFrame("Frame", nil, frame)
+    header.stats = CreateFrame("Frame", nil, graphs)
     header.stats:SetPoint("TOPLEFT", 14, -68)
     header.stats:SetPoint("TOPRIGHT", -14, -68)
     header.stats:SetHeight(14)
@@ -795,7 +850,7 @@ local function createPanel()
     -- Mode buttons on the left, average buttons on the right
     local x = 14
     for _, m in ipairs(MODES) do
-        local b = U.ToggleButton(frame, m[2], m[3])
+        local b = U.ToggleButton(graphs, m[2], m[3])
         b.key = m[1]
         b:SetPoint("TOPLEFT", x, -88)
         x = x + m[3] + 4
@@ -809,7 +864,7 @@ local function createPanel()
     local prev
     for i = #AVERAGES, 1, -1 do
         local days = AVERAGES[i]
-        local b = U.ToggleButton(frame, days .. "d", 38)
+        local b = U.ToggleButton(graphs, days .. "d", 38)
         b.days = days
         if prev then b:SetPoint("RIGHT", prev, "LEFT", -4, 0) else b:SetPoint("TOPRIGHT", -14, -88) end
         prev = b
@@ -824,11 +879,11 @@ local function createPanel()
         end)
         avgButtons[#avgButtons + 1] = b
     end
-    frame.avgLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    frame.avgLabel = graphs:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     frame.avgLabel:SetPoint("RIGHT", prev, "LEFT", -6, 0)
     frame.avgLabel:SetText("Average")
 
-    header.extra = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    header.extra = graphs:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     header.extra:SetPoint("TOPLEFT", 14, -114)
     header.extra:SetPoint("TOPRIGHT", -14, -114)
     header.extra:SetJustifyH("LEFT")
@@ -836,7 +891,7 @@ local function createPanel()
     setColor(header.extra, DIM)
 
     -- Chart well
-    local pane = U.well(frame)
+    local pane = U.well(graphs)
     pane:SetPoint("TOPLEFT", 10, -130)
     pane:SetPoint("BOTTOMRIGHT", -10, 28)
     chart = CreateFrame("Frame", nil, pane)
@@ -898,7 +953,7 @@ local function createPanel()
     ScrollUtil.InitScrollBoxListWithScrollBar(listBox, bar, view)
     listBox:Hide()
 
-    local credit = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local credit = graphs:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     credit:SetPoint("BOTTOMLEFT", 16, 9)
     credit:SetText("Prices from your Auctionator scans. Times in your computer's time zone.")
     setColor(credit, DIM)
@@ -920,7 +975,10 @@ local function createPanel()
         Stonks:DockPanel()
         render()
     end)
-    frame:HookScript("OnHide", function() GameTooltip:Hide() end)
+    frame:HookScript("OnHide", function()
+        GameTooltip:Hide()
+        applyPage("graphs") -- the panel always opens on its graphs
+    end)
 end
 
 local function showPanel()
@@ -938,21 +996,29 @@ function Stonks:ShowItem(item, opts)
     state.view, state.key = "item", key
     state.fromList = opts and opts.fromList or nil
     showPanel()
+    if not (opts and opts.follow) then setPage("graphs") end
     if self.OnPanelItem then self:OnPanelItem(key) end
 end
 
-function Stonks:ShowList(name)
+function Stonks:ShowList(name, opts)
     if type(name) ~= "string" or name == "" then return end
     state.view, state.list, state.fromList = "list", name, nil
     showPanel()
+    if not (opts and opts.follow) then setPage("graphs") end
 end
 
 function Stonks:ShowMarket()
     state.view, state.fromList = "market", nil
     showPanel()
+    setPage("graphs")
 end
 
 function Stonks:ShowPanel() showPanel() end
+-- Opens the panel on a page: "graphs" or "history".
+function Stonks:ShowPage(id)
+    showPanel()
+    setPage(id)
+end
 function Stonks:HidePanel() if frame then frame:Hide() end end
 function Stonks:PanelShown() return frame and frame:IsShown() end
 function Stonks:PanelKey() return state.view == "item" and state.key or nil end

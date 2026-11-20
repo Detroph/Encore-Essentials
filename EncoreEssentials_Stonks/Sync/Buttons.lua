@@ -27,7 +27,8 @@ local function addButtons()
     if not panel then return end
     added = true
 
-    local scanButton = U.ToggleButton(panel, "Share scan", 84)
+    local page = panel.graphPage or panel -- only on the Graphs tab
+    local scanButton = U.ToggleButton(page, "Share scan", 84)
     scanButton:SetPoint("BOTTOMRIGHT", -26, 4) -- clear of the resize grip
     scanButton:SetScript("OnClick", function() Sync.Links.PostScan() end)
     U.tooltip(scanButton, function(tt)
@@ -35,7 +36,7 @@ local function addButtons()
         tt:AddLine("Puts a link to your latest auction house scan in guild chat. Press Enter to send it. Guildmates with Encore-Stonks click it and confirm to import your prices.", 1, 1, 1, true)
     end)
 
-    local itemButton = U.ToggleButton(panel, "Share item", 84)
+    local itemButton = U.ToggleButton(page, "Share item", 84)
     itemButton:SetPoint("RIGHT", scanButton, "LEFT", -4, 0)
     itemButton:SetScript("OnClick", function()
         local id = selectedID()

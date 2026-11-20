@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## Unreleased
+
+- Encore-Stonks: the graph window has two tabs in its title bar, Graphs and History. History lists every guild sync you received: hourly guild scans, your login summary, and items or scans shared by chat link, with when, from whom, how many prices came in and how many were kept. Columns sort on click; click a shared item to see its graph. Also `/stonksync history`.
+
 ## 0.1.2-beta
 
 - Module window: modules show as tiles from left to right, starting a new row after four.

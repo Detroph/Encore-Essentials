@@ -328,6 +328,11 @@ function U.CreateWindow(opts)
     frame:HookScript("OnMouseDown", keepOnTop)
     hooksecurefunc(frame, "Raise", keepOnTop)
     hooksecurefunc(frame, "SetFrameLevel", keepOnTop)
+    -- Other title-bar buttons (the panel's Graphs / History tabs) ask to be kept on top the same way.
+    function frame:KeepOnTop(button)
+        onTop[#onTop + 1] = button
+        keepOnTop()
+    end
 
     if opts.onOptions then
         local cog = CreateFrame("Button", nil, frame)
@@ -415,7 +420,7 @@ function U.CreateWindow(opts)
     return frame
 end
 
--- A small copper-edged toggle button (chart mode and average buttons).
+-- A small copper-edged toggle button (chart mode and average buttons, the panel's title-bar tabs).
 function U.ToggleButton(parent, label, width)
     local b = CreateFrame("Button", nil, parent)
     b:SetSize(width or 64, 20)
