@@ -358,6 +358,69 @@ do
     check(r.sync.from ~= nil and count(r.baseline) > 0, "a player named with a space gets a login summary (from " .. tostring(r.sync.from) .. ")")
     check(spaced.Stonks.SyncComm.perf.rejected == 0, "and nothing is rejected (" .. spaced.Stonks.SyncComm.perf.rejected .. ")")
     holder.online, spaced.online = false, false
+
+    for _, c in ipairs(clients) do c.online = false end
+    -- An old guildmate (0.1.4) offers but never serves a player named with a space: the attempt shows in the
+    -- history, and the summary then comes from someone who can send it.
+    local old = newClient("Old Timer")
+    giveData(old, 40, 0)
+    old.afk = true -- AFK offers are picked first, so the old one is tried first
+    local oldSend = old.Stonks.SyncComm.Send
+    old.Stonks.SyncComm.Send = function(msg, ...)
+        if msg:sub(1, 2) == "1O" then msg = msg:gsub(",2$", "") end -- 0.1.4 offers have no 4th field
+        return oldSend(msg, ...)
+    end
+    old.Stonks.SyncComm.On("A", function() end) -- and can't read the accept
+    -- Only the old one online: the failed attempt is in the history; then a capable sender logs in.
+    local lone = newClient("Lone Asker")
+    run(140)
+    local le = logOf(lone, "summary")
+    check(#le == 1, "the silent sender is not asked again and again (" .. #le .. " tries)")
+    check(#le >= 1 and le[1].from == "Old Timer" and le[1].stopped and le[1].silent and le[1].got == 0,
+        "an offer that never delivers shows in the history as nothing arrived")
+    local good = newClient("Good Sender")
+    giveData(good, 40, 2)
+    run(400)
+    local got
+    for _, e in ipairs(logOf(lone, "summary")) do if e.from == "Good Sender" and e.done and (e.got or 0) > 0 then got = e end end
+    check(got ~= nil, "the next try passes over the silent sender and gets the summary")
+
+    -- Both online from the start: the offer that says it can serve is taken, even though the old one is AFK.
+    local newbie = newClient("New Comer")
+    run(150)
+    local silent, done
+    for _, e in ipairs(logOf(newbie, "summary")) do
+        if e.from == "Old Timer" then silent = e end
+        if e.from == "Good Sender" and e.done and (e.got or 0) > 0 then done = e end
+    end
+    check(silent == nil and done ~= nil, "an offer from a version that can serve is preferred over an old AFK one")
+    old.Stonks.SyncComm.Send = oldSend
+    old.online, good.online, newbie.online, lone.online = false, false, false, false
+
+    -- Request sync button: asks once more, gets what changed since the last summary, then waits an hour.
+    local S = newbie.Stonks
+    local hourNow = math.floor(clock / 3600)
+    good.online = true
+    good.Stonks.realmData.items["9001"] = good.Stonks.b36(hourNow) .. ":" .. good.Stonks.b36(5000) .. ":" .. good.Stonks.b36(3) .. ";"
+    good.Stonks.realmData.last = hourNow * 3600 + 30
+    newbie.online = true
+    local before = #logOf(newbie, "summary")
+    local ok = S.Sync.RequestNow()
+    run(60)
+    local after = logOf(newbie, "summary")
+    check(ok and #after == before + 1 and after[#after].done and newbie.Stonks.realmData.baseline["9001"] ~= nil,
+        "Request sync gets the newer prices and logs it")
+    local again, msg = S.Sync.RequestNow()
+    check(not again and S.Sync.ManualWait() > 3500, "Request sync waits an hour before the next one (" .. tostring(msg) .. ")")
+    local none
+    S.Sync.onManual = function(r) none = r end
+    run(1800)
+    check(not S.Sync.RequestNow(), "still waiting after 30 minutes")
+    run(1800)
+    check(S.Sync.RequestNow() and true, "after an hour it can ask again")
+    run(30)
+    check(none == "none", "with nothing newer anywhere it says nobody answered")
+    good.online, newbie.online = false, false
 end
 
 table.sort(frameSamples)
