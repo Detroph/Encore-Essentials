@@ -6,6 +6,8 @@ local _, ns = ...
 local Stonks = ns.Stonks
 local U = ns.UI
 local Browse = ns.Browse
+-- WoW Forever has no global GetItemInfo; the C_Item one is the same call.
+local GetItemInfo = (C_Item and C_Item.GetItemInfo) or _G.GetItemInfo
 
 local TEAL_SOFT, COPPER, GOLD, INK, DIM = U.TEAL_SOFT, U.COPPER, U.GOLD, U.INK, U.DIM
 local setColor, gradient, coinShort = U.setColor, U.gradient, U.coinShort
@@ -13,9 +15,9 @@ local itemName, itemIcon, itemQualityColor, linkFor, itemIDOf = U.itemName, U.it
 
 local TREE_W = 176
 local TREE_ROW_H, RESULT_ROW_H = 20, 26
-local MAX_ROWS = 500
+local PAGE_SIZE = 100 -- items per page (Det, 2026-11-21: 500 at once lagged when sorting by iLvl/Req)
 
-local frame, tree, results, searchBox, countText
+local frame, tree, results, searchBox, countText, pager
 local renderTree, renderResults, settingsSort
 
 -- Item level and required level columns (Det, 2026-11-21). Shown only while the list holds items where they mean
@@ -32,6 +34,8 @@ local state = {
     match = nil,      -- function(key, name) for the selected category or list
     expanded = {},    -- [id] = true for open categories
     search = "",
+    page = 1,         -- current results page
+    base = nil,       -- last price/name sort { id, desc }: decides which items are on which page
 }
 
 ---------------------------------------------------------------------------
@@ -92,7 +96,7 @@ local function initTreeRow(row)
                 state.expanded[d.id] = true
             end
         end
-        state.node, state.match = d.id, d.match
+        state.node, state.match, state.page = d.id, d.match, 1
         if d.onSelect then d.onSelect() end
         renderTree()
         renderResults()
@@ -309,6 +313,23 @@ local function setLevelColumns(on)
     end
 end
 
+-- Pages of PAGE_SIZE. The pages follow the price, name or days sort over the whole list (those values are cached).
+-- iLvl and Req only reorder the page on screen: they need the game's item info, and asking for it for thousands of
+-- items at once is what lagged the game.
+local function rowValue(d, id)
+    if id == "name" then return d.name end
+    if id == "ilvl" or id == "req" then
+        if not hasLevels(d.key) then return nil end
+        local ilvl, req = itemLevels(d.key)
+        if id == "ilvl" then return ilvl end
+        return req or nil
+    end
+    local st = statsFor(d.key)
+    if not st then return nil end
+    if id == "trend" then return st.last and st.avg14 and (st.last / st.avg14 - 1) or nil end
+    return st[id]
+end
+
 function renderResults(keepScroll)
     if not results then return end
     local search = state.search:lower()
@@ -324,30 +345,24 @@ function renderResults(keepScroll)
         end
     end
     setLevelColumns(levels)
-    U.SortRows(found, settingsSort(), function(d, id)
-        if id == "name" then return d.name end
-        if id == "ilvl" or id == "req" then
-            if not hasLevels(d.key) then return nil end
-            local ilvl, req = itemLevels(d.key)
-            if id == "ilvl" then return ilvl end
-            return req or nil
-        end
-        local st = statsFor(d.key)
-        if not st then return nil end
-        if id == "trend" then return st.last and st.avg14 and (st.last / st.avg14 - 1) or nil end
-        return st[id]
-    end)
+
+    local sort = settingsSort()
+    if not LEVEL_SORTS[sort.id] then state.base = { id = sort.id, desc = sort.desc } end
+    U.SortRows(found, state.base or { id = "days", desc = true }, rowValue)
+
+    local pages = math.max(1, math.ceil(#found / PAGE_SIZE))
+    state.page = math.min(math.max(1, state.page or 1), pages)
+    local first = (state.page - 1) * PAGE_SIZE
     local rows = {}
-    for i = 1, math.min(MAX_ROWS, #found) do
-        found[i].index = i
-        rows[i] = found[i]
+    for i = first + 1, math.min(first + PAGE_SIZE, #found) do
+        rows[#rows + 1] = found[i]
     end
+    if LEVEL_SORTS[sort.id] then U.SortRows(rows, sort, rowValue) end
+    for i, d in ipairs(rows) do d.index = i end
     results:SetDataProvider(CreateDataProvider(rows), keepScroll and ScrollBoxConstants.RetainScrollPosition or nil)
-    if #found > MAX_ROWS then
-        countText:SetText(("%d items with prices (first %d shown; search to narrow)"):format(#found, MAX_ROWS))
-    else
-        countText:SetText(("%d items with prices"):format(#found))
-    end
+
+    countText:SetText(("%d items with prices"):format(#found))
+    if pager then pager:Update(state.page, pages, #found, first + 1, first + #rows) end
 end
 
 local function createList(parent, template, extent, init)
@@ -414,7 +429,7 @@ local function createWindow()
     searchBox:HookScript("OnTextChanged", function(self)
         local value = strtrim(self:GetText() or "")
         if value ~= state.search then
-            state.search = value
+            state.search, state.page = value, 1
             renderResults()
         end
     end)
@@ -453,7 +468,11 @@ local function createWindow()
         { id = "avg7", label = "7-day avg", point = "RIGHT", x = -100, width = 76, desc = true, tip = "Moving average of the daily lows over 7 days." },
         { id = "trend", label = "Trend", point = "RIGHT", x = -46, width = 50, desc = true, tip = "Last price against the 14-day average." },
         { id = "days", label = "Days", point = "RIGHT", x = -6, width = 38, desc = true, tip = "Days with a price." },
-    }, sort, function() renderResults() end)
+    }, sort, function()
+        -- A new price/name order reshuffles the pages: start at page 1. iLvl/Req only sort the page you're on.
+        if not LEVEL_SORTS[sort.id] then state.page = 1 end
+        renderResults()
+    end)
     local listHolder = CreateFrame("Frame", nil, resultPane)
     listHolder:SetPoint("TOPLEFT", 0, -21)
     listHolder:SetPoint("BOTTOMRIGHT")
@@ -465,6 +484,49 @@ local function createWindow()
     credit:SetPoint("BOTTOMLEFT", 16, 9)
     credit:SetText("Only items with recorded prices are listed. Prices from your Auctionator scans.")
     setColor(credit, DIM)
+
+    -- Page arrows, bottom right: < Page 2 of 14 >
+    pager = CreateFrame("Frame", nil, frame)
+    pager:SetSize(170, 24)
+    pager:SetPoint("BOTTOMRIGHT", -14, 3)
+    local function arrow(dir)
+        local b = CreateFrame("Button", nil, pager)
+        b:SetSize(24, 24)
+        local tex = "Interface\\Buttons\\UI-SpellbookIcon-" .. dir .. "Page-"
+        b:SetNormalTexture(tex .. "Up")
+        b:SetPushedTexture(tex .. "Down")
+        b:SetDisabledTexture(tex .. "Disabled")
+        b:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+        return b
+    end
+    pager.prev, pager.next = arrow("Prev"), arrow("Next")
+    pager.next:SetPoint("RIGHT")
+    pager.text = pager:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    pager.text:SetPoint("RIGHT", pager.next, "LEFT", -4, 0)
+    pager.prev:SetPoint("RIGHT", pager.text, "LEFT", -4, 0)
+    local function turn(delta)
+        state.page = (state.page or 1) + delta
+        renderResults()
+    end
+    pager.prev:SetScript("OnClick", function() turn(-1) end)
+    pager.next:SetScript("OnClick", function() turn(1) end)
+    U.tooltip(pager.prev, function(tt) tt:SetText("Previous page") end)
+    U.tooltip(pager.next, function(tt) tt:SetText("Next page") end)
+    function pager:Update(page, pages, total, from, to)
+        self.text:SetText(("Page %d of %d"):format(page, pages))
+        self.prev:SetEnabled(page > 1)
+        self.next:SetEnabled(page < pages)
+        self.range = total > 0 and ("Items %d to %d of %d"):format(from, to, total) or nil
+    end
+    U.tooltip(pager, function(tt, self)
+        tt:SetText(self.text:GetText() or "")
+        if self.range then tt:AddLine(self.range, 1, 1, 1) end
+        tt:AddLine("iLvl and Req sort the items on this page.", 0.6, 0.55, 0.45, true)
+    end)
+    pager:EnableMouse(true)
+    credit:SetPoint("RIGHT", pager, "LEFT", -8, 0)
+    credit:SetJustifyH("LEFT")
+    credit:SetWordWrap(false)
 
     local namesPending = false
     local watcher = CreateFrame("Frame", nil, frame)
