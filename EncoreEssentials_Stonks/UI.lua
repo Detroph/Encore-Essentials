@@ -259,7 +259,8 @@ function U.SortRows(rows, sort, value)
                 return va < vb
             end
         end
-        return (a.name or "") < (b.name or "")
+        if a.name and b.name and a.name ~= b.name then return a.name < b.name end
+        return tostring(a.key or a.name or "") < tostring(b.key or b.name or "")
     end)
 end
 

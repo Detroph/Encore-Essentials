@@ -11,6 +11,7 @@
 
 Recorder.lua
 Stats.lua
+Summary.lua
 Browse.lua
 Templates.xml
 UI.lua
