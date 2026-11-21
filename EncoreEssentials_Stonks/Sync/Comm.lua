@@ -185,6 +185,8 @@ local function frameBudget()
 end
 Comm.FrameBudget = frameBudget
 
+-- This frame's work budget, set by Step and read by MaybeYield (declared before both).
+local frameStart, frameBudgetMs = 0, 1
 function Comm.Step()
     pumpOutbox()
     if InCombatLockdown() or UnitAffectingCombat("player") then return end
@@ -229,7 +231,6 @@ end
 -- Coroutine helpers for jobs: MaybeYield pauses as soon as this frame's budget is used up; Wait pauses until the
 -- next frame (use it when waiting for something, so the work queue doesn't spin).
 function Comm.Wait() coroutine.yield("wait") end
-local frameStart, frameBudgetMs = 0, 1
 function Comm.MaybeYield()
     if debugprofilestop() - frameStart >= frameBudgetMs then coroutine.yield() end
 end

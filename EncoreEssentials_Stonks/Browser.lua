@@ -135,6 +135,19 @@ local function fillTreeRow(row, d)
     end
 end
 
+-- The built list is kept and reused until new prices, refreshed summaries, or a different search, category or
+-- sort. dataVersion goes up with every change to the data.
+local dataVersion = 0
+local built -- { version, search, node, baseId, baseDesc, found, levels }
+local keysCache -- { version, keys }
+local function allKeys()
+    if not keysCache or keysCache.version ~= dataVersion then
+        keysCache = { version = dataVersion, keys = Stonks:AllKeys() }
+    end
+    return keysCache.keys
+end
+
+-- Defined before categories() below, which calls it (0.1.8 had it after, so it was a nil global).
 local categoryCache
 local function categories()
     -- The game's own list appears once the auction house has been opened; rebuild then.
@@ -202,18 +215,6 @@ end
 -- item's history. Out-of-date ones still show and are refreshed in the background; the list redraws after.
 local function statsFor(key)
     return Stonks:Summary(key)
-end
-
--- The built list is kept and reused until new prices, refreshed summaries, or a different search, category or
--- sort. dataVersion goes up with every change to the data.
-local dataVersion = 0
-local built -- { version, search, node, baseId, baseDesc, found, levels }
-local keysCache -- { version, keys }
-local function allKeys()
-    if not keysCache or keysCache.version ~= dataVersion then
-        keysCache = { version = dataVersion, keys = Stonks:AllKeys() }
-    end
-    return keysCache.keys
 end
 
 -- Column sort, saved with the window settings. Default: most days of data first.
