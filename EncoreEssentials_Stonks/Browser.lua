@@ -18,6 +18,15 @@ local MAX_ROWS = 500
 local frame, tree, results, searchBox, countText
 local renderTree, renderResults, settingsSort
 
+-- Item level and required level columns (Det, 2026-11-21). Shown only while the list holds items where they mean
+-- something: consumables, containers, weapons, gems, armor, ammo, quivers and quest items. Trade goods, reagents,
+-- recipes and the like have an item level too, but it says nothing about them.
+local LEVEL_CLASSES = { [0] = true, [1] = true, [2] = true, [3] = true, [4] = true, [6] = true, [11] = true, [12] = true }
+local LEVEL_SORTS = { ilvl = true, req = true }
+local NAME_RIGHT, NAME_RIGHT_LEVELS = -250, -334
+local showLevels = false
+local levelButtons, refreshHeader = {}, nil
+
 local state = {
     node = "all",     -- selected tree entry id
     match = nil,      -- function(key, name) for the selected category or list
@@ -172,6 +181,19 @@ end
 ---------------------------------------------------------------------------
 -- Results
 ---------------------------------------------------------------------------
+-- Item level and required level, from the game's item cache (nil until the item has loaded).
+local function itemLevels(key)
+    local id = itemIDOf(key)
+    if not id then return nil end
+    local _, _, _, ilvl, req = GetItemInfo(id)
+    return ilvl, req
+end
+
+local function hasLevels(key)
+    local c = Browse.ItemClass(itemIDOf(key))
+    return c ~= nil and LEVEL_CLASSES[c[1]] == true
+end
+
 local statsCache = {}
 -- Stats per item, kept until new prices arrive (sorting by a price column needs them for every listed item).
 local function statsFor(key)
@@ -209,7 +231,7 @@ local function initResultRow(row)
     row.icon:SetPoint("LEFT", 4, 0)
     row.name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     row.name:SetPoint("LEFT", row.icon, "RIGHT", 6, 0)
-    row.name:SetPoint("RIGHT", -250, 0)
+    row.name:SetPoint("RIGHT", NAME_RIGHT, 0)
     row.name:SetJustifyH("LEFT")
     row.name:SetWordWrap(false)
     row.last = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -221,6 +243,10 @@ local function initResultRow(row)
     row.days = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     row.days:SetPoint("RIGHT", -6, 0)
     setColor(row.days, DIM)
+    row.ilvl = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    row.ilvl:SetPoint("RIGHT", -296, 0)
+    row.req = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    row.req:SetPoint("RIGHT", -256, 0)
     row:SetScript("OnClick", function(self)
         if not self.key then return end
         if IsModifiedClick("CHATLINK") then
@@ -253,6 +279,34 @@ local function fillResultRow(row, d)
     local pct = st and st.last and st.avg14 and (st.last / st.avg14 - 1) * 100 or nil
     row.trend:SetText(U.pctColored(pct))
     row.days:SetText(tostring((st and st.days) or 0))
+
+    -- Level columns: blank for items they don't apply to (an All items list mixes gear with trade goods)
+    row.name:SetPoint("RIGHT", showLevels and NAME_RIGHT_LEVELS or NAME_RIGHT, 0)
+    row.ilvl:SetShown(showLevels)
+    row.req:SetShown(showLevels)
+    if showLevels then
+        local ilvl, req
+        if hasLevels(d.key) then ilvl, req = itemLevels(d.key) end
+        row.ilvl:SetText(ilvl and ilvl > 0 and tostring(ilvl) or "")
+        if req and req > 1 then
+            row.req:SetText(tostring(req))
+            if req > (UnitLevel("player") or 0) then row.req:SetTextColor(1, 0.25, 0.25) else row.req:SetTextColor(1, 1, 1) end
+        else
+            row.req:SetText("")
+        end
+    end
+end
+
+-- Shows or hides the two level columns in the header.
+local function setLevelColumns(on)
+    showLevels = on
+    for _, b in ipairs(levelButtons) do b:SetShown(on) end
+    local sort = settingsSort()
+    if not on and LEVEL_SORTS[sort.id] then
+        -- Sorted by a column that went away: back to the default until it comes back
+        sort.id, sort.desc = "days", true
+        if refreshHeader then refreshHeader() end
+    end
 end
 
 function renderResults(keepScroll)
@@ -260,15 +314,24 @@ function renderResults(keepScroll)
     local search = state.search:lower()
     local match = state.match
     local found = {}
+    local levels = false
     for _, key in ipairs(Stonks:AllKeys()) do
         local name = itemName(key)
         if (search == "" or name:lower():find(search, 1, true) or tostring(key) == search)
-            and (not match or match(key, name)) and ns.Filter.Pass(key) then
+            and (not match or match(key, name)) then
             found[#found + 1] = { key = key, name = name, samples = sampleCount(key), days = auctionatorDays(key) }
+            levels = levels or hasLevels(key)
         end
     end
+    setLevelColumns(levels)
     U.SortRows(found, settingsSort(), function(d, id)
         if id == "name" then return d.name end
+        if id == "ilvl" or id == "req" then
+            if not hasLevels(d.key) then return nil end
+            local ilvl, req = itemLevels(d.key)
+            if id == "ilvl" then return ilvl end
+            return req or nil
+        end
         local st = statsFor(d.key)
         if not st then return nil end
         if id == "trend" then return st.last and st.avg14 and (st.last / st.avg14 - 1) or nil end
@@ -334,7 +397,7 @@ end
 
 local function createWindow()
     frame = U.CreateWindow({
-        name = "EncoreStonksFrame", title = "Encore-Stonks", width = 780, height = 470, minW = 640, minH = 380,
+        name = "EncoreStonksFrame", title = "Encore-Stonks", width = 780, height = 470, minW = 700, minH = 380,
         settingsKey = "window", onOptions = openOptions, defaultX = -280,
         onMoved = function() Stonks:DockPanel() end,
     })
@@ -381,8 +444,11 @@ local function createWindow()
     headBg:SetAllPoints()
     gradient(headBg, "VERTICAL", 0.09, 0.06, 0.04, 1, 0.17, 0.13, 0.09, 1)
     local sort = settingsSort()
-    U.SortHeader(head, {
+    local headButtons
+    refreshHeader, headButtons = U.SortHeader(head, {
         { id = "name", label = "Item", point = "LEFT", x = 30, width = 160, tip = "Item name." },
+        { id = "ilvl", label = "iLvl", point = "RIGHT", x = -296, width = 36, desc = true, tip = "Item level." },
+        { id = "req", label = "Req", point = "RIGHT", x = -256, width = 34, desc = true, tip = "Required level to use the item. Red when it is above your level." },
         { id = "last", label = "Last", point = "RIGHT", x = -180, width = 70, desc = true, tip = "Lowest buyout on the last day seen." },
         { id = "avg7", label = "7-day avg", point = "RIGHT", x = -100, width = 76, desc = true, tip = "Moving average of the daily lows over 7 days." },
         { id = "trend", label = "Trend", point = "RIGHT", x = -46, width = 50, desc = true, tip = "Last price against the 14-day average." },
@@ -392,7 +458,8 @@ local function createWindow()
     listHolder:SetPoint("TOPLEFT", 0, -21)
     listHolder:SetPoint("BOTTOMRIGHT")
     results = createList(listHolder, "EncoreStonksResultRowTemplate", RESULT_ROW_H, fillResultRow)
-    ns.Filter.Attach(frame, searchBox, countText, function() renderResults() end) -- Filter.lua
+    levelButtons = { headButtons[2], headButtons[3] } -- iLvl, Req
+    Stonks:Settings().filters = nil -- left over from the Filter dropdown (0.1.3-beta to 0.1.5)
 
     local credit = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     credit:SetPoint("BOTTOMLEFT", 16, 9)

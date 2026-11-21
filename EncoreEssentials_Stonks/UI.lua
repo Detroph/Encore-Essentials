@@ -242,7 +242,7 @@ function U.SortHeader(head, columns, sort, onChange)
         buttons[#buttons + 1] = b
     end
     refresh()
-    return refresh
+    return refresh, buttons
 end
 
 -- Sort rows by a column. value(row, id) returns a number or string (nil sorts last); ties fall back to name.
