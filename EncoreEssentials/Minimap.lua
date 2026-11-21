@@ -66,6 +66,7 @@ function Encore:OpenMenu(owner)
             root:CreateButton(L.MENU_SQUARE_BUTTON_DETACH, function() Encore:DetachMinimapButton(true) end)
         end
         root:CreateDivider()
+        if Encore.optionsCategory then root:CreateButton(L.MENU_OPTIONS, function() Encore:OpenOptions() end) end
         root:CreateButton(L.MENU_INFO, function() Encore:ShowInfo() end)
         root:CreateCheckbox(L.MENU_LOGIN_MESSAGE,
             function() return Encore.db.settings.showLoginMessage end,

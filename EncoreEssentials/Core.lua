@@ -125,6 +125,7 @@ local function showHelp()
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_DB)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_STONKS)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_MINIMAP)
+    DEFAULT_CHAT_FRAME:AddMessage(L.HELP_OPTIONS)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_INFO)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_RESET)
 end
@@ -139,6 +140,8 @@ local COMMANDS = {
     end,
     db = function() Encore:ToggleDB() end,
     stonks = function() Encore:ToggleStonks() end,
+    options = function() Encore:OpenOptions() end,
+    config = function() Encore:OpenOptions() end,
     minimap = function()
         local show = Encore.db.settings.minimap.hide
         Encore:SetMinimapButtonShown(show)
