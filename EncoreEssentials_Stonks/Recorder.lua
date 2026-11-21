@@ -114,9 +114,48 @@ end
 function Stonks:Pending(key) return pending[key] end
 function Stonks:PendingKeys() return pending end
 
+---------------------------------------------------------------------------
+-- Neutral auction houses (Booty Bay, Gadgetzan, Everlook) are not recorded (Det, 2026-11-21): their prices
+-- would mix into the faction auction house's history and pull its averages up. Told apart by the auctioneer,
+-- who belongs to no faction there, with the zones as a fallback.
+---------------------------------------------------------------------------
+local NEUTRAL_MAPS = { [1434] = true, [1446] = true, [1452] = true } -- Stranglethorn Vale, Tanaris, Winterspring
+local NEUTRAL_TOWNS = { ["Booty Bay"] = true, ["Gadgetzan"] = true, ["Everlook"] = true }
+local atNeutral = false
+
+local function isNeutralAH()
+    if UnitExists("npc") then
+        local faction = UnitFactionGroup("npc")
+        if faction == "Horde" or faction == "Alliance" then return false end
+        if faction == nil and UnitIsPlayer and not UnitIsPlayer("npc") then return true end
+    end
+    local map = C_Map and C_Map.GetBestMapForUnit and C_Map.GetBestMapForUnit("player")
+    if map and NEUTRAL_MAPS[map] then return true end
+    return NEUTRAL_TOWNS[GetSubZoneText and GetSubZoneText() or ""] or NEUTRAL_TOWNS[GetZoneText and GetZoneText() or ""] or false
+end
+
+function Stonks:AtNeutralAH() return atNeutral end
+
+local ahEvents = CreateFrame("Frame")
+pcall(ahEvents.RegisterEvent, ahEvents, "AUCTION_HOUSE_SHOW")
+pcall(ahEvents.RegisterEvent, ahEvents, "AUCTION_HOUSE_CLOSED")
+ahEvents:SetScript("OnEvent", function(_, event)
+    if event == "AUCTION_HOUSE_SHOW" then
+        local ok, neutral = pcall(isNeutralAH)
+        atNeutral = ok and neutral == true
+        if atNeutral and not Stonks.neutralNoted then
+            Stonks.neutralNoted = true
+            Encore:Print("Encore-Stonks: neutral auction house, prices here are not recorded.")
+        end
+    else
+        atNeutral = false
+    end
+end)
+
 local lastPriceAt = 0
 function Stonks:Record(key, price, available)
     if not realmData or type(key) ~= "string" and type(key) ~= "number" then return end
+    if atNeutral then return end
     price = tonumber(price)
     if not price or price <= 0 then return end
     key = tostring(key)

@@ -140,7 +140,7 @@ local function categories()
     -- The game's own list appears once the auction house has been opened; rebuild then.
     local fromGame = type(_G.AuctionCategories) == "table" and #_G.AuctionCategories > 0
     if not categoryCache or categoryCache.fromGame ~= fromGame then
-        categoryCache = { fromGame = fromGame, tree = Browse.Categories(Stonks:AllKeys(), itemIDOf) }
+        categoryCache = { fromGame = fromGame, tree = Browse.Categories(allKeys(), itemIDOf) }
     end
     return categoryCache.tree
 end
@@ -198,15 +198,22 @@ local function hasLevels(key)
     return c ~= nil and LEVEL_CLASSES[c[1]] == true
 end
 
-local statsCache = {}
--- Stats per item, kept until new prices arrive (sorting by a price column needs them for every listed item).
+-- Price summary per item (Summary.lua): saved, so listing and sorting thousands of items doesn't work out every
+-- item's history. Out-of-date ones still show and are refreshed in the background; the list redraws after.
 local function statsFor(key)
-    local st = statsCache[key]
-    if st == nil then
-        st = Stonks:ItemStats(key) or false
-        statsCache[key] = st
+    return Stonks:Summary(key)
+end
+
+-- The built list is kept and reused until new prices, refreshed summaries, or a different search, category or
+-- sort. dataVersion goes up with every change to the data.
+local dataVersion = 0
+local built -- { version, search, node, baseId, baseDesc, found, levels }
+local keysCache -- { version, keys }
+local function allKeys()
+    if not keysCache or keysCache.version ~= dataVersion then
+        keysCache = { version = dataVersion, keys = Stonks:AllKeys() }
     end
-    return st or nil
+    return keysCache.keys
 end
 
 -- Column sort, saved with the window settings. Default: most days of data first.
@@ -264,20 +271,22 @@ local function initResultRow(row)
         local link = self.key and linkFor(self.key)
         if link then tt:SetHyperlink(link) else tt:SetText(itemName(self.key)) end
         tt:AddLine(" ")
-        tt:AddLine(("%d Stonks samples, %d Auctionator days"):format(self.samples or 0, self.adays or 0), TEAL_SOFT[1], TEAL_SOFT[2], TEAL_SOFT[3])
+        tt:AddLine(("%d Stonks samples, %d Auctionator days"):format(sampleCount(self.key), auctionatorDays(self.key)), TEAL_SOFT[1], TEAL_SOFT[2], TEAL_SOFT[3])
         tt:AddLine("Click to show its price history.", DIM[1], DIM[2], DIM[3])
     end)
 end
 
 local function fillResultRow(row, d)
     initResultRow(row)
-    row.key, row.samples, row.adays = d.key, d.samples, d.days
+    row.key, row.data = d.key, d
     row.stripe:SetShown(d.index % 2 == 0)
     row.sel:SetShown(d.key == Stonks:PanelKey())
     row.icon:SetTexture(itemIcon(d.key))
-    row.name:SetText(itemName(d.key))
+    d.name = d.name or itemName(d.key)
+    row.name:SetText(d.name)
     row.name:SetTextColor(itemQualityColor(d.key))
-    local st = statsFor(d.key)
+    if not d.st then d.st = Stonks:SummaryNow(d.key) end -- rows on screen never wait for the background refresh
+    local st = d.st
     row.last:SetText(coinShort(st and st.last))
     row.avg:SetText(coinShort(st and st.avg7))
     local pct = st and st.last and st.avg14 and (st.last / st.avg14 - 1) * 100 or nil
@@ -324,31 +333,53 @@ local function rowValue(d, id)
         if id == "ilvl" then return ilvl end
         return req or nil
     end
-    local st = statsFor(d.key)
+    local st = d.st
     if not st then return nil end
     if id == "trend" then return st.last and st.avg14 and (st.last / st.avg14 - 1) or nil end
     return st[id]
 end
 
-function renderResults(keepScroll)
-    if not results then return end
+-- Names are only needed for every item while searching, sorting by name or showing a shopping list (matched by
+-- name); otherwise only the rows on screen ask the game for them.
+local function needNames(baseId)
+    return state.search ~= "" or baseId == "name" or (state.node or ""):match("^list:") ~= nil
+end
+
+local function buildList(base)
     local search = state.search:lower()
     local match = state.match
-    local found = {}
-    local levels = false
-    for _, key in ipairs(Stonks:AllKeys()) do
-        local name = itemName(key)
+    local names = needNames(base.id)
+    local found, levels = {}, false
+    for _, key in ipairs(allKeys()) do
+        local name = names and itemName(key) or nil
         if (search == "" or name:lower():find(search, 1, true) or tostring(key) == search)
             and (not match or match(key, name)) then
-            found[#found + 1] = { key = key, name = name, samples = sampleCount(key), days = auctionatorDays(key) }
+            found[#found + 1] = { key = key, name = name, st = statsFor(key) }
             levels = levels or hasLevels(key)
         end
     end
-    setLevelColumns(levels)
+    U.SortRows(found, base, rowValue)
+    for i, d in ipairs(found) do d.pos = i end
+    return found, levels
+end
 
+function renderResults(keepScroll)
+    if not results then return end
     local sort = settingsSort()
     if not LEVEL_SORTS[sort.id] then state.base = { id = sort.id, desc = sort.desc } end
-    U.SortRows(found, state.base or { id = "days", desc = true }, rowValue)
+    local base = state.base or { id = "days", desc = true }
+
+    local b = built
+    if not (b and b.version == dataVersion and b.search == state.search and b.node == state.node
+        and b.baseId == base.id and b.baseDesc == base.desc) then
+        local found, levels = buildList(base)
+        b = { version = dataVersion, search = state.search, node = state.node, baseId = base.id, baseDesc = base.desc,
+            found = found, levels = levels }
+        built = b
+    end
+    local found = b.found
+    setLevelColumns(b.levels)
+    sort = settingsSort() -- setLevelColumns may have moved the sort off a hidden column
 
     local pages = math.max(1, math.ceil(#found / PAGE_SIZE))
     state.page = math.min(math.max(1, state.page or 1), pages)
@@ -357,11 +388,20 @@ function renderResults(keepScroll)
     for i = first + 1, math.min(first + PAGE_SIZE, #found) do
         rows[#rows + 1] = found[i]
     end
-    if LEVEL_SORTS[sort.id] then U.SortRows(rows, sort, rowValue) end
+    if LEVEL_SORTS[sort.id] then
+        U.SortRows(rows, sort, rowValue)
+    else
+        -- Keep the page in list order: an earlier iLvl/Req sort reordered these same tables
+        table.sort(rows, function(x, y) return x.pos < y.pos end)
+    end
     for i, d in ipairs(rows) do d.index = i end
     results:SetDataProvider(CreateDataProvider(rows), keepScroll and ScrollBoxConstants.RetainScrollPosition or nil)
 
-    countText:SetText(("%d items with prices"):format(#found))
+    if Stonks:SummariesBusy() then
+        countText:SetText(("%d items with prices (updating prices...)"):format(#found))
+    else
+        countText:SetText(("%d items with prices"):format(#found))
+    end
     if pager then pager:Update(state.page, pages, #found, first + 1, first + #rows) end
 end
 
@@ -536,7 +576,15 @@ local function createWindow()
         namesPending = true
         C_Timer.After(0.5, function()
             namesPending = false
-            if frame:IsShown() then renderResults(true) end
+            if not frame:IsShown() then return end
+            if LEVEL_SORTS[settingsSort().id] or needNames(state.base and state.base.id) then
+                -- Names or levels decide the order: rebuild with them
+                if needNames(state.base and state.base.id) then dataVersion = dataVersion + 1 end
+                renderResults(true)
+            else
+                -- Only the rows on screen change
+                results:ForEachFrame(function(row) if row.data then fillResultRow(row, row.data) end end)
+            end
         end)
     end)
 
@@ -567,12 +615,18 @@ end
 -- New prices while the browser is open
 local refreshTimer
 function Stonks:OnBrowserData()
-    wipe(statsCache)
+    dataVersion = dataVersion + 1
     if not frame or not frame:IsShown() or refreshTimer then return end
     refreshTimer = C_Timer.NewTimer(3, function()
         refreshTimer = nil
         renderResults(true)
     end)
+end
+
+-- Background summary refresh finished (Summary.lua): show the new values.
+function Stonks:OnSummaries()
+    dataVersion = dataVersion + 1
+    if frame and frame:IsShown() and not refreshTimer then renderResults(true) end
 end
 
 -- Shift-click an item (bags, chat, Auctionator) while the search box has focus: show that item.
@@ -591,3 +645,5 @@ function Stonks:ToggleWindow()
     if not frame then createWindow() end
     frame:SetShown(not frame:IsShown())
 end
+
+function Stonks:BrowserShown() return frame ~= nil and frame:IsShown() end
