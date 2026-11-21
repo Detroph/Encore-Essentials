@@ -26,3 +26,4 @@ Sync\Links.lua
 Sync\HistoryView.lua
 Sync\Slash.lua
 Sync\Buttons.lua
+Options.lua
