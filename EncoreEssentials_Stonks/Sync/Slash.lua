@@ -117,10 +117,13 @@ SlashCmdList.ENCORESTONKSSYNC = function(input)
         perf()
     elseif cmd == "status" then
         status()
+    elseif cmd == "request" then
+        local _, msg = Sync.RequestNow()
+        print(P .. msg)
     elseif cmd == "who" then
         if Sync.Who(whoReport) then print(P .. "asking the guild who runs Encore-Stonks...") else print(P .. "you are not in a guild.") end
     else
-        print(P .. "guild sharing: /stonksync off | receive | share | status | who | perf | lowend | mute <name> | unmute <name> | link scan | link item <item> | history")
+        print(P .. "guild sharing: /stonksync off | receive | share | status | who | request | perf | lowend | mute <name> | unmute <name> | link scan | link item <item> | history")
         status()
     end
 end

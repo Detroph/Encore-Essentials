@@ -450,6 +450,12 @@ local function startAsk(resume)
     local thisAsk = ask.askedAt
     C_Timer.After(ASK_TIMEOUT, function()
         if ask and ask.askedAt == thisAsk and not ask.chosen and #ask.offers == 0 then
+            if ask.manual then
+                -- A request from the button: say so, and don't keep asking.
+                ask = nil
+                if Sync.onManual then Sync.onManual("none") end
+                return
+            end
             ask.tries = ask.tries + 1
             local wait = RETRY[ask.tries]
             if wait then C_Timer.After(wait, function() startAsk() end) else ask = nil end
@@ -457,6 +463,25 @@ local function startAsk(resume)
     end)
 end
 Sync.StartAsk = startAsk
+
+-- The "Request sync" button: one more login-summary request, at most once every 10 minutes. It costs the guild what
+-- a login does: one small hello, a few small offers, and one guildmate whispering only what changed since your last
+-- summary.
+local MANUAL_COOLDOWN = 600
+local manualAt = 0
+function Sync.ManualWait()
+    return math.max(0, manualAt + MANUAL_COOLDOWN - time())
+end
+function Sync.RequestNow()
+    if mode() == "off" then return false, "Guild sharing is off. /stonksync share turns it on." end
+    if not IsInGuild() then return false, "You are not in a guild." end
+    if Sync.ManualWait() > 0 then return false, "You can ask again in a few minutes." end
+    if ask and ask.chosen then return false, "A login summary is already coming in from " .. Codec.safeText(ask.chosen) .. "." end
+    manualAt = time()
+    ask = { tries = #RETRY, manual = true }
+    startAsk(0)
+    return true, "Asked the guild. If someone has newer prices than you, they show up here in a minute or two."
+end
 
 local function pickOffer()
     if not ask or ask.chosen or #ask.offers == 0 then return end

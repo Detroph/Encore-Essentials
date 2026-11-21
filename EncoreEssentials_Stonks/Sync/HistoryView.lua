@@ -19,7 +19,8 @@ local FILTERS = {
 }
 local MODE_TEXT = { share = "on (sharing and receiving)", receive = "receive only", off = "off (chat links only)" }
 
-local page, box, summary, footer
+local page, box, summary, footer, requestBtn
+local note, noteUntil -- a short message from the Request sync button, shown in the footer for a while
 local filterButtons = {}
 
 local function settings()
@@ -172,7 +173,11 @@ local function refresh()
     local mode = Sync and Sync.Mode and Sync.Mode() or "off"
     local last = r and r.sync and r.sync.at and ("   Last login summary: %s, %s."):format(Codec.safeText(r.sync.from), date("%d %b %H:%M", r.sync.at)) or ""
     summary:SetText("Guild sharing is " .. (MODE_TEXT[mode] or mode) .. "." .. last)
-    footer:SetText(("%d deliveries kept (the last 30 days). Times in your computer's time zone."):format(#Log.Entries()))
+    if note and time() < (noteUntil or 0) then
+        footer:SetText(note)
+    else
+        footer:SetText(("%d deliveries kept (the last 30 days). Times in your computer's time zone."):format(#Log.Entries()))
+    end
 end
 
 local pending = false
@@ -266,8 +271,48 @@ function View.Build(panel)
     page.empty:SetText("Nothing received yet. Guild scans, your login summary and prices shared by chat link show up here.")
     U.setColor(page.empty, DIM)
 
+    -- Request sync: asks the guild once more for your login summary (what changed since your last one).
+    requestBtn = U.ToggleButton(page, "Request sync", 118)
+    requestBtn:SetPoint("BOTTOMLEFT", 10, 4)
+    local function setNote(text)
+        note, noteUntil = text, time() + 20
+        refresh()
+    end
+    local function updateRequest()
+        local wait = Sync.ManualWait and Sync.ManualWait() or 0
+        if wait > 0 then
+            requestBtn.text:SetText(("Request sync %d:%02d"):format(math.floor(wait / 60), wait % 60))
+            requestBtn.text:SetTextColor(DIM[1], DIM[2], DIM[3])
+        else
+            requestBtn:SetOn(false)
+            requestBtn.text:SetText("Request sync")
+        end
+    end
+    requestBtn:SetScript("OnClick", function()
+        if not Sync.RequestNow then return end
+        local _, msg = Sync.RequestNow()
+        setNote(msg)
+        updateRequest()
+    end)
+    U.tooltip(requestBtn, function(tt)
+        tt:SetText("Request sync")
+        tt:AddLine("Asks the guild for your login summary again: one guildmate whispers you the prices that changed since your last summary. Light on the guild, like logging in. Once every 10 minutes.", 1, 1, 1, true)
+    end)
+    Sync.onManual = function(result)
+        if result == "none" then setNote("Nobody answered: no guildmate online has newer prices than you, or nobody shares.") end
+    end
+    local elapsed = 0
+    requestBtn:SetScript("OnUpdate", function(_, dt)
+        elapsed = elapsed + dt
+        if elapsed < 1 then return end
+        elapsed = 0
+        updateRequest()
+        if note and time() >= (noteUntil or 0) then note = nil; refresh() end
+    end)
+    updateRequest()
+
     footer = page:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    footer:SetPoint("BOTTOMLEFT", 16, 9)
+    footer:SetPoint("BOTTOMLEFT", requestBtn, "BOTTOMRIGHT", 8, 5)
     footer:SetPoint("RIGHT", page, "BOTTOMRIGHT", -100, 0)
     footer:SetJustifyH("LEFT")
     footer:SetWordWrap(false)

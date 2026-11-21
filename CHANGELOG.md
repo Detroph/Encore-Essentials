@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Encore-Stonks: a Request sync button at the bottom left of the sync history (also `/stonksync request`) asks the guild for your login summary again, like logging in: one guildmate whispers you the prices that changed since your last summary. Once every 10 minutes; the button shows the time left, and says so when nobody has newer prices.
 - Encore-Stonks: the sync history shows every login summary attempt, also one where the guildmate offered but nothing arrived. Guildmates still on 0.1.4 or older answer the login request but can't send to names with a space, so the login summary now prefers guildmates on this version, waits a little longer when only an old version answered, and doesn't ask a guildmate who never delivered again that session.
 
 ## 0.1.7
