@@ -27,6 +27,7 @@ import { fileURLToPath } from 'node:url';
 import { readJson, writeJson } from './net.mjs';
 import { readFdb } from './foreverdb-files.mjs';
 import { fdbLoot } from './fdb-loot.mjs';
+import { atlasLoot, atlasLootFile } from './atlasloot-loot.mjs';
 import { djLoot, djFolder } from './dj-loot.mjs';
 import { refreshConfig } from '../refresh-config.mjs';
 
@@ -38,10 +39,12 @@ const dgItems = readFdb('Dungeons.lua').tables['ns.dgItems'] || {};
 const searchNames = readFdb('SearchNames.lua').tables['ns.searchItemNames'] || {};
 const itemFacts = readFdb('Items.lua').tables['ns.items'] || {};
 // Sources to use ("lootSources"): dungeon-journal (a source) or dungeon-journal-check (only compared, in
-// out/dj-check.json), foreverdb, foreverchanges, wowtbc, wowhead.
-const SOURCES = new Set(refreshConfig().lootSources || ['dungeon-journal-check', 'foreverdb', 'foreverchanges', 'wowhead']);
+// out/dj-check.json), atlasloot-check (leads checked on Wowhead, report in out/atlasloot-check.json), foreverdb,
+// foreverchanges, wowtbc, wowhead.
+const SOURCES = new Set(refreshConfig().lootSources || ['dungeon-journal-check', 'atlasloot-check', 'foreverdb', 'foreverchanges', 'wowhead']);
 const djAll = SOURCES.has('dungeon-journal') || SOURCES.has('dungeon-journal-check') ? djLoot(djFolder()) : null;
 const dj = SOURCES.has('dungeon-journal') ? djAll : null;
+const al = SOURCES.has('atlasloot-check') ? atlasLoot(atlasLootFile()) : null;
 const optJson = (f) => { try { return readJson(f); } catch { return []; } };
 const fc = SOURCES.has('foreverchanges') ? optJson('out/fc-dungeons.json') : [];
 const tbc = SOURCES.has('wowtbc') ? optJson('out/wowtbc.json') : [];
@@ -219,6 +222,39 @@ if (!dj) for (const d of djAll?.dungeons || []) {
     bossStats.added.push(`${I.name}: ${jb.name}`);
   }
 }
+// 2c. AtlasLoot Continued (GPL v2 only, so never copied): its entries are leads, marked 'al'. One is kept only when
+//     Wowhead Forever confirms it (step 3: the tooltip names the boss, or a trash mob of the instance; or the boss's
+//     Wowhead page lists it, step 2b). A boss it lists that no source here has is added with no loot of its own, so its
+//     Wowhead page is read. Instances are matched by ForeverDB instance ID, else by name; it never adds an instance.
+const alStats = { bosses: 0, matched: 0, added: [], instancesNotHere: [], leads: 0, alreadyHere: 0 };
+const alInst = new Map(); // AtlasLoot instance -> Encore instance key
+const alCheck = { confirmed: [], contradicted: [], unconfirmed: [], notFetched: [] };
+if (al) for (const d of al.dungeons) {
+  const I = [...instances.values()].find((x) => d.instance && x.fdb === d.instance) || instances.get(group(d.name));
+  if (!I) { alStats.instancesNotHere.push(d.name); continue; }
+  alInst.set(d.key, I.key);
+  for (const ab of d.bosses) {
+    alStats.bosses++;
+    let B = ab.trash ? boss(I, '', true) : (ab.npc && I.bosses.find((x) => !x.trash && x.npc === ab.npc)) ||
+      I.bosses.find((x) => !x.trash && (norm(x.name) === norm(ab.name) || x.aliases.has(norm(ab.name)) || (ALIAS[norm(ab.name)] && norm(x.name) === ALIAS[norm(ab.name)]))) ||
+      fdbBoss(I, ab.name) ||
+      // One member of an encounter listed apart (Olaf of The Lost Dwarves): the boss that already has most of its loot.
+      I.bosses.filter((x) => !x.trash).map((x) => [x, ab.items.filter((i) => x.items.has(i)).length]).filter(([, n]) => n * 2 >= ab.items.length && n > 0).sort((a, b) => b[1] - a[1])[0]?.[0];
+    if (B) alStats.matched++;
+    else {
+      // Kept only if Wowhead confirms some of its loot (AtlasLoot also lists chests and quest items as bosses).
+      B = { name: ab.name, trash: false, kills: 0, items: new Map(), aliases: new Set([norm(ab.name)]), npc: ab.npc || undefined, alOnly: true };
+      I.bosses.push(B);
+      alStats.added.push(`${I.name}: ${ab.name}`);
+    }
+    B.aliases.add(norm(ab.name));
+    for (const id of ab.items) {
+      if (B.items.has(id)) { B.items.get(id).src.add('al'); alStats.alreadyHere++; continue; }
+      addItem(B, id, 'al', { alLead: true });
+      alStats.leads++;
+    }
+  }
+}
 // Two entries for one NPC (a fill-in site's name and ForeverDB's, or a group's members): one boss, ForeverDB's name first.
 function mergeSameNpc() {
   for (const I of instances.values()) {
@@ -232,7 +268,7 @@ function mergeSameNpc() {
       for (const a of from.aliases) into.aliases.add(a);
       into.aliases.add(norm(from.name));
       into.kills = Math.max(into.kills || 0, from.kills || 0);
-      into.fdb = into.fdb || from.fdb; into.listed = into.listed || from.listed;
+      into.fdb = into.fdb || from.fdb; into.listed = into.listed || from.listed; into.alOnly = !!(into.alOnly && from.alOnly);
       bossStats.merged.push(`${I.name}: ${from.name} -> ${into.name}`);
       if (into === B) { keep.set(B.npc, B); I.bosses[I.bosses.indexOf(K)] = null; return true; }
       return false;
@@ -273,6 +309,19 @@ if (whd) {
       const pct = (id) => (100 * (W.drops[id] || 0)) / W.kills;
       for (const [id, e] of B.items) {
         const c = W.drops[id] || 0;
+        // An AtlasLoot lead the boss's Wowhead page lists is confirmed by Wowhead.
+        if (e.alLead && c) {
+          const p = pct(id), q = W.items?.[id]?.[1] ?? 1;
+          e.src.add('whn');
+          e.whAnyway = p >= WH_ALSO_PCT || (RECIPE_RE.test(W.items?.[id]?.[0] || '') && c >= 2); // Wowhead alone adds it too
+          if (e.chance == null) { e.chance = Math.round(p * 100) / 100; e.whChance = true; }
+          e.whOwn = p >= WH_OWN_ANY_PCT || (p >= WH_OWN_PCT && q >= 3);
+        }
+        if (e.alLead && !c && W.kills >= WH_NONE_KILLS) {
+          B.items.delete(id);
+          alCheck.contradicted.push({ instance: I.name, boss: B.name, item: id, name: al.names[id] || null, wowheadKills: W.kills });
+          continue;
+        }
         if (c && W.kills >= 3 * (B.kills || 0)) { e.chance = Math.round(pct(id) * 100) / 100; e.whChance = true; whStats.chances++; }
         if (!c && W.kills >= WH_NONE_KILLS) {
           if (!e.src.has('fdb') && !e.src.has('dj')) { B.items.delete(id); whStats.dropped++; } else e.whNone = true;
@@ -325,9 +374,17 @@ function itemOf(id) {
 let leftOut = 0, whChances = 0;
 const notFetched = new Set();
 const confirmedIn = new Map(); // item ID -> instances where a fill-in source or Wowhead ties it to a boss
+// Trash mobs of each instance, from Wowhead's zone pages: a tooltip naming one confirms a trash drop.
+const zoneNpcs = new Map();
+for (const z of Object.values(whd?.zones || {})) {
+  const k = group(z.name);
+  const set = zoneNpcs.get(k) || zoneNpcs.set(k, new Set()).get(k);
+  for (const n of z.npcs || []) set.add(norm(n.name));
+}
 for (const I of instances.values()) for (const B of I.bosses) for (const e of B.items.values()) {
   const w = wh[e.id];
   if (w && !w.unknown && w.droppedBy && (norm(w.droppedBy) === norm(B.name) || B.aliases.has(norm(w.droppedBy)))) e.src.add('wh');
+  if (B.trash && e.src.has('al') && w && !w.unknown && w.droppedBy && zoneNpcs.get(I.key)?.has(norm(w.droppedBy))) e.src.add('wh');
   if (e.src.has('fc') || e.src.has('tbc') || e.src.has('wh') || e.whOwn || e.djOwn) (confirmedIn.get(e.id) || confirmedIn.set(e.id, new Set()).get(e.id)).add(I.key);
 }
 // Level-range drops (Det, 2026-11-20): items that drop anywhere in a level range, not from one boss. A boss's table shows only
@@ -344,6 +401,16 @@ for (const I of instances.values()) {
   for (const B of I.bosses) {
     for (const [id, e] of B.items) {
       const w = wh[id];
+      // An AtlasLoot lead Wowhead Forever does not confirm is left out, and listed in out/atlasloot-check.json.
+      if (e.src.has('al')) {
+        const row = { instance: I.name, boss: B.name, item: id, name: w?.name || al.names[id] || null };
+        if (e.src.size === 1) {
+          B.items.delete(id);
+          (w ? alCheck.unconfirmed : alCheck.notFetched).push(w ? { ...row, wowheadDroppedBy: w.droppedBy || null, unknownOnWowhead: !!w.unknown } : row);
+          if (!w) notFetched.add(id);
+          continue;
+        }
+      }
       const fromFdb = e.src.has('fdb') || e.src.has('whn') || e.src.has('dj'); // seen in Forever (Journal, ForeverDB or Wowhead)
       // An item only the fill-in sites list, and Wowhead Forever does not know, is not confirmed in Forever: left out.
       // One not fetched from Wowhead yet is left out too, but counted apart: run wowhead-items.mjs again.
@@ -385,7 +452,7 @@ for (const I of instances.values()) {
     }
   }
   // Empty entries are dropped: trash, and bosses only a fill-in site lists in an instance ForeverDB has bosses for.
-  I.bosses = I.bosses.filter((b) => b.items.size || (!b.trash && (!I.fdb || b.fdb || b.dj || b.listed)));
+  I.bosses = I.bosses.filter((b) => b.items.size || (!b.trash && !b.alOnly && (!I.fdb || b.fdb || b.dj || b.listed)));
 }
 // Shared recipe drops: recipes seen from bosses in two or more instances. Listed once per instance, not per boss.
 const recipeInsts = new Map();
@@ -399,7 +466,7 @@ for (const I of instances.values()) {
     if ((recipeInsts.get(id)?.size || 0) >= 2) { I.recipes.add(id); B.items.delete(id); }
   }
   sharedRecipes += I.recipes.size;
-  I.bosses = I.bosses.filter((b) => b.items.size || (!b.trash && (!I.fdb || b.fdb || b.listed)));
+  I.bosses = I.bosses.filter((b) => b.items.size || (!b.trash && !b.alOnly && (!I.fdb || b.fdb || b.listed)));
 }
 // Items the ForeverDB vendors sell.
 const vendors = FL.vendors.map((v) => ({ ...v, items: [...v.items] }));
@@ -506,6 +573,7 @@ if (dj) L.push(`-- Boss loot first from Dungeon Journal (ForeverDungeonJournal) 
 const fills = [fc.length && 'foreverchanges.pro', tbc.length && 'wowtbc.gg'].filter(Boolean);
 L.push(`-- ${fills.length ? `Filled in from ${fills.join(' and ')}. ` : ''}${Object.keys(wh).length ? 'Item details from Wowhead Forever (https://www.wowhead.com/forever) and the game client.' : 'Item details from the game client.'}`);
 if (whd) L.push('-- Boss drops, drop chances, reputation rewards and world drops filled in from Wowhead Forever (https://www.wowhead.com/forever).');
+if (al) L.push('-- AtlasLoot Continued was used as a checklist of drops to look up on Wowhead Forever; none of its data is included.');
 if (npcLevels) L.push(`-- Boss levels from QuestieDB (https://github.com/Questie/QuestieDB, GPL-3.0), ${npcLevels.source}: its WoW Forever NPC data, which is Questie's Classic data with Forever corrections. No other Classic or emulator data.`);
 else L.push('-- No Classic or emulator data.');
 L.push("-- Licence: GPL-3.0 with ForeverDB.net's attribution term; see NOTICE.txt in this addon.");
@@ -578,9 +646,24 @@ if (djAll) {
   console.log(`Dungeon Journal check: ${check.missingHere.length} of its entries not listed here, ${check.notInJournal.length} entries here not in it (tools/out/dj-check.json)`);
 }
 
+// AtlasLoot as a cross-check: what Wowhead confirmed (now in Loot.lua as Wowhead data), what it did not, and the reverse.
+if (al) {
+  const inAl = new Map();
+  for (const d of al.dungeons) { const k = alInst.get(d.key); if (k) { const set = inAl.get(k) || inAl.set(k, new Set()).get(k); d.bosses.forEach((b) => b.items.forEach((i) => set.add(i))); } }
+  // Leads Wowhead confirmed that are in Loot.lua now (random and level-range drops are taken off the bosses as usual).
+  for (const I of order) for (const B of I.bosses) for (const e of B.items.values()) if (e.alLead) {
+    alCheck.confirmed.push({ instance: I.name, boss: B.name, item: e.id, name: items[e.id]?.name || null, by: e.src.has('whn') ? 'Wowhead boss page' : 'Wowhead tooltip', newFromLead: !e.whAnyway });
+  }
+  const notInAtlasLoot = [];
+  for (const I of order) { const set = inAl.get(I.key); if (set) for (const B of I.bosses) for (const id of B.items.keys()) if (!set.has(id)) notInAtlasLoot.push({ instance: I.name, boss: B.name, item: id, name: items[id]?.name || null }); }
+  writeJson('out/atlasloot-check.json', { version: al.version, file: al.file, ...alStats, ...alCheck, notInAtlasLoot });
+  console.log(`AtlasLoot check: ${alStats.leads} leads (${alStats.alreadyHere} entries already here); ${alCheck.confirmed.length} confirmed on Wowhead (${alCheck.confirmed.filter((x) => x.newFromLead).length} that Wowhead's boss pages alone would not add), ${alCheck.contradicted.length} contradicted by Wowhead, ${alCheck.unconfirmed.length} not confirmed, ${alCheck.notFetched.length} not fetched from Wowhead yet; ${alStats.added.length} bosses added; ${notInAtlasLoot.length} entries here not in AtlasLoot (tools/out/atlasloot-check.json)`);
+}
+
 const report = {
   foreverdb: { version: FL.version, built: FL.built, classicEntriesLeftOut: FL.dropped.classic, cluesLeftOut: FL.dropped.clues, vendorsLeftOut: FL.dropped.vendors },
   dungeonJournal: dj ? { version: dj.version, ...djStats } : null,
+  atlasLoot: al ? { version: al.version, ...alStats, confirmed: alCheck.confirmed.length, contradicted: alCheck.contradicted.length, unconfirmed: alCheck.unconfirmed.length, notFetched: alCheck.notFetched.length } : null,
   levelsFound,
   bossesAdded: bossStats.added, bossesMerged: bossStats.merged,
   skipped,
@@ -602,7 +685,8 @@ console.log(`${levelRangeDropped} random and level-range drops taken off the bos
 console.log(`${order.length} instances, ${Object.keys(items).length} items (${noDetails} without Wowhead details yet), ${whChances} chances from Wowhead, ${leftOut} fill-in entries left out (not on Wowhead Forever)`);
 if (notFetched.size) console.log(`WARNING: ${notFetched.size} fill-in items not fetched from Wowhead yet, left out: run node tools/loot/wowhead-items.mjs, then build again`);
 if (dj) console.log(`Dungeon Journal ${dj.version}: ${djStats.bosses} bosses (${djStats.matched} matched to ForeverDB by NPC/alias), ${djStats.own} own and ${djStats.random} random entries`);
-else if (!djAll && (SOURCES.has('dungeon-journal') || SOURCES.has('dungeon-journal-check'))) console.log('No Dungeon Journal folder: set "dungeonJournal" in tools/refresh.config.json or DUNGEON_JOURNAL');
+if (!al && SOURCES.has('atlasloot-check')) console.log('No AtlasLoot folder: set "atlasLoot" in tools/refresh.config.json or ATLASLOOT');
+if (!djAll && (SOURCES.has('dungeon-journal') || SOURCES.has('dungeon-journal-check'))) console.log('No Dungeon Journal folder: set "dungeonJournal" in tools/refresh.config.json or DUNGEON_JOURNAL');
 if (whd) console.log(`Wowhead: ${whStats.npcs} bosses, ${whStats.added} drops added, ${whStats.chances} chances, ${whStats.dropped} contradicted ties dropped, ${whStats.moved} moved from trash; ${sharedRecipes} shared recipe entries; ${whRewards} reputation rewards (${whFactions} new factions); ${world.size} world drops`);
 else console.log('No out/wowhead-drops.json: built without Wowhead Forever pages (run node tools/loot/wowhead-drops.mjs)');
 console.log('skipped:', skipped.join('; '));
