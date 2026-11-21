@@ -99,7 +99,13 @@ local function insertChat(text)
         activate(box)
         setChat(box, saved.chatType, saved.tellTarget, saved.channelTarget)
         if PUBLIC[saved.chatType] and IsInGuild() then setChat(box, "GUILD") end
+        -- Insert a moment later too, in case the game fills or clears the reopened box on its next frame.
         box:Insert(text)
+        if C_Timer then
+            C_Timer.After(0.05, function()
+                if not (box:GetText() or ""):find(text, 1, true) then box:Insert(text) end
+            end)
+        end
         return
     end
     if not ChatFrame_OpenChat then return end
