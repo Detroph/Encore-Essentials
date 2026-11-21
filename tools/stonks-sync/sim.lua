@@ -397,7 +397,7 @@ do
     old.Stonks.SyncComm.Send = oldSend
     old.online, good.online, newbie.online, lone.online = false, false, false, false
 
-    -- Request sync button: asks once more, gets what changed since the last summary, then waits 10 minutes.
+    -- Request sync button: asks once more, gets what changed since the last summary, then waits an hour.
     local S = newbie.Stonks
     local hourNow = math.floor(clock / 3600)
     good.online = true
@@ -411,11 +411,13 @@ do
     check(ok and #after == before + 1 and after[#after].done and newbie.Stonks.realmData.baseline["9001"] ~= nil,
         "Request sync gets the newer prices and logs it")
     local again, msg = S.Sync.RequestNow()
-    check(not again and S.Sync.ManualWait() > 500, "Request sync waits 10 minutes before the next one (" .. tostring(msg) .. ")")
+    check(not again and S.Sync.ManualWait() > 3500, "Request sync waits an hour before the next one (" .. tostring(msg) .. ")")
     local none
     S.Sync.onManual = function(r) none = r end
-    run(600)
-    check(S.Sync.RequestNow() and true, "after 10 minutes it can ask again")
+    run(1800)
+    check(not S.Sync.RequestNow(), "still waiting after 30 minutes")
+    run(1800)
+    check(S.Sync.RequestNow() and true, "after an hour it can ask again")
     run(30)
     check(none == "none", "with nothing newer anywhere it says nobody answered")
     good.online, newbie.online = false, false

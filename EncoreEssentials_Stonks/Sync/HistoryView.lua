@@ -296,7 +296,7 @@ function View.Build(panel)
     end)
     U.tooltip(requestBtn, function(tt)
         tt:SetText("Request sync")
-        tt:AddLine("Asks the guild for your login summary again: one guildmate whispers you the prices that changed since your last summary. Light on the guild, like logging in. Once every 10 minutes.", 1, 1, 1, true)
+        tt:AddLine("Asks the guild for your login summary again: one guildmate whispers you the prices that changed since your last summary. Light on the guild, like logging in. Once an hour.", 1, 1, 1, true)
     end)
     Sync.onManual = function(result)
         if result == "none" then setNote("Nobody answered: no guildmate online has newer prices than you, or nobody shares.") end
