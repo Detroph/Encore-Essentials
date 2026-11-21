@@ -6,6 +6,7 @@
 local _, ns = ...
 local Stonks = ns.Stonks
 local Codec, Comm, Sync, Log = Stonks.SyncCodec, Stonks.SyncComm, Stonks.Sync, Stonks.SyncLog
+local GetItemInfo = (C_Item and C_Item.GetItemInfo) or _G.GetItemInfo -- no global one on WoW Forever
 local Links = {}
 Sync.Links = Links
 

@@ -6,6 +6,8 @@ local _, ns = ...
 local Stonks = ns.Stonks
 local U = ns.UI
 local Browse = ns.Browse
+-- WoW Forever has no global GetItemInfo; the C_Item one is the same call.
+local GetItemInfo = (C_Item and C_Item.GetItemInfo) or _G.GetItemInfo
 
 local TEAL_SOFT, COPPER, GOLD, INK, DIM = U.TEAL_SOFT, U.COPPER, U.GOLD, U.INK, U.DIM
 local setColor, gradient, coinShort = U.setColor, U.gradient, U.coinShort
