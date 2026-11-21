@@ -3,6 +3,7 @@
 ## 0.1.7
 
 - Encore-Stonks: the item list shows 100 items per page (was the first 500), with arrows at the bottom right to page through. Sorting by price, name or days orders the whole list. iLvl and Req sort only the page you're on, so the game no longer lags looking up item info for every item.
+- Encore-DB: item lists with two to four items side by side fill down each column first, then the next column, so a sorted list reads top to bottom in column 1, then column 2 and on.
 
 ## 0.1.6
 
