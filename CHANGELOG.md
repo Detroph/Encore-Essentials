@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Encore-Stonks: Share scan and Share item now really go to the chat you were typing in (whisper, party, raid, guild, officer or a channel), or the whisper tab you have selected. In 0.1.3 they still fell back to guild, because clicking the button closes the chat box and the game resets its chat type first. Guild only when your last chat was say, yell or emote, or you have not typed yet this session.
+- Encore-Stonks: Share scan and Share item now really go to the chat you have open, like shift-clicking an item: into the open whisper, party, raid, guild, officer or channel box at the cursor, or the chat you last had open. In 0.1.3 they opened an empty guild box instead, because the game fills a newly opened chat box one frame later and wiped the link. Guild only when your last chat was say, yell or emote, or you have not opened a chat yet this session.
 
 ## 0.1.3-beta
 

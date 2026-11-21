@@ -21,20 +21,50 @@ local expecting = {} -- [sender] = { kind, arg, untilTime }
 -- Chat types that make no sense for a shared link; for these we send to guild instead.
 local PUBLIC = { SAY = true, YELL = true, EMOTE = true }
 
--- The chat the player last typed in this session (whisper target, party, raid, guild, officer or a channel).
--- Clicking Share takes focus from the chat box and the game then resets it to its default type, so by the time
--- the button runs, the box no longer knows. We remember it from every header update while the player types.
+-- The chat the player last had open (its box, chat type, whisper target and channel). Clicking Share takes focus
+-- from the chat box, and the game may close it and reset it to its default type before the button runs, so we
+-- remember it all the time while the player has a chat box focused.
 local lastChat
 local restoring = false
+
 local function remember(box)
-    if restoring or not box or not box.GetAttribute then return end
-    -- Only while the player is typing in it: the game also updates the header when it resets a closed box.
-    if not (ChatEdit_GetActiveWindow and ChatEdit_GetActiveWindow() == box) then return end
+    if restoring or not box or not box.GetAttribute or not (box.HasFocus and box:HasFocus()) then return end
     local chatType = box:GetAttribute("chatType")
     if not chatType then return end
-    lastChat = { chatType = chatType, tellTarget = box:GetAttribute("tellTarget"), channelTarget = box:GetAttribute("channelTarget") }
+    lastChat = { box = box, chatType = chatType, tellTarget = box:GetAttribute("tellTarget"),
+        channelTarget = box:GetAttribute("channelTarget") }
 end
-if hooksecurefunc and ChatEdit_UpdateHeader then hooksecurefunc("ChatEdit_UpdateHeader", remember) end
+
+-- Every chat edit box: the numbered chat frames and any whisper windows (CHAT_FRAMES lists them all).
+local function chatBoxes()
+    local list, seen = {}, {}
+    local function add(box) if box and not seen[box] then seen[box] = true; list[#list + 1] = box end end
+    for _, name in ipairs(CHAT_FRAMES or {}) do
+        local frame = _G[name]
+        add(frame and (frame.editBox or _G[name .. "EditBox"]))
+    end
+    for i = 1, NUM_CHAT_WINDOWS or 10 do add(_G["ChatFrame" .. i .. "EditBox"]) end
+    return list
+end
+
+local hooked = {}
+local function hookBoxes()
+    for _, box in ipairs(chatBoxes()) do
+        if not hooked[box] and box.HookScript then
+            hooked[box] = true
+            box:HookScript("OnEditFocusGained", remember)
+            box:HookScript("OnTextChanged", remember)
+        end
+    end
+end
+hookBoxes()
+if hooksecurefunc then
+    if ChatEdit_UpdateHeader then hooksecurefunc("ChatEdit_UpdateHeader", remember) end
+    if FCF_OpenTemporaryWindow then hooksecurefunc("FCF_OpenTemporaryWindow", hookBoxes) end
+end
+local loginFrame = CreateFrame("Frame")
+loginFrame:RegisterEvent("PLAYER_LOGIN")
+loginFrame:SetScript("OnEvent", hookBoxes)
 
 local function setChat(box, chatType, tellTarget, channelTarget)
     restoring = true
@@ -45,24 +75,49 @@ local function setChat(box, chatType, tellTarget, channelTarget)
     restoring = false
 end
 
--- Puts the link text into the chat the player has open, ready to send with Enter: the box being typed in,
--- else the selected whisper tab, else the chat the player last typed in. Guild only when that is say, yell
--- or emote, or nothing is known yet.
+local function activate(box)
+    restoring = true
+    if ChatEdit_ActivateChat then ChatEdit_ActivateChat(box) else box:Show(); box:SetFocus() end
+    restoring = false
+end
+
+-- Puts the link text into the chat the player has open, ready to send with Enter:
+-- 1. a chat box that has focus: the link goes in at the cursor;
+-- 2. else the chat the player last had open (whisper target, party, raid, guild, officer, channel): that box is
+--    opened again with that chat and the link is added to whatever was typed;
+-- 3. else a new chat box, in guild chat when the default would be say, yell or emote.
+-- Note: ChatFrame_OpenChat only fills its text on the next frame, so text inserted right after it is wiped;
+-- that is why 0.1.3 opened an empty guild box. We open boxes with ChatEdit_ActivateChat instead.
 local function insertChat(text)
-    local box = ChatEdit_GetActiveWindow and ChatEdit_GetActiveWindow()
-    if box then box:Insert(text); return end
-    if not ChatFrame_OpenChat then return end
-    ChatFrame_OpenChat("")
-    box = ChatEdit_GetActiveWindow and ChatEdit_GetActiveWindow()
-    if not box then return end
-    local tab = box.chatFrame
-    local whisperTab = tab and tab.isTemporary and box:GetAttribute("chatType") ~= "SAY"
-    if not whisperTab and lastChat then
-        setChat(box, lastChat.chatType, lastChat.tellTarget, lastChat.channelTarget)
+    hookBoxes()
+    for _, box in ipairs(chatBoxes()) do
+        if box:HasFocus() then box:Insert(text); return end
     end
-    local chatType = box:GetAttribute("chatType")
-    if (not chatType or PUBLIC[chatType]) and IsInGuild() then setChat(box, "GUILD") end
-    box:Insert(text)
+    local saved = lastChat
+    if saved and saved.box then
+        local box = saved.box
+        activate(box)
+        setChat(box, saved.chatType, saved.tellTarget, saved.channelTarget)
+        if PUBLIC[saved.chatType] and IsInGuild() then setChat(box, "GUILD") end
+        box:Insert(text)
+        return
+    end
+    if not ChatFrame_OpenChat then return end
+    restoring = true
+    ChatFrame_OpenChat(text)
+    restoring = false
+    -- The box shows its default chat; move it to guild when that is say, yell or emote.
+    local function fixType()
+        for _, box in ipairs(chatBoxes()) do
+            if box:HasFocus() then
+                local chatType = box:GetAttribute("chatType")
+                if (not chatType or PUBLIC[chatType]) and IsInGuild() then setChat(box, "GUILD") end
+                return
+            end
+        end
+    end
+    fixType()
+    if C_Timer then C_Timer.After(0, fixType) end
 end
 
 function Links.PostItem(input)
