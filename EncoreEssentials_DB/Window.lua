@@ -1298,9 +1298,12 @@ local function packRows(blocks)
             if key and (known or key == b.defaultSort) then b.cells = ns.SortCells(b.cells, key, desc) end
             layout.sortKey, layout.sortDesc = known and key or nil, desc
             rows[#rows + 1] = { kind = "cols", layout = layout }
-            for i = 1, #b.cells, layout.n do
+            -- Fill down each column first, then the next column, so the sorted order reads top to bottom.
+            local total = #b.cells
+            local height = math.ceil(total / layout.n)
+            for r = 1, height do
                 local slice = {}
-                for j = i, math.min(i + layout.n - 1, #b.cells) do slice[#slice + 1] = b.cells[j] end
+                for col = 1, layout.n do slice[col] = b.cells[(col - 1) * height + r] end
                 rows[#rows + 1] = { kind = "cells", cells = slice, layout = layout }
             end
         else
