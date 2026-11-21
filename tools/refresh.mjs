@@ -61,7 +61,7 @@ const steps = {
     run('quests/build-quests.mjs');
   },
   loot() {
-    const src = new Set(cfg.lootSources || ['dungeon-journal-check', 'atlasloot-check', 'foreverdb', 'foreverchanges', 'wowhead']);
+    const src = new Set(cfg.lootSources || ['dungeon-journal-check', 'atlasloot', 'foreverdb', 'foreverchanges', 'wowhead']);
     if (download) {
       run('loot/foreverdb-files.mjs');
       if (src.has('foreverchanges')) run('loot/fc-dungeons.mjs');

@@ -1,7 +1,7 @@
 {
   "dungeonJournal": "<your WoW Forever folder>/Interface/AddOns/ForeverDungeonJournal",
   "atlasLoot": "<your WoW Forever folder>/Interface/AddOns",
-  "lootSources": ["dungeon-journal-check", "atlasloot-check", "foreverdb", "foreverchanges", "wowhead"],
+  "lootSources": ["dungeon-journal-check", "atlasloot", "foreverdb", "foreverchanges", "wowhead"],
   "wowheadPauseSeconds": 8,
   "questieDB": "tools/cache/questiedb"
 }
