@@ -501,16 +501,25 @@ for (const [fid, f] of Object.entries(whd?.factions || {})) {
 }
 vendors.sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'pvp' ? 1 : -1) || a.name.localeCompare(b.name));
 for (const v of vendors) for (const e of v.items) if (!items[e.id]) items[e.id] = itemOf(e.id);
-// World drops from Wowhead Forever: dropped items no boss, NPC or instance is named for, rare or better only, no quest items
+// World drops from Wowhead Forever: dropped items no boss, NPC or instance is named for, rare or better only, no quest items,
+// no enchanting materials
 // (project rule: uncommon and common world drops are not in the addon). Items an instance or a vendor lists are left out here.
 const listed = new Set();
 for (const I of instances.values()) { for (const B of I.bosses) for (const id of B.items.keys()) listed.add(id); for (const id of I.recipes || []) listed.add(id); }
 for (const v of vendors) for (const e of v.items) listed.add(e.id);
 const world = new Map();
+// Enchanting materials (Trade Goods > Enchanting: shards and crystals) are left out of the world drops too (project rule,
+// Det 2026-11-21). Wowhead's item class and subclass (7/12) decide when the world lists carry them; the known shard and
+// crystal IDs and names cover lists read before that.
+const ENCHANTING_MATS = new Set([10978, 11084, 11138, 11139, 11177, 11178, 14343, 14344, 20725, 22448, 22449, 22450, 34052, 34053, 34057]);
+const ENCHANTING_RE = /^(?:Small|Large) (?:Glimmering|Glowing|Radiant|Brilliant|Prismatic|Dream) Shard$|^(?:Nexus|Void|Abyss) Crystal$/;
+const isEnchantingMat = (id, x) => (x && x.classs === 7 && x.subclass === 12) || ENCHANTING_MATS.has(+id) || ENCHANTING_RE.test((x && x.name) || items[id]?.name || '');
+const enchantingLeftOut = new Set();
 // Quest items and quest starters are left out too (project rule): the Quest item lists, Quest Item binding, quest-starter tooltips.
 const questIds = new Set(Object.entries(whd?.world || {}).filter(([k]) => k.startsWith('quest/')).flatMap(([, l]) => (l.items || []).map((x) => x.id)));
 for (const l of Object.values(whd?.world || {})) for (const x of l.items || []) {
   if (listed.has(x.id) || world.has(x.id) || (x.quality ?? 0) < 3 || questIds.has(x.id)) continue;
+  if (isEnchantingMat(x.id, x)) { enchantingLeftOut.add(+x.id); continue; }
   const t = wh[x.id];
   if (t && (t.bind === 'Quest Item' || t.startsQuest || t.type === 'Quest')) continue;
   world.set(x.id, x);
@@ -525,6 +534,7 @@ for (const id of levelRangeIds) {
   if (listed.has(id) || world.has(id) || questIds.has(id)) continue;
   const it = items[id] || itemOf(id);
   if ((it.quality ?? 0) < 3 || it.bind === 'Quest Item' || it.startsQuest || it.type === 'Quest') continue;
+  if (isEnchantingMat(id, it)) { enchantingLeftOut.add(+id); continue; }
   world.set(id, { id, name: it.name, quality: it.quality, ilvl: it.ilvl, req: it.req });
   items[id] = it;
 }
@@ -681,7 +691,7 @@ const report = {
   skipped,
   notFetchedFromWowhead: [...notFetched].sort((a, b) => a - b),
   vendors: vendors.map((v) => ({ name: v.name, items: v.items.length, fromWowhead: !!v.wh })),
-  wowhead: whd ? { ...whStats, sharedRecipes, rewardsAdded: whRewards, factionsAdded: whFactions, worldDrops: world.size } : null,
+  wowhead: whd ? { ...whStats, sharedRecipes, rewardsAdded: whRewards, factionsAdded: whFactions, worldDrops: world.size, enchantingLeftOut: enchantingLeftOut.size } : null,
   instances: order.map((I) => {
     const all = I.bosses.flatMap((b) => [...b.items.values()]);
     return {
@@ -693,6 +703,7 @@ const report = {
 };
 writeJson('out/loot-report.json', report);
 const noDetails = Object.values(items).filter((w) => w.quality == null).length;
+console.log(`${enchantingLeftOut.size} enchanting materials left out of the world drops`);
 console.log(`${levelRangeDropped} random and level-range drops taken off the bosses (${world.size} world drops in all), ${lowQualityDropped} white/grey boss drops left out`);
 console.log(`${order.length} instances, ${Object.keys(items).length} items (${noDetails} without Wowhead details yet), ${whChances} chances from Wowhead, ${leftOut} fill-in entries left out (not on Wowhead Forever)`);
 if (notFetched.size) console.log(`WARNING: ${notFetched.size} fill-in items not fetched from Wowhead yet, left out: run node tools/loot/wowhead-items.mjs, then build again`);
