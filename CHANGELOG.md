@@ -2,6 +2,7 @@
 
 ## 0.1.8
 
+- Encore-Stonks: prices seen at the neutral auction houses (Booty Bay, Gadgetzan, Everlook) are no longer recorded, so they don't pull your faction's averages up. Auctionator still keeps its own daily prices from there.
 - Encore-Stonks: the browser opens without freezing. Each item's last price, 7- and 14-day averages and days are kept as a small saved summary, so opening the list no longer works out every item's price history. Summaries that are out of date (new prices, a guild sync, a new day) still show and are refreshed in the background a few milliseconds per frame, then the list redraws; the full history is untouched. About 20 seconds after login every item is brought up to date in the background.
 - Encore-Stonks: the built list is reused when you reopen the browser, until new prices come in or you change the search, category or sort.
 - Encore-Stonks: only the rows on screen ask the game for item names and info (all items only while searching, sorting by name or showing a shopping list). Sample and Auctionator day counts are worked out when you hover an item. When item info arrives, only the visible rows redraw.
