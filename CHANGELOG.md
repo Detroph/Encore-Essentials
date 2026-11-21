@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## Unreleased
+
+- Encore-Stonks: the sync history shows every login summary attempt, also one where the guildmate offered but nothing arrived. Guildmates still on 0.1.4 or older answer the login request but can't send to names with a space, so the login summary now prefers guildmates on this version, waits a little longer when only an old version answered, and doesn't ask a guildmate who never delivered again that session.
+
 ## 0.1.5
 
 - Encore-DB: boss loot follows AtlasLoot Continued: each boss shows the drops AtlasLoot lists for it that Wowhead Forever confirms, plus confirmed drops from summoned bosses (Valthalak, Isalien, Mor Grayhoof, Kormok), the Drowned City and the Ring of Law. About 470 drops that AtlasLoot doesn't list under a boss are gone from it. Drop chances, bosses AtlasLoot doesn't cover, recipes, world drops, reputations, vendors and quests come from the same sources as before.

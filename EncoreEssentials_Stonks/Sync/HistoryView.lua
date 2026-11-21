@@ -32,6 +32,7 @@ local function settings()
 end
 
 local function status(e)
+    if e.stopped and e.silent then return "stopped", "Nothing arrived: they offered but never sent anything. They probably run Encore-Stonks 0.1.4 or older, which can't send to names with a space; someone else was asked instead." end
     if e.stopped then return "stopped", "Stopped: the sender went quiet; the rest came from someone else." end
     if e.done then return "done", "Complete." end
     if time() - (e.last or e.t or 0) > STALE then return "incomplete", "Incomplete: the end message never arrived (logged off or reloaded)." end

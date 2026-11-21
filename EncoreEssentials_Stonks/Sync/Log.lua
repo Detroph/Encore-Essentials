@@ -94,6 +94,7 @@ function Log.Finish(kind, from, match, fields)
     fields = fields or {}
     e.done, e.match, e.last = true, nil, time()
     if fields.stopped then e.stopped = true end
+    if fields.silent then e.silent = true end
     if fields.expected then e.expected = fields.expected end
     changed()
 end

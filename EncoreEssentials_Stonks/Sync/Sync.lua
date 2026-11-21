@@ -434,6 +434,8 @@ local ask -- our request: { since, resume, offers = {}, chosen, lastBlock, tries
 local offerTimers = {} -- [asker] = timer handle (we are waiting to offer)
 local serving -- { asker }
 local pendingOffers = {} -- [asker] = { since, resume, at }: offers we made and wait to hear back on
+local noServe = {} -- [name] = true: offered but never sent anything this session (an older version that can't
+                   -- read our name, or gone), passed over while anyone else offers
 
 local function startAsk(resume)
     if mode() == "off" or not IsInGuild() then return end
@@ -459,19 +461,24 @@ Sync.StartAsk = startAsk
 local function pickOffer()
     if not ask or ask.chosen or #ask.offers == 0 then return end
     table.sort(ask.offers, function(a, b)
+        -- Senders that say they can serve any name (0.1.8 and later) first.
+        if a.cap ~= b.cap then return a.cap end
         if a.afk ~= b.afk then return a.afk end
         if a.asOf ~= b.asOf then return a.asOf > b.asOf end
         return a.name < b.name
     end)
     local best = ask.offers[1]
-    ask.chosen, ask.asOf, ask.lastBlock = best.name, best.asOf, Comm.now()
+    ask.chosen, ask.asOf, ask.lastBlock, ask.gotBlock = best.name, best.asOf, Comm.now(), false
     Comm.Send("1A" .. best.name, "GUILD")
+    -- Sync history: the login summary starts now, so an attempt that never delivers is visible too.
+    Log.Add("summary", best.name, "login", { got = 0, kept = 0, hour = best.asOf })
     local function watch()
         if not ask or ask.chosen ~= best.name then return end
         if Comm.now() - ask.lastBlock > BLOCK_TIMEOUT then
             -- Sender went quiet (logged off, disconnected): keep what we have and ask someone else to continue.
             local resume = ask.resume
-            Log.Finish("summary", best.name, "login", { stopped = true })
+            if not ask.gotBlock then noServe[best.name] = true end
+            Log.Finish("summary", best.name, "login", { stopped = true, silent = not ask.gotBlock })
             ask.chosen = nil
             startAsk(resume)
         else
@@ -497,7 +504,8 @@ Comm.On("H", function(body, sender, channel)
     offerTimers[sender] = C_Timer.NewTimer(delay, function()
         offerTimers[sender] = nil
         if serving or Comm.Busy() then return end
-        Comm.Send("1O" .. sender .. "," .. Codec.enc(asOf) .. "," .. (afk and "1" or "0"), "GUILD")
+        -- The 4th field says "this version can serve players named with a space"; 0.1.4 and older can't.
+        Comm.Send("1O" .. sender .. "," .. Codec.enc(asOf) .. "," .. (afk and "1" or "0") .. ",2", "GUILD")
         pendingOffers[sender] = { since = since, resume = resume, at = Comm.now() }
     end)
 end)
@@ -505,16 +513,18 @@ end)
 -- An offer: if it is for us, collect it; if it is for someone we were about to answer, stand down.
 Comm.On("O", function(body, sender, channel)
     if channel ~= "GUILD" then return end
-    local f = Codec.fields(body, 3)
-    if not f or #f ~= 3 then return Comm.Reject("fields") end
+    local f = Codec.fields(body, 4)
+    if not f or (#f ~= 3 and #f ~= 4) then return Comm.Reject("fields") end
     local asker, asOf = Codec.cleanName(f[1]), Codec.dec(f[2])
     if not asker or not asOf or (f[3] ~= "0" and f[3] ~= "1") then return Comm.Reject(asker and "fields" or "name") end
     if Comm.IsMe(asker) then
-        if ask and not ask.chosen then
-            ask.offers[#ask.offers + 1] = { name = sender, asOf = asOf, afk = f[3] == "1" }
-            if #ask.offers == 1 then C_Timer.After(2, pickOffer) end
+        if ask and not ask.chosen and not noServe[sender] then
+            ask.offers[#ask.offers + 1] = { name = sender, asOf = asOf, afk = f[3] == "1", cap = f[4] == "2" }
+            -- Wait 2 seconds for better offers, 6 when the first one is from an old version that may not deliver.
+            if #ask.offers == 1 then C_Timer.After(f[4] == "2" and 2 or 6, pickOffer) end
         end
-    elseif offerTimers[asker] then
+    elseif offerTimers[asker] and f[4] == "2" then
+        -- Only a sender that can serve every name makes us stand down: an old version's offer may never deliver.
         offerTimers[asker]:Cancel()
         offerTimers[asker] = nil
     end
@@ -571,7 +581,7 @@ end)
 
 Comm.On("Y", function(body, sender, channel)
     if channel ~= "WHISPER" or not ask or ask.chosen ~= sender then return end
-    ask.lastBlock = Comm.now()
+    ask.lastBlock, ask.gotBlock = Comm.now(), true
     local got, kept = 0, 0
     for text in (body .. ";"):gmatch("([^;]*);") do
         got = got + 1
