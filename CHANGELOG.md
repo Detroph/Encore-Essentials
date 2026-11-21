@@ -1,5 +1,10 @@
 # Encore Essentials
 
+## 0.1.9
+
+- Encore-Stonks: fixes the Lua error "Browser.lua:143: attempt to call a nil value" when opening the Stonks browser in 0.1.8. The category list asked for the item list before the function that builds it was set up.
+- Encore-Stonks: guild sync work (receiving a sync, the login summary) uses its few milliseconds per frame as meant. Before, it paused after every step, so big syncs took longer than needed.
+
 ## 0.1.8
 
 - Encore-Stonks: prices seen at the neutral auction houses (Booty Bay, Gadgetzan, Everlook) are no longer recorded, so they don't pull your faction's averages up. Auctionator still keeps its own daily prices from there.
