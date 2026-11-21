@@ -6,6 +6,9 @@
 - Encore-Stonks: the browser opens without freezing. Each item's last price, 7- and 14-day averages and days are kept as a small saved summary, so opening the list no longer works out every item's price history. Summaries that are out of date (new prices, a guild sync, a new day) still show and are refreshed in the background a few milliseconds per frame, then the list redraws; the full history is untouched. About 20 seconds after login every item is brought up to date in the background.
 - Encore-Stonks: the built list is reused when you reopen the browser, until new prices come in or you change the search, category or sort.
 - Encore-Stonks: only the rows on screen ask the game for item names and info (all items only while searching, sorting by name or showing a shopping list). Sample and Auctionator day counts are worked out when you hover an item. When item info arrives, only the visible rows redraw.
+- Encore-DB: World Rares and World Epics no longer list enchanting materials (Small and Large Glimmering, Glowing and Brilliant Shards, Nexus Crystal). They come from disenchanting, not from mobs. The data tool leaves them out on every refresh.
+- Encore-Stonks: a Request sync button at the bottom left of the sync history (also `/stonksync request`) asks the guild for your login summary again, like logging in: one guildmate whispers you the prices that changed since your last summary. Once an hour; the button shows the time left, and says so when nobody has newer prices.
+- Encore-Stonks: the sync history shows every login summary attempt, also one where the guildmate offered but nothing arrived. Guildmates still on 0.1.4 or older answer the login request but can't send to names with a space, so the login summary now prefers guildmates on this version, waits a little longer when only an old version answered, and doesn't ask a guildmate who never delivered again that session.
 
 ## 0.1.7
 
