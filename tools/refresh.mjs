@@ -27,6 +27,7 @@ const download = rest.includes('--download');
 const files = rest.filter((a) => !a.startsWith('--'));
 const env = { ...process.env };
 if (cfg.dungeonJournal && !env.DUNGEON_JOURNAL) env.DUNGEON_JOURNAL = cfg.dungeonJournal;
+if (cfg.atlasLoot && !env.ATLASLOOT) env.ATLASLOOT = cfg.atlasLoot;
 
 function run(script, ...args) {
   const file = path.join(DIR, script);
@@ -60,7 +61,7 @@ const steps = {
     run('quests/build-quests.mjs');
   },
   loot() {
-    const src = new Set(cfg.lootSources || ['dungeon-journal-check', 'foreverdb', 'foreverchanges', 'wowhead']);
+    const src = new Set(cfg.lootSources || ['dungeon-journal-check', 'atlasloot', 'foreverdb', 'foreverchanges', 'wowhead']);
     if (download) {
       run('loot/foreverdb-files.mjs');
       if (src.has('foreverchanges')) run('loot/fc-dungeons.mjs');

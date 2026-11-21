@@ -42,6 +42,11 @@ the repository).
    drop chances ForeverDB has not seen, reputation rewards, world drops and
    quest details QuestieDB leaves blank, and every recipe is checked against
    it. Thank you to Wowhead.
+   AtlasLoot Continued (by Okrah, Lag and many others; its WoW Forever port)
+   is read during the build as the list of drops to show for each boss it
+   covers (tools/loot/atlasloot-loot.mjs). Each drop is looked up on Wowhead
+   Forever, and only what Wowhead confirms is listed, as Wowhead data. None of AtlasLoot's files or data are included:
+   AtlasLoot is GPL v2 only, which can't be combined with GPL-3.0.
    Boss levels come from QuestieDB (https://github.com/Questie/QuestieDB,
    GPL-3.0), its WoW Forever NPC data: Questie's Classic data (built from
    CMaNGOS) with Forever corrections, QuestieTrace and hand-written fixes (tools/loot/questie-levels.mjs). Only the levels and
