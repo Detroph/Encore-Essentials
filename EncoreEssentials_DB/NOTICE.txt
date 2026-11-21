@@ -47,6 +47,15 @@ the repository).
    covers (tools/loot/atlasloot-loot.mjs). Each drop is looked up on Wowhead
    Forever, and only what Wowhead confirms is listed, as Wowhead data. None of AtlasLoot's files or data are included:
    AtlasLoot is GPL v2 only, which can't be combined with GPL-3.0.
+   Data/Extras.lua (Warsong Gulch and Alterac Valley rewards, honor rewards,
+   more reputation rewards, the Collections tab, item sets and rogue poisons)
+   is Wowhead Forever data: names, levels, prices, vendors, sources, the
+   reputation each item needs, item sets and the poison recipes
+   (tools/loot/build-extras.mjs). AtlasLoot Continued's PvP, Collections and
+   Factions lists are read only to know which items to look up
+   (tools/loot/atlasloot-extras.mjs); an item is listed only when Wowhead
+   Forever shows a source for it in WoW Forever. None of AtlasLoot's data is
+   included.
    Boss levels come from QuestieDB (https://github.com/Questie/QuestieDB,
    GPL-3.0), its WoW Forever NPC data: Questie's Classic data (built from
    CMaNGOS) with Forever corrections, QuestieTrace and hand-written fixes (tools/loot/questie-levels.mjs). Only the levels and

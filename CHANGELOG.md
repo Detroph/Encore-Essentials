@@ -1,5 +1,13 @@
 # Encore Essentials
 
+## 0.2.0
+
+- Encore-DB: the PvP tab has Warsong Gulch (Warsong Outriders, Silverwing Sentinels) and Alterac Valley (Frostwolf Clan, Stormpike Guard) rewards by standing, and the honor rewards: armor, Grand Marshal's and High Warlord's weapons, insignia and war mounts, each with its price.
+- Encore-DB: reputation rewards that were missing (Argent Dawn, Cenarion Circle, Zandalar Tribe and others) are added to their faction, with the standing they need where Wowhead Forever shows one.
+- Encore-DB: the Collections tab is open. Mounts, companions, tabards and legendaries, grouped by vendors, quests, drops and crafted, each with where it comes from. Item sets: PvP sets, Zul'Gurub, Ruins and Temple of Ahn'Qiraj and other sets, with their pieces. Search finds these items too.
+- Encore-DB: rogue poisons are under Professions, in a new Class skills group, by the level you learn them at the rogue trainer.
+- Everything new comes from Wowhead Forever, and only items Wowhead Forever shows a source for in WoW Forever are listed. AtlasLoot Continued's lists were only used to know which items to look up. World events stay out until they run in WoW Forever.
+
 ## 0.1.9
 
 - Encore-Stonks: fixes the Lua error "Browser.lua:143: attempt to call a nil value" when opening the Stonks browser in 0.1.8. The category list asked for the item list before the function that builds it was set up.

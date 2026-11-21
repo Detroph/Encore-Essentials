@@ -22,7 +22,9 @@ Open everything from the Encore crest on the minimap, the game's addon list butt
 - **Dungeon quests and quest chains**, read top to bottom with the steps out in the world, marked *done* or *in your log*, with *Hide finished*, a faction filter and a map pin to where each quest starts and ends.
 - **Open World:** World Epics and World Rares by required level (1-10 up to 51-60).
 - **Professions:** every recipe by skill bracket with difficulty colours; click one for reagents, trainer cost, vendors (with a map pin), drops, quests and the reputation it needs.
-- **PvP and reputation vendors** seen in Forever, with the standing or PvP rank and price of every item.
+- **PvP and reputation vendors** seen in Forever, with the standing or PvP rank and price of every item: Arathi Basin, Warsong Gulch, Alterac Valley, the honor rewards (armor, weapons, insignia, war mounts) and the reputation factions.
+- **Collections:** mounts, companions, tabards and legendaries with where each comes from, and item sets (PvP, Zul'Gurub, Ahn'Qiraj and others) with their pieces.
+- **Rogue poisons** under Professions, by the level you learn them.
 - **Highlight Forever changes** marks what is new or changed in Forever, with teal counters per dungeon and boss; **Forever only** hides the rest.
 - Search across all loot and recipes, quality and slot filters, three icon sizes, a resizable window, click-to-sort columns, coin-icon prices and tooltips that follow the cursor.
 
@@ -137,7 +139,8 @@ tools/                   data-extraction scripts for the Encore-DB database
 **Data from ForeverDB.net (https://foreverdb.net).** ForeverDB.net is the main source. Encore-DB is built from the data files of its addon, which are GPL-3.0 with an attribution term. The generated files keep ForeverDB's credit line, and [`EncoreEssentials_DB/NOTICE.txt`](EncoreEssentials_DB/NOTICE.txt) gives the terms.
 
 - **Bosses, loot and drop rates:** ForeverDB's loot data. It covers instances and bosses in the game client's order, with NPC IDs. Encore-DB keeps only the drops that players' ForeverDB addons saw in WoW Forever, with drop rates per looted kill. ForeverDB's Classic data and its unconfirmed client clues are left out. Random world drops seen from a boss go in a separate list.
-- **Reputation and PvP vendors:** ForeverDB's vendor lists, only for vendors that players saw in Forever.
+- **Reputation and PvP vendors:** ForeverDB's vendor lists, only for vendors that players saw in Forever. Warsong Gulch, Alterac Valley, honor rewards and reputation rewards ForeverDB has not seen come from Wowhead Forever.
+- **Collections, item sets and rogue poisons:** Wowhead Forever. AtlasLoot Continued's lists are read only to know which items to look up; an item is listed only when Wowhead Forever shows a source for it, and none of AtlasLoot's data is included. World events are left out until they run in Forever.
 - **Recipes:** ForeverDB's recipe data, taken from the Forever client. Each recipe has its reagents, crafted item and skill colours, and how it is learned: trainer, recipe item or automatic. Trainer costs are included where they were seen at Forever trainers, and so are Merchant's Favor costs. Recipes ForeverDB marks as speculation (Season of Discovery leftovers) are left out.
 - **Recipe item sources:** the vendors, drops and quests that ForeverDB players saw in Forever, plus the reputation the item needs. Sources ForeverDB labels as Classic are left out. Vendor positions come only from vendors seen in Forever.
 - **Filling the gaps:**
