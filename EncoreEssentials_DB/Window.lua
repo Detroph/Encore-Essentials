@@ -2388,27 +2388,45 @@ function openOptions(owner)
         root:CreateDivider()
         root:CreateCheckbox("Split Blackrock Spire into Lower and Upper", function() return settings().splitBRS == true end, function()
             settings().splitBRS = not settings().splitBRS or nil
-            local current = state.inst and Loot.instances[state.inst]
-            if ns.ApplyWings then ns.ApplyWings(Loot, settings().splitBRS == true) end
-            -- Stay on the same dungeon, or on its first wing / the whole dungeon it was a wing of
-            state.inst = nil
-            for i, inst in ipairs(Loot.instances) do
-                if current and (inst == current or inst.parent == current.key or inst.key == current.parent) then
-                    state.inst = i
-                    break
-                end
-            end
-            state.boss, state.randomOpen, whereIndex = 1, {}, nil
-            renderAll()
+            DB:ApplyOption("splitBRS")
         end)
         root:CreateCheckbox("Open random drops by default", function() return settings().randomOpen == true end, function()
             settings().randomOpen = not settings().randomOpen or nil
-            state.randomOpen = {}
-            renderLoot(true)
+            DB:ApplyOption("randomOpen")
         end)
         root:CreateDivider()
         root:CreateButton("Reset window size and position", resetWindow)
     end)
+end
+
+-- A saved setting changed, from the cogwheel menu or from Options > AddOns > Encore-DB (EncoreEssentials
+-- Options.lua writes the saved value first, then calls this). Brings the open window in line with it.
+function DB:ApplyOption(key)
+    local s = settings()
+    if key == "splitBRS" then
+        local current = state.inst and Loot.instances[state.inst]
+        if ns.ApplyWings then ns.ApplyWings(Loot, s.splitBRS == true) end
+        -- Stay on the same dungeon, or on its first wing / the whole dungeon it was a wing of
+        state.inst = nil
+        for i, inst in ipairs(Loot.instances) do
+            if current and (inst == current or inst.parent == current.key or inst.key == current.parent) then
+                state.inst = i
+                break
+            end
+        end
+        state.boss, state.randomOpen, whereIndex = 1, {}, nil
+        renderAll()
+    elseif key == "randomOpen" then
+        state.randomOpen = {}
+        renderLoot(true)
+    elseif key == "highlight" then
+        local h = tonumber(s.highlight)
+        if h and h >= 1 and h <= 3 then setHighlight(h) end
+    elseif key == "iconSize" then
+        if ICON_SIZES[s.iconSize] then setIconSize(s.iconSize) end
+    elseif key == "resetWindow" then
+        if frame then resetWindow() end
+    end
 end
 
 local function createWindow()
