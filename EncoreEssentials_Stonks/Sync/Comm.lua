@@ -29,7 +29,7 @@ local handlers = {}
 
 -- Counters for /stonksync perf
 local perf = { sentBytes = 0, sentMsgs = 0, recvBytes = 0, recvMsgs = 0, dropped = 0, rejected = 0,
-    sentInCombat = 0, workMs = 0, maxFrameMs = 0, frames = 0, since = 0 }
+    sentInCombat = 0, workMs = 0, maxFrameMs = 0, frames = 0, since = 0, reasons = {} }
 Comm.perf = perf
 
 local now = function() return GetTime() end
@@ -40,6 +40,20 @@ local function me()
     return name
 end
 Comm.Me = me
+
+-- True when a name from a message is us: "Name", or "Name-Realm" as a guildmate on another realm writes it.
+function Comm.IsMe(name)
+    local mine = me()
+    if not name or not mine then return false end
+    if name == mine then return true end
+    local realm = GetNormalizedRealmName and GetNormalizedRealmName()
+    if realm and name == mine .. "-" .. realm then return true end
+    local base = name:match("^([^%-]+)%-")
+    return base == mine and realm == nil
+end
+
+-- Guildmates whose Encore-Stonks we heard this session: seen[name] = { t = time, kind = last message type }.
+Comm.seen = {}
 
 function Comm.Ambiguate(name)
     if not name then return nil end
@@ -127,9 +141,10 @@ Comm.accept = function() return true end
 function Comm.Receive(prefix, msg, channel, sender)
     if prefix ~= Comm.PREFIX or type(msg) ~= "string" then return end
     sender = Comm.Ambiguate(sender)
-    if not sender or sender == me() then return end
+    if not sender or Comm.IsMe(sender) then return end
     if msg:sub(1, 1) ~= Codec.VERSION then return end -- other protocol versions are ignored
     local kind = msg:sub(2, 2)
+    Comm.seen[sender] = { t = time(), kind = kind, channel = channel }
     if not handlers[kind] or not Comm.accept(kind, sender, channel) then return end
     local hour = math.floor(time() / 3600)
     if hour ~= senderHour then senderHour = hour; wipe(senderBytes) end
@@ -144,7 +159,16 @@ function Comm.Receive(prefix, msg, channel, sender)
     inbox[inboxLast] = { kind, msg:sub(3), sender, channel }
 end
 
-function Comm.Reject() perf.rejected = perf.rejected + 1 end
+-- A message we threw out. reason says which check failed; /stonksync perf lists them by message type and reason.
+local current -- the message being handled right now: { kind, body, sender, channel }
+function Comm.Reject(reason)
+    perf.rejected = perf.rejected + 1
+    local kind = current and current[1] or "?"
+    local key = kind .. " " .. (reason or "bad")
+    perf.reasons[key] = (perf.reasons[key] or 0) + 1
+    perf.lastReject = { key = key, sender = current and current[3], channel = current and current[4],
+        body = current and current[2] and current[2]:sub(1, 60), t = time() }
+end
 
 ---------------------------------------------------------------------------
 -- Work queue: inbox first, then jobs (coroutines that yield between small steps).
@@ -175,8 +199,10 @@ function Comm.Step()
             inbox[inboxFirst] = nil
             inboxFirst = inboxFirst + 1
             what = m[1]
+            current = m
             local ok, err = pcall(handlers[m[1]], m[2], m[3], m[4])
-            if not ok then perf.rejected = perf.rejected + 1; Comm.lastError = err end
+            if not ok then Comm.Reject("error"); Comm.lastError = err end
+            current = nil
         elseif jobs[1] then
             local job = jobs[1]
             what = job.name

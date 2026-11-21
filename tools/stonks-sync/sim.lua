@@ -152,7 +152,7 @@ local function giveData(c, n, scannedHoursAgo, priceFactor)
     r.last = (nowHour - scannedHoursAgo) * 3600 + 600
 end
 
-local function setMode(c, m) c.Stonks.db.settings.sync = c.Stonks.db.settings.sync or {}; c.Stonks.db.settings.sync.mode = m; c.Stonks.db.settings.sync.v = 2 end
+local function setMode(c, m) c.Stonks.db.settings.sync = c.Stonks.db.settings.sync or {}; c.Stonks.db.settings.sync.mode = m; c.Stonks.db.settings.sync.v = 3 end
 local function count(t) local n = 0; for _ in pairs(t) do n = n + 1 end return n end
 local function sentOfKind(kind, channel)
     local n = 0
@@ -317,6 +317,48 @@ check(clicker.Stonks.realmData.baseline["151"] == nil, "an item the poster never
 local cs, ci = logOf(clicker, "scan"), logOf(clicker, "item")
 check(#cs == 1 and cs[1].from == poster.name and cs[1].done and cs[1].got == 300, "sync history: the linked scan is logged (" .. tostring(cs[1] and cs[1].got) .. " items)")
 check(#ci == 1 and ci[1].id == 150 and ci[1].kept == 1 and ci[1].med and ci[1].med > 0, "sync history: the linked item is logged with its price")
+
+---------------------------------------------------------------------------
+print("== Who has it, sharing switched on once, names from other realms, reject reasons")
+do
+    local asker, other = newClient("WhoA"), newClient("WhoB")
+    other.Stonks.realmData.last = math.floor(clock / 3600) * 3600 + 5
+    local replies
+    asker.Stonks.Sync.Who(function(r) replies = r end)
+    run(15)
+    check(replies and replies.WhoB and replies.WhoB.mode == "share" and replies.WhoB.version == "test", "/stonksync who: a guildmate answers with mode and version")
+    check(asker.Stonks.SyncComm.seen.WhoB ~= nil, "status: guildmates heard from are listed")
+
+    local old = newClient("OldSave")
+    old.Stonks.db.settings.sync = { mode = "off", v = 2, muted = {} }
+    check(old.Stonks.Sync.Mode() == "share", "first login with this version switches sharing on, even from off")
+    old.Stonks.db.settings.sync.mode = "receive"
+    check(old.Stonks.Sync.Mode() == "receive", "a choice made after that sticks")
+    old.online = false
+
+    local Comm = asker.Stonks.SyncComm
+    check(Comm.IsMe("WhoA") and Comm.IsMe("WhoA-Othrealm") and not Comm.IsMe("WhoB-Othrealm"), "own name is recognised with a realm suffix")
+    asker.env.GetNormalizedRealmName = function() return "Home" end
+    check(Comm.IsMe("WhoA-Home") and not Comm.IsMe("WhoA-Othrealm"), "with the realm known, only our own realm matches")
+    asker.env.GetNormalizedRealmName = nil
+
+    local before = Comm.perf.rejected
+    Comm.Receive(Comm.PREFIX, "1Cbad", "GUILD", "WhoB-Test")
+    run(1)
+    check(Comm.perf.rejected == before + 1 and Comm.perf.reasons["C fields"] == 1 and Comm.perf.lastReject.sender == "WhoB",
+        "a rejected message is counted with its type, reason and sender")
+    asker.online, other.online = false, false
+
+    -- WoW Forever names have a first and last name: the login handshake must work with them.
+    local holder = newClient("Croq Madame")
+    giveData(holder, 50, 1)
+    local spaced = newClient("Berya Ebonlocke")
+    run(150)
+    local r = spaced.Stonks.realmData
+    check(r.sync.from ~= nil and count(r.baseline) > 0, "a player named with a space gets a login summary (from " .. tostring(r.sync.from) .. ")")
+    check(spaced.Stonks.SyncComm.perf.rejected == 0, "and nothing is rejected (" .. spaced.Stonks.SyncComm.perf.rejected .. ")")
+    holder.online, spaced.online = false, false
+end
 
 table.sort(frameSamples)
 local p99 = frameSamples[math.max(1, math.floor(#frameSamples * 0.99))] or 0

@@ -198,7 +198,7 @@ function Links.Click(link)
     local kind, arg, sender = link:match("^garrmission:encorestonks:([is]):([0-9A-Za-z*=]+):([^:]+)$")
     sender = Codec.cleanName(sender)
     if not kind or not sender then return end
-    if sender == Comm.Me() then return print(P .. "that is your own link.") end
+    if Comm.IsMe(sender) then return print(P .. "that is your own link.") end
     local what
     if kind == "i" then
         local id = tonumber(arg)
@@ -236,7 +236,7 @@ end
 Comm.On("L", function(body, asker, channel)
     if channel ~= "WHISPER" then return end
     local kind, arg = body:match("^([is])([0-9A-Za-z*=]+)$")
-    if not kind then return Comm.Reject() end
+    if not kind then return Comm.Reject("link") end
     local at = posted[kind .. (kind == "s" and tostring(Codec.dec(arg)) or arg)]
     if not at or time() - at > POSTED_FOR then return end
     if answered[asker] and time() - answered[asker] < ASK_GAP then return end
