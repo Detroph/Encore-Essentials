@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## 0.1.8
+
+- Encore-DB: World Rares and World Epics no longer list enchanting materials (Small and Large Glimmering, Glowing and Brilliant Shards, Nexus Crystal). They come from disenchanting, not from mobs. The data tool leaves them out on every refresh.
+
 ## 0.1.7
 
 - Encore-Stonks: the item list shows 100 items per page (was the first 500), with arrows at the bottom right to page through. Sorting by price, name or days orders the whole list. iLvl and Req sort only the page you're on, so the game no longer lags looking up item info for every item.
