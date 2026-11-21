@@ -71,7 +71,9 @@ local function inRange(v, lo, hi) return v and v >= lo and v <= hi end
 -- A player name from a message field: no separators, escape codes or control characters, not too long.
 function Codec.cleanName(s)
     if type(s) ~= "string" or #s == 0 or #s > Codec.MAX_NAME then return nil end
-    if s:find("[%c|,:;%s]") then return nil end
+    -- WoW Forever names have a first and last name ("Berya Ebonlocke"), so single spaces inside are fine; field
+    -- separators, escape codes, control characters, and spaces at the ends or doubled are not.
+    if s:find("[%c|,:;]") or s:find("^ ") or s:find(" $") or s:find("  ", 1, true) then return nil end
     return s
 end
 

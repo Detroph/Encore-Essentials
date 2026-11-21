@@ -41,11 +41,11 @@ local function settings()
     local s = Stonks:Settings()
     if type(s.sync) ~= "table" then s.sync = {} end
     local sync = s.sync
-    -- On by default (since 2026-11-19). Saved data from the first test build said "off" without anyone choosing it,
-    -- so that is switched on once; an explicit /stonksync off after this sticks.
-    if sync.v ~= 2 then
-        if sync.mode ~= "receive" then sync.mode = "share" end
-        sync.v = 2
+    -- On by default. The first login with this version switches sharing on once for everyone (whatever was saved
+    -- before), so the whole guild shares; an explicit /stonksync off or receive after that sticks.
+    if (tonumber(sync.v) or 0) < 3 then
+        sync.mode = "share"
+        sync.v = 3
     end
     if sync.mode ~= "share" and sync.mode ~= "receive" and sync.mode ~= "off" then sync.mode = "share" end
     if type(sync.muted) ~= "table" then sync.muted = {} end
@@ -204,8 +204,8 @@ end
 function Sync.AddSummary(text, sender)
     local r = realm()
     if not r then return false end
-    local rec = Codec.decodeSummary(text)
-    if not rec then Comm.Reject(); return false end
+    local rec, why = Codec.decodeSummary(text)
+    if not rec then Comm.Reject("summary " .. tostring(why)); return false end
     local key = tostring(rec.id)
     local outlier, checked = isOutlier(key, rec.med)
     if checked and sender then note(sender, outlier) end
@@ -379,9 +379,10 @@ end
 
 Comm.On("C", function(body, sender)
     local f = Codec.fields(body, 3)
-    if not f or #f ~= 3 then return Comm.Reject() end
+    if not f or #f ~= 3 then return Comm.Reject("fields") end
     local hour, count, hash = Codec.dec(f[1]), Codec.dec(f[2]), Codec.dec(f[3])
-    if not hour or not count or not hash or math.abs(hour - hourNow()) > 1 then return Comm.Reject() end
+    if not hour or not count or not hash then return Comm.Reject("fields") end
+    if math.abs(hour - hourNow()) > 1 then return Comm.Reject("hour") end
     local c = claims[hour]
     -- Two claims for one hour: the lower hash (then the lower name) keeps it.
     if c and c.name ~= sender and (hash > c.hash or (hash == c.hash and sender > c.name)) then return end
@@ -396,11 +397,11 @@ end)
 local function acceptObsMessage(body, sender, live)
     local hs, rest = body:match("^([^:]+):(.*)$")
     local hour = Codec.dec(hs)
-    if not hour or not rest then return Comm.Reject() end
-    if live and math.abs(hour - hourNow()) > 1 then return Comm.Reject() end
-    if not live and (hour > hourNow() or hour < hourNow() - Stonks:KeepDays() * 24) then return Comm.Reject() end
-    local list = Codec.decodeObs(rest)
-    if not list then return Comm.Reject() end
+    if not hour or not rest then return Comm.Reject("header") end
+    if live and math.abs(hour - hourNow()) > 1 then return Comm.Reject("hour") end
+    if not live and (hour > hourNow() or hour < hourNow() - Stonks:KeepDays() * 24) then return Comm.Reject("hour") end
+    local list, why = Codec.decodeObs(rest)
+    if not list then return Comm.Reject(why) end
     local kept = 0
     for _, o in ipairs(list) do
         local key = tostring(o[1])
@@ -485,7 +486,7 @@ Comm.On("H", function(body, sender, channel)
     if channel ~= "GUILD" or not sharing() then return end
     local f = Codec.fields(body, 2)
     local since, resume = f and Codec.dec(f[1]), f and Codec.dec(f[2])
-    if not since or not resume then return Comm.Reject() end
+    if not since or not resume then return Comm.Reject("fields") end
     if serving or offerTimers[sender] or Comm.Busy() then return end
     local r = Stonks.realmData
     local asOf = r and r.last and floor(r.last / 3600) or 0
@@ -505,10 +506,10 @@ end)
 Comm.On("O", function(body, sender, channel)
     if channel ~= "GUILD" then return end
     local f = Codec.fields(body, 3)
-    if not f or #f ~= 3 then return Comm.Reject() end
+    if not f or #f ~= 3 then return Comm.Reject("fields") end
     local asker, asOf = Codec.cleanName(f[1]), Codec.dec(f[2])
-    if not asker or not asOf or (f[3] ~= "0" and f[3] ~= "1") then return Comm.Reject() end
-    if asker == Comm.Me() then
+    if not asker or not asOf or (f[3] ~= "0" and f[3] ~= "1") then return Comm.Reject(asker and "fields" or "name") end
+    if Comm.IsMe(asker) then
         if ask and not ask.chosen then
             ask.offers[#ask.offers + 1] = { name = sender, asOf = asOf, afk = f[3] == "1" }
             if #ask.offers == 1 then C_Timer.After(2, pickOffer) end
@@ -560,11 +561,11 @@ end
 Comm.On("A", function(body, sender, channel)
     if channel ~= "GUILD" then return end
     local chosen = Codec.cleanName(body)
-    if not chosen then return Comm.Reject() end
+    if not chosen then return Comm.Reject("name") end
     local p = pendingOffers[sender]
     if p then
         pendingOffers[sender] = nil
-        if chosen == Comm.Me() and not serving then serve(sender, p.since, p.resume) end
+        if Comm.IsMe(chosen) and not serving then serve(sender, p.since, p.resume) end
     end
 end)
 
@@ -593,6 +594,52 @@ Comm.On("Z", function(body, sender, channel)
 end)
 
 ---------------------------------------------------------------------------
+-- Who runs Encore-Stonks: /stonksync who asks the guild, every guildmate with sharing not off answers by whisper.
+---------------------------------------------------------------------------
+local MODE_CODE = { share = "s", receive = "r", off = "o" }
+local CODE_MODE = { s = "share", r = "receive", o = "off" }
+local who -- { at, replies = { [name] = { mode, asOf, version } }, done = fn }
+
+local function myVersion()
+    local v = C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata("EncoreEssentials_Stonks", "Version")
+    v = tostring(v or "?"):gsub("[^%w%.%-]", "")
+    if v == "" or v:find("project") then v = "dev" end
+    return v:sub(1, 20)
+end
+
+function Sync.Who(done)
+    if not IsInGuild() then return false end
+    who = { at = time(), replies = {}, done = done }
+    Comm.Send("1W", "GUILD")
+    local thisWho = who
+    C_Timer.After(8, function()
+        if who == thisWho then
+            who = nil
+            if thisWho.done then thisWho.done(thisWho.replies) end
+        end
+    end)
+    return true
+end
+
+Comm.On("W", function(_, sender, channel)
+    if channel ~= "GUILD" or mode() == "off" then return end
+    local r = Stonks.realmData
+    local asOf = r and r.last and floor(r.last / 3600) or 0
+    C_Timer.After(random() * 4, function()
+        Comm.Send("1V" .. MODE_CODE[mode()] .. "," .. Codec.enc(asOf) .. "," .. myVersion(), "WHISPER", sender)
+    end)
+end)
+
+Comm.On("V", function(body, sender, channel)
+    if channel ~= "WHISPER" or not who then return end
+    local f = Codec.fields(body, 3)
+    if not f or #f ~= 3 or not CODE_MODE[f[1]] or not Codec.dec(f[2]) or not f[3]:match("^[%w%.%-]+$") then
+        return Comm.Reject("fields")
+    end
+    who.replies[sender] = { mode = CODE_MODE[f[1]], asOf = Codec.dec(f[2]), version = f[3] }
+end)
+
+---------------------------------------------------------------------------
 -- Header filter: drop what we don't want before it is even queued.
 ---------------------------------------------------------------------------
 Comm.accept = function(kind, sender, channel)
@@ -600,7 +647,7 @@ Comm.accept = function(kind, sender, channel)
     if isMuted(sender) then return false end
     -- Chat-link traffic is manual on both ends (posted by one player, confirmed by the other), so it works even
     -- with automatic sharing off.
-    if channel == "WHISPER" and (kind == "L" or kind == "R" or kind == "S" or kind == "E") then return true end
+    if channel == "WHISPER" and (kind == "L" or kind == "R" or kind == "S" or kind == "E" or kind == "V") then return true end
     if m == "off" then return false end
     if channel == "GUILD" and kind == "S" and settings().lowEnd then return false end
     if kind == "H" or kind == "A" then return m == "share" end
