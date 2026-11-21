@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## 0.1.7
+
+- Encore-Stonks: the item list shows 100 items per page (was the first 500), with arrows at the bottom right to page through. Sorting by price, name or days orders the whole list. iLvl and Req sort only the page you're on, so the game no longer lags looking up item info for every item.
+
 ## 0.1.6
 
 - Encore-Stonks: fixes the Lua error "Browser.lua:188: attempt to call a nil value" when opening the Stonks browser in 0.1.5. The new iLvl and Req columns called GetItemInfo, which WoW Forever only has as C_Item.GetItemInfo. Share links had the same slip when naming the item.
