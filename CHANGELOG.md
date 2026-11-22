@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## 0.2.3
+
+- Encore-DB: Collections > Item sets are listed by class (Warrior, Paladin, Hunter, Rogue, Priest, Shaman, Mage, Warlock, Druid), each with its class icon, and every class shows all its sets: PvP, Zul'Gurub, Ruins and Temple of Ahn'Qiraj. Each set says where it comes from. Sets for no single class stay under Other sets. Dungeon and tier sets will slot in the same way when they are added.
+
 ## 0.2.2
 
 - Encore-Stonks: WoW Forever's launch week (4 to 11 November 2026) is left out of every average: the 3, 7 and 14-day averages, the median and mean, the normal price, the weekday and hour bars, the saved summaries and what you send to the guild. The prices stay saved and still show on the trend; hovering one says it is left out.
