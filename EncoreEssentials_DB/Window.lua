@@ -1546,7 +1546,11 @@ local function initTreeRow(row, d)
     row.pmText:SetText(d.open and "-" or "+")
     row.sel:SetShown(d.selected == true); row.selBar:SetShown(d.selected == true)
     row.icon:SetShown(d.icon ~= nil)
-    if d.icon then row.icon:SetTexture(d.icon) end
+    if d.icon then
+        row.icon:SetTexture(d.icon)
+        -- iconCoords: a part of an icon sheet (class icons); otherwise the usual crop of an icon's border
+        if d.iconCoords then row.icon:SetTexCoord(unpack(d.iconCoords)) else row.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93) end
+    end
 
     row.label:SetFontObject(cat and "GameFontNormal" or "GameFontHighlight")
     if cat then
@@ -1654,6 +1658,7 @@ local function initSectionRow(row, d)
         row.badge:SetShown(d.badge ~= nil)
         if d.badge then
             row.badge:SetTexture(d.badge)
+            if d.badgeCoords then row.badge:SetTexCoord(unpack(d.badgeCoords)) else row.badge:SetTexCoord(0, 1, 0, 1) end
             row.badge:SetSize(d.badgeSize or 30, d.badgeSize or 30)
         end
     end

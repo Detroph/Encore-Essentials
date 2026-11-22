@@ -2,6 +2,7 @@
 
 ## 0.2.3
 
+- Encore-DB: Collections > Item sets are listed by class (Warrior, Paladin, Hunter, Rogue, Priest, Shaman, Mage, Warlock, Druid), each with its class icon, and every class shows all its sets: PvP, Zul'Gurub, Ruins and Temple of Ahn'Qiraj. Each set says where it comes from. Sets for no single class stay under Other sets. Dungeon and tier sets will slot in the same way when they are added.
 - Encore-Stonks: Auctionator's Auction price line in item tooltips shows when that price was scanned, in brackets: "Auction  12g 30s (22 Nov 14:05)". The time comes from Encore-Stonks' own record of each scan. Prices from before Stonks saw them show the day only, from Auctionator's history. On by default; turn it off in Options > AddOns > Encore Essentials > Encore-Stonks ("Show scan time on Auctionator's price"). Auctionator's own tooltip is otherwise unchanged, and nothing is changed if Auctionator's tooltip can't be found.
 
 ## 0.2.2
