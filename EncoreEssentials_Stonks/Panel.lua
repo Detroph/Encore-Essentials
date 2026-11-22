@@ -318,9 +318,9 @@ local function drawTimeline(points, profile, history)
             x1 = left, x2 = right, cx = x, my = Y(pt.p),
             tooltip = function(tt)
                 if pt.src == "s" then
-                    tt:SetText(WEEKDAYS[Stonks.WeekdayIndex(pt.t)] .. date(" %d %b, %H:00", pt.t))
+                    tt:SetText(WEEKDAYS[Stonks.WeekdayIndex(pt.t)] .. date(" %d %b %Y, %H:00", pt.t))
                 else
-                    tt:SetText(WEEKDAYS[Stonks.WeekdayIndex(pt.t)] .. date(" %d %b", pt.t))
+                    tt:SetText(WEEKDAYS[Stonks.WeekdayIndex(pt.t)] .. date(" %d %b %Y", pt.t))
                 end
                 tt:AddDoubleLine("Lowest buyout", coin(pt.p), 1, 1, 1, 1, 1, 1)
                 if pt.q then tt:AddDoubleLine("Units on sale", tostring(pt.q), 1, 1, 1, 1, 1, 1) end
