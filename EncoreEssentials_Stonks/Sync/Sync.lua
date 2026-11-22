@@ -189,6 +189,8 @@ function Sync.BuildSummary(key)
     if not id or id < 1 or id > Codec.MAX_ITEM_ID or floor(id) ~= id then return nil end
     local st = origItemStats(Stonks, key)
     if not st or not st.median or not st.days or st.days < 1 then return nil end
+    -- A missing average would stop the whole summary job with an error (and leave us "serving" all session).
+    if not st.avg3 or not st.avg7 or not st.avg14 then return nil end
     local rec = { id = id, days = st.days }
     rec.med, rec.q25, rec.q75 = floor(st.median + 0.5), floor((st.q25 or st.median) + 0.5), floor((st.q75 or st.median) + 0.5)
     rec.a3, rec.a7, rec.a14 = floor(st.avg3 + 0.5), floor(st.avg7 + 0.5), floor(st.avg14 + 0.5)

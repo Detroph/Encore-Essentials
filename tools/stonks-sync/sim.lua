@@ -60,7 +60,15 @@ local function newClient(name)
     env.C_AddOns = { IsAddOnLoaded = function() return false end, GetAddOnMetadata = function() return "test" end }
     env.GetRealmName = function() return "Test" end
     env.UnitFactionGroup = function() return "Horde" end
-    env.UnitName = function() return name end
+    -- WoW Forever: UnitName("player") returns the first name and the surname apart ("Berya", "Ebonlocke"); chat and
+    -- addon messages carry the whole name with a space ("Berya Ebonlocke-Realm").
+    env.UnitName = function()
+        local first, surname = name:match("^(%S+) (.+)$")
+        if first then return first, surname end
+        return name
+    end
+    env.RegionalUniqueNamesEnabled = function() return true end
+    env.Constants = { CharacterNameSeparatorConsts = { CHARACTERNAME_SURNAME_SEPARATOR = " " } }
     env.InCombatLockdown = function() return c.combat end
     env.UnitAffectingCombat = function() return c.combat end
     env.IsInInstance = function() return false, "none" end
@@ -78,7 +86,8 @@ local function newClient(name)
             assert(#msg <= 255, "message over 255 bytes")
             c.sent[#c.sent + 1] = { msg = msg, channel = channel, target = target, at = clock, combat = c.combat }
             for _, other in ipairs(clients) do
-                if other ~= c and other.online and (channel == "GUILD" or other.name == target) then
+                -- The game echoes guild messages back to the sender too.
+                if other.online and ((channel == "GUILD") or (other ~= c and other.name == target)) then
                     schedule(0.1, function() other:event("CHAT_MSG_ADDON", prefix, msg, channel, name .. "-Test") end)
                 end
             end
@@ -369,8 +378,19 @@ do
     local Comm = asker.Stonks.SyncComm
     check(Comm.IsMe("WhoA") and Comm.IsMe("WhoA-Othrealm") and not Comm.IsMe("WhoB-Othrealm"), "own name is recognised with a realm suffix")
     asker.env.GetNormalizedRealmName = function() return "Home" end
-    check(Comm.IsMe("WhoA-Home") and not Comm.IsMe("WhoA-Othrealm"), "with the realm known, only our own realm matches")
+    check(Comm.IsMe("WhoA-Home") and Comm.IsMe("WhoA-Othrealm"), "on Forever (names unique in the region) any realm suffix after our name is us")
+    asker.env.RegionalUniqueNamesEnabled = function() return false end
+    check(Comm.IsMe("WhoA-Home") and not Comm.IsMe("WhoA-Othrealm"), "elsewhere, with the realm known, only our own realm matches")
+    asker.env.RegionalUniqueNamesEnabled = function() return true end
     asker.env.GetNormalizedRealmName = nil
+
+    -- Forever: UnitName("player") gives "Berya", "Ebonlocke"; messages say "Berya Ebonlocke".
+    local twoPart = newClient("Kela Twopart")
+    local TC = twoPart.Stonks.SyncComm
+    check(TC.Me() == "Kela Twopart", "own name is the first name and surname together (" .. tostring(TC.Me()) .. ")")
+    check(TC.IsMe("Kela Twopart") and TC.IsMe("Kela Twopart-PvP") and not TC.IsMe("Kela") and not TC.IsMe("Kela Other"),
+        "own two-part name is recognised, with or without a realm, and the first name alone is not")
+    twoPart.online = false
 
     local before = Comm.perf.rejected
     Comm.Receive(Comm.PREFIX, "1Cbad", "GUILD", "WhoB-Test")
