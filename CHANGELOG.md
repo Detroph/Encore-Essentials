@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## 0.2.4
+
+- Encore-DB: Collections > Item sets lists PvP sets, Zul'Gurub, Ruins of Ahn'Qiraj, Temple of Ahn'Qiraj and Other sets again. Inside each one the sets are grouped by class, one row per class with its class icon; pick a class to see its sets. Sets for no single class (Other sets) are listed one by one. Dungeon and tier sets will be grouped the same way when they are added.
+
 ## 0.2.3
 
 - Encore-DB: Collections > Item sets are listed by class (Warrior, Paladin, Hunter, Rogue, Priest, Shaman, Mage, Warlock, Druid), each with its class icon, and every class shows all its sets: PvP, Zul'Gurub, Ruins and Temple of Ahn'Qiraj. Each set says where it comes from. Sets for no single class stay under Other sets. Dungeon and tier sets will slot in the same way when they are added.

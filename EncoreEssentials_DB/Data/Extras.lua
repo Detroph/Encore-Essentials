@@ -860,9 +860,9 @@ ns.Collections = {
     { text = "Crafted", items = { { 17771, "Crafted" } } },
   } },
 }
--- Item sets: { text, sets = { { id, name, class, side, quality, level, pieces = { itemID, ... } } } }.
+-- Item sets: { text, tab ("pvp": shown in the PvP tab, else Collections), sets = { { id, name, class, side, quality, level, pieces = { itemID, ... } } } }.
 ns.ItemSets = {
-  { text = "PvP sets (rare)", sets = {
+  { text = "PvP sets (rare)", tab = "pvp", sets = {
     { id = 539, name = "Champion's Refuge", class = "Druid", quality = 3, level = 60, pieces = { 272464, 272606, 272627, 272626, 272642, 272641 } },
     { id = 382, name = "Champion's Sanctuary", class = "Druid", quality = 3, level = 60, pieces = { 272614, 272462, 272470, 272472, 272469, 272471 } },
     { id = 2080, name = "Champion's Wildhide", class = "Druid", quality = 3, level = 60, pieces = { 273382, 273383, 273385, 273384, 273387, 273386 } },
