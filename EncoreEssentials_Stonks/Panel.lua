@@ -24,7 +24,7 @@ local modeButtons, avgButtons = {}, {}
 local render, applyPage, createTabs
 local PAGES = {
     { "graphs", "Graphs", 58, "Price history of the selected item, shopping list or the whole market." },
-    { "history", "History", 58, "Sync history: when and from whom you received guild scans, login summaries and shared items or scans." },
+    { "history", "History", 58, "Sync history: what you received from and sent to the guild (hourly scans, login summaries, shared items or scans), with the data size per day." },
 }
 local pageTabs, pages = {}, {}
 

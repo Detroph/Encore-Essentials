@@ -7,6 +7,9 @@
 - Encore-DB: the Collections tab is open. Mounts, companions, tabards and legendaries, grouped by vendors, quests, drops and crafted, each with where it comes from. Item sets: PvP sets, Zul'Gurub, Ruins and Temple of Ahn'Qiraj and other sets, with their pieces. Search finds these items too.
 - Encore-DB: rogue poisons are in the Collections tab under Class skills, by the level you learn them at the rogue trainer (not under Professions).
 - Everything new comes from Wowhead Forever, and only items Wowhead Forever shows a source for in WoW Forever are listed. AtlasLoot Continued's lists were only used to know which items to look up. World events stay out until they run in WoW Forever.
+- Encore-Stonks: the sync history has two big tabs, Received and Sent. Sent lists what you sent to the guild: your hourly scans (to Guild), login summaries you sent to a guildmate, and items or scans you shared by chat link, with the same filters, sortable columns and tooltips as Received.
+- Encore-Stonks: the sync history shows how much data went in or out: cards for today, the last 7 days and the last 30 days, and a bar per day for the last 30 days (hover a bar for that day). Both lists have a Size column. Sizes are the addon messages as they go over the wire, in B, KB or MB.
+- Encore-Stonks: Clear (Shift-click) empties only the tab you're on.
 
 ## 0.1.9
 
