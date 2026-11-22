@@ -18,6 +18,7 @@ UI.lua
 Panel.lua
 Browser.lua
 Hooks.lua
+AuctionatorTip.lua
 Sync\Codec.lua
 Sync\Comm.lua
 Sync\Log.lua

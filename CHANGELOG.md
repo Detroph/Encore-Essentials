@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## 0.2.3
+
+- Encore-Stonks: Auctionator's Auction price line in item tooltips shows when that price was scanned, in brackets: "Auction  12g 30s (22 Nov 14:05)". The time comes from Encore-Stonks' own record of each scan. Prices from before Stonks saw them show the day only, from Auctionator's history. On by default; turn it off in Options > AddOns > Encore Essentials > Encore-Stonks ("Show scan time on Auctionator's price"). Auctionator's own tooltip is otherwise unchanged, and nothing is changed if Auctionator's tooltip can't be found.
+
 ## 0.2.2
 
 - Encore-Stonks: WoW Forever's launch week (4 to 11 November 2026) is left out of every average: the 3, 7 and 14-day averages, the median and mean, the normal price, the weekday and hour bars, the saved summaries and what you send to the guild. The prices stay saved and still show on the trend; hovering one says it is left out.
