@@ -1,5 +1,10 @@
 # Encore Essentials
 
+## 0.2.1
+
+- Encore-Stonks: login summaries work. On WoW Forever the game gives the addon your first name and surname apart ("Berya", "Ebonlocke") while guild messages carry the whole name ("Berya Ebonlocke"), and Stonks only used the first name. So every offer meant for you was ignored, guildmates never started sending when you picked them, and your own guild messages came back to you as if from a guildmate. Stonks now uses the whole name. Both sides need this version: the player logging in and the guildmate who sends.
+- Encore-Stonks: an item with incomplete averages no longer stops a login summary you are sending halfway.
+
 ## 0.2.0
 
 - Encore-DB: the PvP tab has Warsong Gulch (Warsong Outriders, Silverwing Sentinels) and Alterac Valley (Frostwolf Clan, Stormpike Guard) rewards by standing, and the honor rewards: armor, Grand Marshal's and High Warlord's weapons, insignia and war mounts, each with its price.

@@ -35,8 +35,21 @@ Comm.perf = perf
 local now = function() return GetTime() end
 Comm.now = now
 
+-- WoW Forever gives every character a first name and a surname. UnitName("player") returns them apart ("Berya",
+-- "Ebonlocke"), while chat and addon messages carry the whole name ("Berya Ebonlocke"). Using only the first name
+-- meant no offer, accept or echo of ours was ever recognised as ours, so login summaries never started.
+local function surnameNames()
+    return RegionalUniqueNamesEnabled and RegionalUniqueNamesEnabled() or false
+end
+
 local function me()
-    local name = UnitName("player")
+    local name, second = UnitName("player")
+    if not name then return nil end
+    if second and second ~= "" and surnameNames() then
+        local consts = Constants and Constants.CharacterNameSeparatorConsts
+        local sep = consts and consts.CHARACTERNAME_SURNAME_SEPARATOR or " "
+        name = name .. sep .. second
+    end
     return name
 end
 Comm.Me = me
@@ -46,6 +59,8 @@ function Comm.IsMe(name)
     local mine = me()
     if not name or not mine then return false end
     if name == mine then return true end
+    -- Names are unique across the whole region on Forever, so any realm suffix after our full name is still us.
+    if surnameNames() and name:match("^(.-)%-[^%-]*$") == mine then return true end
     local realm = GetNormalizedRealmName and GetNormalizedRealmName()
     if realm and name == mine .. "-" .. realm then return true end
     local base = name:match("^([^%-]+)%-")
