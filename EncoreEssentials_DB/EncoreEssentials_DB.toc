@@ -10,6 +10,7 @@
 
 Data\Loot.lua
 Data\Recipes.lua
+Data\Extras.lua
 Data\Portraits.lua
 Data\Wings.lua
 Data\Quests-questie.lua
@@ -19,3 +20,4 @@ QuestData.lua
 Templates.xml
 Window.lua
 QuestView.lua
+CollectionsView.lua

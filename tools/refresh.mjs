@@ -5,11 +5,15 @@
 //                Boss levels: QuestieDB first, Wowhead Forever fills blanks (tools/loot/questie-levels.mjs)
 //   professions  ForeverDB first, then everything checked against Wowhead Forever
 //                                                                           (build-recipes.mjs, check-recipes.mjs)
+//   extras       PvP and reputation rewards, collections, item sets, rogue poisons: Wowhead Forever data for the
+//                items AtlasLoot Continued lists (leads only, never copied)  (atlasloot-extras.mjs, build-extras.mjs)
 // Settings: tools/refresh.config.json (copy refresh.config.example.json). See tools/README.md, "Refreshing the data".
 //
 // Usage: node tools/refresh.mjs <step> [--download]
-//   all             quests, loot and professions
-//   quests | loot | professions
+//   all             quests, loot, professions and extras
+//   quests | loot | professions | extras
+//   extras-script   writes tools/out/wowhead-extras-sweep.js, to paste into the browser console on wowhead.com/forever;
+//                   save the wowhead-extras.json it downloads in tools/out/, then run the extras step
 //   wowhead-script  writes tools/out/wowhead-sweep.js, to paste into the browser console on wowhead.com/forever
 //   import <files>  reads the wowhead-drops-*.json files the browser script downloaded
 // --download first downloads the sources again: the ForeverDB files, foreverchanges.pro pages and missing Wowhead
@@ -78,7 +82,23 @@ const steps = {
     run('loot/build-recipes.mjs');
     run('loot/check-recipes.mjs', ...(download ? ['--fetch'] : []));
   },
-  all() { steps.quests(); steps.loot(); steps.professions(); },
+  extras() {
+    run('loot/atlasloot-extras.mjs');
+    if (!fs.existsSync(path.join(DIR, 'out', 'wowhead-extras.json'))) {
+      console.log('\nNo tools/out/wowhead-extras.json yet: run "node tools/refresh.mjs extras-script" and the script it writes. Extras.lua is left as it is.');
+      return;
+    }
+    run('loot/build-extras.mjs');
+  },
+  'extras-script'() {
+    run('loot/atlasloot-extras.mjs');
+    if (!fs.existsSync(path.join(DIR, 'loot', 'wowhead-extras-script.mjs'))) {
+      console.log('\ntools/loot/wowhead-extras-script.mjs is missing: copy it in from encore-data-tools (install.ps1).');
+      return;
+    }
+    run('loot/wowhead-extras-script.mjs');
+  },
+  all() { steps.quests(); steps.loot(); steps.professions(); steps.extras(); },
   'wowhead-script'() {
     run('loot/wowhead-browser-script.mjs', '--pause', String(cfg.wowheadPauseSeconds || 8));
   },

@@ -375,7 +375,7 @@ end
 ---------------------------------------------------------------------------
 -- Recipes
 ---------------------------------------------------------------------------
-local function recipeLevel(r) return r[3] or r[4] or 0 end
+local function recipeLevel(r) return r[3] or r[4] or r.level or 0 end
 local sortedRecipes = {}
 local function recipesOf(prof)
     if sortedRecipes[prof] then return sortedRecipes[prof] end
@@ -425,6 +425,7 @@ local function learnSkill(r)
 end
 
 local function skillText(r)
+    if r.level and not r[3] then return ("|cffff8040Level %d|r"):format(r.level) end
     return ("|cffff8040%s|r |cffffff00%d|r |cff40bf40%d|r |cff9d9d9d%d|r"):format(learnSkill(r), r[4] or 0, r[5] or 0, r[6] or 0)
 end
 
@@ -449,7 +450,7 @@ local function recipeCell(r, prof)
     c.name = r[2] or c.name or ("Spell " .. r[1])
     if r[8] and r[8] > 1 then c.name = c.name .. " |cffc8b898x" .. r[8] .. "|r" end
     c.skill = skillText(r)
-    c.sortv = { skill = r[3] or 9999 }
+    c.sortv = { skill = r[3] or r.level or 9999 }
     if type(r[10]) == "number" then c.recipeItem = r[10] end -- learned from this recipe item
     c.isNew, c.changed = r.new == true, r.changed == true
     c.recipe = r
@@ -508,6 +509,7 @@ local function buildIndexes()
             end
         end
     end
+    if ns.CollectionsView then ns.CollectionsView.index(whereIndex) end
 end
 
 local function clearSearch()
@@ -528,6 +530,8 @@ local function goTo(w)
         state.inst, state.boss = w.inst, w.boss
     elseif w.tab == "world" then
         state.band, state.worldQuality = World.bandOf(w.world), World.catOf(w.world) or 4
+    elseif w.tab == "collections" then
+        if ns.CollectionsView then ns.CollectionsView.goTo(w) end
     else
         state.vendor[w.tab] = w.vendor
     end
@@ -614,8 +618,12 @@ local function recipePopupEntries(r)
     elseif highlightOn() and r.changed then
         e[#e + 1] = { text = "Changed in WoW Forever", color = TEAL_SOFT }
     end
-    e[#e + 1] = { text = ("Learned at |cffff8040%s|r.  Turns |cffffff00yellow|r at %d, |cff40bf40green|r at %d, |cff9d9d9dgrey|r at %d.")
-        :format(learnSkill(r), r[4] or 0, r[5] or 0, r[6] or 0), color = DIM }
+    if r.level and not r[3] then
+        e[#e + 1] = { text = ("Learned at level |cffff8040%d|r."):format(r.level), color = DIM }
+    else
+        e[#e + 1] = { text = ("Learned at |cffff8040%s|r.  Turns |cffffff00yellow|r at %d, |cff40bf40green|r at %d, |cff9d9d9dgrey|r at %d.")
+            :format(learnSkill(r), r[4] or 0, r[5] or 0, r[6] or 0), color = DIM }
+    end
     if r[8] and r[8] > 1 then e[#e + 1] = { text = ("Makes %d."):format(r[8]), color = DIM } end
 
     e[#e + 1] = { text = "Reagents", font = "GameFontNormal", color = GOLD, gap = 6 }
@@ -636,7 +644,7 @@ local function recipePopupEntries(r)
     e[#e + 1] = { text = "How to learn it", font = "GameFontNormal", color = GOLD, gap = 6 }
     local l = r[10]
     if l == "t" then
-        e[#e + 1] = { text = "From a profession trainer" .. (r.trainerCost and (" for " .. coin(r.trainerCost)) or "") .. "." }
+        e[#e + 1] = { text = (r.level and not r[3] and "From the rogue trainer" or "From a profession trainer") .. (r.trainerCost and (" for " .. coin(r.trainerCost)) or "") .. "." }
     elseif l == "a" then
         e[#e + 1] = { text = "Learned automatically with the profession." }
     elseif type(l) == "number" then
@@ -671,7 +679,7 @@ local TABS = {
     { key = "pvp", text = "PvP", vendorKind = "pvp" },
     { key = "reputations", text = "Reputations", vendorKind = "faction" },
     { key = "events", text = "World Events", soon = true },
-    { key = "collections", text = "Collections", soon = true },
+    { key = "collections", text = "Collections" },
 }
 local TAB_BY_KEY = {}
 for _, t in ipairs(TABS) do TAB_BY_KEY[t.key] = t end
@@ -809,6 +817,8 @@ local function treeRows()
             end
             group(tab.vendorKind .. tostring(s.key), s.text, entries)
         end
+    elseif state.tab == "collections" and ns.CollectionsView then
+        for _, g in ipairs(ns.CollectionsView.tree(pick)) do group(g.key, g.text, g.entries) end
     end
     return rows
 end
@@ -952,6 +962,8 @@ local function sectionRows()
                 onClick = function() state.standing = s; clearSearch(); renderAll() end,
             }
         end
+    elseif state.tab == "collections" and ns.CollectionsView then
+        ns.CollectionsView.sections(rows)
     end
     return rows
 end
@@ -1021,6 +1033,7 @@ local function lootBlocks()
     local blocks = {}
     if state.search ~= "" then return searchBlocks() end
     local tab = TAB_BY_KEY[state.tab]
+    if state.tab == "collections" and ns.CollectionsView then return ns.CollectionsView.blocks() end
     if tab.soon then
         blocks[1] = emptyLine("Nothing here yet. " .. tab.text .. " comes in a later version of Encore-DB.")
         return blocks, tab.text
@@ -2762,12 +2775,13 @@ end
 ns.UI = {
     state = state, settings = settings, rowKinds = ROW_KINDS, lineFonts = LINE_FONTS,
     heading = heading, textLine = textLine, emptyLine = emptyLine, grid = grid,
-    itemInfo = itemInfo, cellFromInfo = cellFromInfo, passesInfo = passesInfo, coin = coin,
+    itemInfo = itemInfo, cellFromInfo = cellFromInfo, recipeCell = recipeCell, passesRecipe = passesRecipe, passesInfo = passesInfo, coin = coin,
     mapName = mapName, setPin = setPin, highlightOn = highlightOn,
     setColor = setColor, gradient = gradient, addBorder = addBorder, onRowClick = onRowClick,
     colors = { TEAL = TEAL, TEAL_SOFT = TEAL_SOFT, COPPER = COPPER, GOLD = GOLD, INK = INK, DIM = DIM, TEAL_HEX = TEAL_HEX },
     renderLoot = function(keepScroll) renderLoot(keepScroll) end,
     renderAll = function() renderAll() end,
+    clearSearch = function() clearSearch() end,
     isShown = function() return frame ~= nil and frame:IsShown() end,
 }
 
