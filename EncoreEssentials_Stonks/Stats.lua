@@ -16,6 +16,14 @@ end
 
 local function dayKey(t) return date("%Y%m%d", t) end
 
+-- WoW Forever's launch week, 4 to 11 November 2026 (local dates, both days included), is left out of every
+-- average, median and weekday/hour bar (Det, 2026-11-22): launch prices were nothing like normal ones. The prices
+-- stay saved and still show as points on the trend. Pinned to 2026 only.
+local SKIP_FROM = time({ year = 2026, month = 11, day = 4, hour = 0 })
+local SKIP_UNTIL = time({ year = 2026, month = 11, day = 12, hour = 0 })
+function Stonks.Skipped(t) return t >= SKIP_FROM and t < SKIP_UNTIL end
+local skipped = Stonks.Skipped
+
 local function median(values)
     local n = #values
     if n == 0 then return nil end
@@ -101,8 +109,11 @@ function Stonks:Fold(key, oldStr, keptStr, cutoffHour)
     local r = self.realmData
     if not r then return end
     local old, prices = {}, {}
-    Stonks.EachSample(oldStr, function(h, p) old[#old + 1] = { t = h * 3600 + 1800, p = p }; prices[#prices + 1] = p end)
-    Stonks.EachSample(keptStr, function(_, p) prices[#prices + 1] = p end)
+    Stonks.EachSample(oldStr, function(h, p)
+        local t = h * 3600 + 1800
+        if not skipped(t) then old[#old + 1] = { t = t, p = p }; prices[#prices + 1] = p end
+    end)
+    Stonks.EachSample(keptStr, function(h, p) if not skipped(h * 3600 + 1800) then prices[#prices + 1] = p end end)
     local normal = Stonks.Median(prices)
     local agg = Stonks.ParseAgg(r.agg[key])
     agg.untilHour = math.max(agg.untilHour, cutoffHour)
@@ -158,7 +169,7 @@ function Stonks.DayNumber(t) return floor((t - day0()) / 86400) end
 function Stonks.DailyLows(points, filter)
     local byDay, byTime = {}, {}
     for _, pt in ipairs(points) do
-        if not filter or filter(pt) then
+        if not skipped(pt.t) and (not filter or filter(pt)) then
             local d = Stonks.DayNumber(pt.t)
             if not byDay[d] or pt.p < byDay[d] then byDay[d], byTime[d] = pt.p, pt.t end
         end
@@ -328,7 +339,7 @@ end
 -- from older samples, added to the buckets.
 function Stonks.Profile(points, agg)
     local prices = {}
-    for i, pt in ipairs(points) do prices[i] = pt.p end
+    for _, pt in ipairs(points) do if not skipped(pt.t) then prices[#prices + 1] = pt.p end end
     local normal = median(prices)
     local profile = { normal = normal, week = newBuckets(7, 1), hour = newBuckets(24, 0), count = #points, days = 0, hours = 0, folded = 0 }
     if agg then
@@ -353,15 +364,17 @@ function Stonks.Profile(points, agg)
     -- Weekdays: the lowest price of each date, so a day scanned five times counts once.
     local dayMin, dayTime = {}, {}
     for _, pt in ipairs(points) do
-        local k = dayKey(pt.t)
-        if not pt.folded and (not dayMin[k] or pt.p < dayMin[k]) then dayMin[k], dayTime[k] = pt.p, pt.t end
-        -- Hours: only Stonks' own samples know their hour.
-        if pt.src == "s" then
-            local lr = ratio(pt.p)
-            if lr then
-                local b = profile.hour[date("*t", pt.t).hour]
-                b.sum, b.n = b.sum + lr, b.n + 1
-                profile.hours = profile.hours + 1
+        if not skipped(pt.t) then
+            local k = dayKey(pt.t)
+            if not pt.folded and (not dayMin[k] or pt.p < dayMin[k]) then dayMin[k], dayTime[k] = pt.p, pt.t end
+            -- Hours: only Stonks' own samples know their hour.
+            if pt.src == "s" then
+                local lr = ratio(pt.p)
+                if lr then
+                    local b = profile.hour[date("*t", pt.t).hour]
+                    b.sum, b.n = b.sum + lr, b.n + 1
+                    profile.hours = profile.hours + 1
+                end
             end
         end
     end
@@ -469,4 +482,45 @@ function Stonks.MovingAverage(points, days)
         out[#out + 1] = { t = d.t, v = e }
     end
     return out
+end
+
+---------------------------------------------------------------------------
+-- Saved data version 2 (v0.2.2): running statistics saved by version 1 may hold days from 4-11 Nov 2026. They
+-- are rebuilt from the dated prices still saved (Auctionator's days before each item's fold point), leaving that
+-- week out, and the saved summaries are dropped so they are worked out again. Nothing else is deleted.
+-- Runs from the saved-data version step at login (Recorder.lua), and only moves the version to 2 when every item
+-- is done; after that the step never runs it again. Folded weekday/hour totals need nothing: Stonks' own samples
+-- start after launch week.
+---------------------------------------------------------------------------
+function Stonks:MigrateLaunchWeek(onDone)
+    local r = self.realmData
+    if not r then return end
+    -- Auctionator's dated days are the source; without them now, the version stays at 1 and this runs next login.
+    local a = _G.Auctionator
+    if self:Settings().useAuctionator and not (a and a.Database and type(a.Database.db) == "table") then return end
+    for _, realm in pairs(self.db.realms) do
+        if type(realm) == "table" then realm.sum = {} end
+    end
+    local keys = {}
+    for k in pairs(r.stat) do keys[#keys + 1] = k end
+    local i = 1
+    local ticker
+    ticker = C_Timer.NewTicker(0, function()
+        for _ = 1, 100 do
+            local key = keys[i]
+            if not key then
+                ticker:Cancel()
+                onDone()
+                return
+            end
+            local cutoffTime = Stonks.ParseAgg(r.agg[key]).untilHour * 3600
+            local st = Stonks.ParseStat(nil)
+            if cutoffTime > 0 then
+                local days = Stonks.DailyLows(self:ItemSeries(key), function(pt) return pt.t < cutoffTime end)
+                for _, d in ipairs(days) do Stonks.StatAdd(st, d.day, d.p) end
+            end
+            r.stat[key] = st.n > 0 and Stonks.EncodeStat(st) or nil
+            i = i + 1
+        end
+    end)
 end
