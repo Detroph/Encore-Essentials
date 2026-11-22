@@ -15,7 +15,7 @@ The graph panel has **Share item** and **Share scan** buttons at the bottom righ
 | `/stonksync mute <name>` / `unmute <name>` | Ignore a player's prices |
 | `/stonksync link scan` | Put a link to your latest scan in the chat box |
 | `/stonksync link item <item>` | Put a link to one item's price history in the chat box |
-| `/stonksync history` | Open the History tab: when and from whom you received guild scans, login summaries and shared prices |
+| `/stonksync history` | Open the History tab: what you received and sent (guild scans, login summaries and shared prices), with the data size per day |
 
 ## How it works
 
@@ -23,7 +23,7 @@ The graph panel has **Share item** and **Share scan** buttons at the bottom righ
 - **Login summary.** A minute after login, out of combat, the player sends `HELLO` with the hour of its last summary. Guildmates sharing data who are free and hold newer data wait 0 to 1 seconds when AFK, 1 to 5 otherwise (shorter for fresher data), and the first one sends `OFFER`; anyone who hears an offer stands down. The asker picks the best offer after 2 seconds (AFK first, then freshest) and sends `ACCEPT`. The summary comes by whisper, only for items that changed since the asker's last summary. If no block arrives for 60 seconds the asker keeps what it has and asks again from the next item. No offer within 15 seconds: retry after 1, 2, 4, 8 and 15 minutes.
 - **Chat links.** Anyone can post a link; it travels as plain text (`[Stonks: Black Lotus #i13468]`) and players with Stonks see it as a link. Clicking asks for confirmation, and only then is the data requested by whisper. Posters only answer for links they posted in the last hour.
 
-- **Sync history.** Every delivery you receive is logged per realm (`realm.syncLog`, last 30 days, at most 300 entries): hourly scans by sender and hour (closed by the sender's end message), login summaries (marked stopped when the sender goes quiet and someone else resumes), and shared items and scans. The graph window's History tab shows it; nothing about it is sent.
+- **Sync history.** Every delivery is logged per realm, last 30 days, at most 300 entries each: what you receive in `realm.syncLog` (hourly scans by sender and hour, closed by the sender's end message; login summaries, marked stopped when the sender goes quiet and someone else resumes; shared items and scans) and what you send in `realm.syncSent` (worked out in `Comm` from each message that actually went out: hourly scans to the guild, login summaries you served, items and scans you shared by link). Each entry has its size in bytes (the addon message text, as it goes over the wire). `realm.syncBytes` adds up every message of ours per day in both directions, control messages included, for the stat cards (today, 7 days, 30 days) and the bytes-per-day chart. The graph window's History tab shows it in a Received and a Sent tab; nothing about it is sent.
 
 ## Limits that keep it invisible
 

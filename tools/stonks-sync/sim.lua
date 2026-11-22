@@ -219,14 +219,30 @@ run(1500)
 local got = count(newbie.Stonks.realmData.baseline)
 check(got == 2000, "newcomer received the full summary (" .. got .. " items)")
 check(newbie.Stonks.realmData.sync.from == afkName, "summary marked complete")
-local function logOf(c, kind)
+local function logOf(c, kind, sent)
     local out = {}
-    for _, e in ipairs(c.Stonks.realmData.syncLog or {}) do if e.kind == kind then out[#out + 1] = e end end
+    for _, e in ipairs(c.Stonks.realmData[sent and "syncSent" or "syncLog"] or {}) do if e.kind == kind then out[#out + 1] = e end end
     return out
+end
+local function wireBytes(c, kind, channel)
+    local n = 0
+    for _, s in ipairs(c.sent) do
+        if (not kind or s.msg:sub(2, 2) == kind) and (not channel or s.channel == channel) then n = n + #s.msg end
+    end
+    return n
 end
 local nl = logOf(newbie, "summary")
 check(#nl == 1 and nl[1].from == afkName and nl[1].done and nl[1].kept == 2000 and nl[1].expected == 2000,
     "sync history: one complete login summary from " .. afkName .. " (" .. tostring(nl[1] and nl[1].kept) .. " kept)")
+local afkClient = holders[2]
+local sl = logOf(afkClient, "summary", true)
+local servedBytes = wireBytes(afkClient, "Y", "WHISPER") + wireBytes(afkClient, "Z", "WHISPER")
+check(#sl == 1 and sl[1].to == "Newbie" and sl[1].done and sl[1].got == 2000 and sl[1].expected == 2000 and sl[1].bytes == servedBytes,
+    ("sync history Sent: the sender logged the login summary to Newbie (%s items, %s of %d bytes)"):format(tostring(sl[1] and sl[1].got), tostring(sl[1] and sl[1].bytes), servedBytes))
+check(nl[1].bytes == servedBytes, ("sync history: the received summary's size matches what was sent (%s of %d bytes)"):format(tostring(nl[1].bytes), servedBytes))
+local SL = afkClient.Stonks.SyncLog
+check(SL.Bytes("sent", 1) == wireBytes(afkClient), ("daily bytes: everything the sender sent counts today (%d of %d)"):format(SL.Bytes("sent", 1), wireBytes(afkClient)))
+check(newbie.Stonks.SyncLog.Bytes("rec", 30) >= servedBytes, "daily bytes: the newcomer counted what arrived (" .. newbie.Stonks.SyncLog.Bytes("rec", 30) .. " bytes)")
 local st = newbie.Stonks:ItemStats("150")
 check(st and st.guild and st.median and st.median > 0, "charts see the guild baseline for an item the newcomer never scanned")
 
@@ -273,6 +289,15 @@ local claimer = next(claimers)
 local wl = logOf(watcher, "hourly")
 check(#wl == 1 and wl[1].from == claimer and wl[1].done and wl[1].got == 1200 and wl[1].hour == nowHour,
     "sync history: the bystander logged one complete hourly scan from " .. tostring(claimer) .. " (" .. tostring(wl[1] and wl[1].got) .. " items)")
+local claimerClient
+for _, c in ipairs(scanners) do if c.name == claimer then claimerClient = c end end
+local hs = claimerClient and logOf(claimerClient, "hourly", true) or {}
+check(#hs == 1 and hs[1].to == "Guild" and hs[1].done and hs[1].got == 1200 and hs[1].expected == 1200 and hs[1].hour == nowHour,
+    "sync history Sent: the claimer logged one complete hourly scan to the guild (" .. tostring(hs[1] and hs[1].got) .. " items)")
+check(#hs == 1 and hs[1].bytes == wl[1].bytes and hs[1].bytes > 0, ("hourly scan size is the same on both sides (%s and %s bytes)"):format(tostring(hs[1] and hs[1].bytes), tostring(wl[1] and wl[1].bytes)))
+for _, c in ipairs(scanners) do
+    if c.name ~= claimer then check(#logOf(c, "hourly", true) == 0, c.name .. " lost the claim and logged nothing sent") end
+end
 
 ---------------------------------------------------------------------------
 print("== Never in combat, outliers rejected")
@@ -317,6 +342,11 @@ check(clicker.Stonks.realmData.baseline["151"] == nil, "an item the poster never
 local cs, ci = logOf(clicker, "scan"), logOf(clicker, "item")
 check(#cs == 1 and cs[1].from == poster.name and cs[1].done and cs[1].got == 300, "sync history: the linked scan is logged (" .. tostring(cs[1] and cs[1].got) .. " items)")
 check(#ci == 1 and ci[1].id == 150 and ci[1].kept == 1 and ci[1].med and ci[1].med > 0, "sync history: the linked item is logged with its price")
+local ps, pi = logOf(poster, "scan", true), logOf(poster, "item", true)
+check(#ps == 1 and ps[1].to == "Clicker" and ps[1].done and ps[1].got == 300 and ps[1].bytes == cs[1].bytes, "sync history Sent: the poster logged the linked scan to Clicker (" .. tostring(ps[1] and ps[1].bytes) .. " bytes)")
+check(#pi == 1 and pi[1].to == "Clicker" and pi[1].id == 150 and pi[1].done and pi[1].bytes == ci[1].bytes, "sync history Sent: the poster logged the linked item")
+clicker.Stonks.SyncLog.Clear("rec")
+check(#clicker.Stonks.SyncLog.Entries("rec") == 0 and clicker.Stonks.SyncLog.Bytes("rec", 30) == 0, "Clear empties the received tab and its byte counts")
 
 ---------------------------------------------------------------------------
 print("== Who has it, sharing switched on once, names from other realms, reject reasons")
