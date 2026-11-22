@@ -1,5 +1,11 @@
 # Encore Essentials
 
+## Unreleased
+
+- Encore-Stonks: the sync history has two big tabs, Received and Sent. Sent lists what you sent to the guild: your hourly scans (to Guild), login summaries you sent to a guildmate, and items or scans you shared by chat link, with the same filters, sortable columns and tooltips as Received.
+- Encore-Stonks: the sync history shows how much data went in or out: cards for today, the last 7 days and the last 30 days, and a bar per day for the last 30 days (hover a bar for that day). Both lists have a Size column. Sizes are the addon messages as they go over the wire, in B, KB or MB.
+- Encore-Stonks: Clear (Shift-click) empties only the tab you're on.
+
 ## 0.1.9
 
 - Encore-Stonks: fixes the Lua error "Browser.lua:143: attempt to call a nil value" when opening the Stonks browser in 0.1.8. The category list asked for the item list before the function that builds it was set up.

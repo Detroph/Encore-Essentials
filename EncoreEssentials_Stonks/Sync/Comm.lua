@@ -125,6 +125,9 @@ local function pumpOutbox()
         table.remove(outbox, 1)
         tokens = tokens - cost
         perf.sentBytes, perf.sentMsgs = perf.sentBytes + #m[1], perf.sentMsgs + 1
+        -- Sync history (Sent tab) and the daily byte totals
+        local Log = Stonks.SyncLog
+        if Log and Log.Sent then pcall(Log.Sent, m[1], m[2], m[3]) end
         if m[4] then m[4]() end
     end
 end
@@ -155,12 +158,19 @@ function Comm.Receive(prefix, msg, channel, sender)
         return
     end
     perf.recvBytes, perf.recvMsgs = perf.recvBytes + #msg, perf.recvMsgs + 1
+    local Log = Stonks.SyncLog
+    if Log and Log.Received then pcall(Log.Received, #msg) end
     inboxLast = inboxLast + 1
     inbox[inboxLast] = { kind, msg:sub(3), sender, channel }
 end
 
 -- A message we threw out. reason says which check failed; /stonksync perf lists them by message type and reason.
 local current -- the message being handled right now: { kind, body, sender, channel }
+
+-- Size in bytes of the message being handled right now (the whole addon message), 0 outside a handler.
+function Comm.CurrentSize()
+    return current and current[2] and #current[2] + 2 or 0
+end
 function Comm.Reject(reason)
     perf.rejected = perf.rejected + 1
     local kind = current and current[1] or "?"
