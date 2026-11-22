@@ -24,7 +24,7 @@ Open everything from the Encore crest on the minimap, the game's addon list butt
 - **Professions:** every recipe by skill bracket with difficulty colours; click one for reagents, trainer cost, vendors (with a map pin), drops, quests and the reputation it needs.
 - **PvP and reputation vendors** seen in Forever, with the standing or PvP rank and price of every item: Arathi Basin, Warsong Gulch, Alterac Valley, the honor rewards (armor, weapons, insignia, war mounts) and the reputation factions.
 - **Collections:** mounts, companions, tabards and legendaries with where each comes from, and item sets (PvP, Zul'Gurub, Ahn'Qiraj and others) with their pieces.
-- **Rogue poisons** under Professions, by the level you learn them.
+- **Rogue poisons** in the Collections tab under Class skills, by the level you learn them.
 - **Highlight Forever changes** marks what is new or changed in Forever, with teal counters per dungeon and boss; **Forever only** hides the rest.
 - Search across all loot and recipes, quality and slot filters, three icon sizes, a resizable window, click-to-sort columns, coin-icon prices and tooltips that follow the cursor.
 

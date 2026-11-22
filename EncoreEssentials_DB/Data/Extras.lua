@@ -4,7 +4,7 @@
 -- the reputation each item needs, item sets and poison recipes. Only items Wowhead Forever shows a source for are listed.
 -- AtlasLoot Continued (GPL v2 only) was read as the list of items to look up; none of its data is included.
 -- World events are left out until they run in WoW Forever. Licence: GPL-3.0; see NOTICE.txt in this addon.
--- Built 2026-11-21.
+-- Built 2026-11-22.
 local _, ns = ...
 local Loot = ns.Loot
 if not Loot then return end
@@ -956,9 +956,10 @@ ns.ItemSets = {
     { id = 141, name = "Volcanic Armor", quality = 2, level = 61, pieces = { 15053, 15054, 15055 } },
   } },
 }
--- Rogue poisons, as in Recipes.lua but learned by level from the rogue trainer: level = the level needed.
-if ns.Recipes then
-  ns.Recipes["Poisons"] = {
+-- Class skills (Collections tab, not Professions): rogue poisons, recipes as in Recipes.lua but learned by level
+-- from the rogue trainer: level = the level needed.
+ns.ClassSkills = {
+  { key = "poisons", text = "Rogue poisons", class = "Rogue", recipes = {
     { 3420, "Crippling Poison", nil, nil, nil, nil, 3775, 1, { 2930, 1, 3371, 1 }, "t", level = 20 },
     { 8681, "Instant Poison", nil, nil, nil, nil, 6947, 1, { 2928, 1, 3371, 1 }, "t", level = 20 },
     { 5763, "Mind-numbing Poison", nil, nil, nil, nil, 5237, 1, { 2928, 1, 2930, 1, 3371, 1 }, "t", level = 24 },
@@ -979,5 +980,5 @@ if ns.Recipes then
     { 13230, "Wound Poison IV", nil, nil, nil, nil, 10922, 1, { 8923, 2, 5173, 2, 8925, 1 }, "t", level = 56 },
     { 25347, "Deadly Poison V", nil, nil, nil, nil, 20844, 1, { 5173, 7, 8925, 1 }, "t", level = 60 },
     { 11343, "Instant Poison VI", nil, nil, nil, nil, 8928, 1, { 8924, 4, 8925, 1 }, "t", level = 60 },
-  }
-end
+  } },
+}

@@ -1,5 +1,6 @@
 // Builds EncoreEssentials_DB/Data/Extras.lua: PvP rewards (Warsong Gulch, Alterac Valley, honor rewards), reputation
-// rewards Data/Loot.lua lacks, the Collections tab (mounts, companions, tabards, legendaries, item sets) and rogue poisons.
+// rewards Data/Loot.lua lacks, the Collections tab (mounts, companions, tabards, legendaries, item sets) and rogue poisons
+// (ns.ClassSkills, shown in the Collections tab under Class skills, not under Professions).
 //
 // Sources:
 //   tools/out/wowhead-extras.json  Wowhead Forever (https://www.wowhead.com/forever): item names, qualities, levels,
@@ -246,14 +247,15 @@ for (const g of sets) {
   L.push('  } },');
 }
 L.push('}');
-L.push('-- Rogue poisons, as in Recipes.lua but learned by level from the rogue trainer: level = the level needed.');
+L.push('-- Class skills (Collections tab, not Professions): rogue poisons, recipes as in Recipes.lua but learned by level');
+L.push('-- from the rogue trainer: level = the level needed.');
+L.push('ns.ClassSkills = {');
 if (poisons.length) {
-  L.push('if ns.Recipes then');
-  L.push('  ns.Recipes["Poisons"] = {');
+  L.push('  { key = "poisons", text = "Rogue poisons", class = "Rogue", recipes = {');
   for (const p of poisons) L.push(`    { ${p.spell}, ${q(p.name)}, nil, nil, nil, nil, ${p.makes}, ${p.count}, { ${p.reagents.join(', ')} }, "t", level = ${n(p.level)} },`);
-  L.push('  }');
-  L.push('end');
+  L.push('  } },');
 }
+L.push('}');
 fs.writeFileSync(OUT, L.join('\n') + '\n');
 
 check.kept = items.size;

@@ -395,7 +395,6 @@ end
 local PROF_GROUPS = {
     { key = "crafting", text = "Professions", list = { "Alchemy", "Blacksmithing", "Enchanting", "Engineering", "Leatherworking", "Tailoring" } },
     { key = "secondary", text = "Gathering and secondary", list = { "Cooking", "First Aid", "Fishing", "Herbalism", "Mining", "Skinning" } },
-    { key = "class", text = "Class skills", list = { "Poisons" } },
 }
 
 local PROF_ICONS = {
@@ -403,7 +402,6 @@ local PROF_ICONS = {
     Engineering = "Trade_Engineering", Leatherworking = "INV_Misc_ArmorKit_17", Tailoring = "Trade_Tailoring",
     Herbalism = "Spell_Nature_NatureTouchGrow", Mining = "Trade_Mining", Skinning = "INV_Misc_Pelt_Wolf_01",
     Cooking = "INV_Misc_Food_15", ["First Aid"] = "Spell_Holy_SealOfSacrifice", Fishing = "Trade_Fishing",
-    Poisons = "Trade_BrewPoison",
 }
 
 local SKILL_BRACKETS = {
@@ -416,7 +414,6 @@ local SKILL_BRACKETS = {
 }
 
 local function inBracket(r, b)
-    if r.level and not r[3] then return b.min < 0 and b.max >= 100000 end -- learned by level (poisons): All recipes only
     local lv = recipeLevel(r)
     return lv >= b.min and lv <= b.max
 end
@@ -2778,7 +2775,7 @@ end
 ns.UI = {
     state = state, settings = settings, rowKinds = ROW_KINDS, lineFonts = LINE_FONTS,
     heading = heading, textLine = textLine, emptyLine = emptyLine, grid = grid,
-    itemInfo = itemInfo, cellFromInfo = cellFromInfo, passesInfo = passesInfo, coin = coin,
+    itemInfo = itemInfo, cellFromInfo = cellFromInfo, recipeCell = recipeCell, passesRecipe = passesRecipe, passesInfo = passesInfo, coin = coin,
     mapName = mapName, setPin = setPin, highlightOn = highlightOn,
     setColor = setColor, gradient = gradient, addBorder = addBorder, onRowClick = onRowClick,
     colors = { TEAL = TEAL, TEAL_SOFT = TEAL_SOFT, COPPER = COPPER, GOLD = GOLD, INK = INK, DIM = DIM, TEAL_HEX = TEAL_HEX },
