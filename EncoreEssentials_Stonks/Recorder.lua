@@ -15,7 +15,7 @@ local Encore = _G.EncoreEssentials
 local Stonks = Encore:RegisterModule("Stonks", {})
 ns.Stonks = Stonks
 
-Stonks.SCHEMA = 1
+Stonks.SCHEMA = 2 -- saved data version; 2 = launch week left out of the saved statistics (Stats.lua)
 Stonks.KEEP_DAYS_OPTIONS = { 7, 14, 30 }
 local DEFAULT_KEEP_DAYS = 7
 local SCAN_GAP = 120 -- seconds without a price before the next price counts as a new scan
@@ -270,6 +270,9 @@ events:SetScript("OnEvent", function(self, event, arg1)
         if not hookAuctionator() then
             -- Auctionator missing, disabled or changed: try once more after its own late setup.
             C_Timer.After(2, hookAuctionator)
+        end
+        if (tonumber(db.schema) or 1) < 2 then
+            C_Timer.After(5, function() Stonks:MigrateLaunchWeek(function() db.schema = 2 end) end)
         end
         C_Timer.After(10, function() Stonks:Prune() end)
     elseif event == "PLAYER_LOGOUT" then

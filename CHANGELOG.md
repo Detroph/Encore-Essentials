@@ -1,5 +1,11 @@
 # Encore Essentials
 
+## 0.2.2
+
+- Encore-Stonks: WoW Forever's launch week (4 to 11 November 2026) is left out of every average: the 3, 7 and 14-day averages, the median and mean, the normal price, the weekday and hour bars, the saved summaries and what you send to the guild. The prices stay saved and still show on the trend; hovering one says it is left out.
+- Encore-Stonks: once, on the first login with this version, Stonks redoes its saved statistics and summaries without that week. Nothing is deleted.
+- Encore-Stonks: hovering a point on the graph shows the year too ("Tuesday 10 Nov 2026").
+
 ## 0.2.1
 
 - Encore-Stonks: login summaries work. On WoW Forever the game gives the addon your first name and surname apart ("Berya", "Ebonlocke") while guild messages carry the whole name ("Berya Ebonlocke"), and Stonks only used the first name. So every offer meant for you was ignored, guildmates never started sending when you picked them, and your own guild messages came back to you as if from a guildmate. Stonks now uses the whole name. Both sides need this version: the player logging in and the guildmate who sends.

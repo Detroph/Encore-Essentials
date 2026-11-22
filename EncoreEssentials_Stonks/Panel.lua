@@ -327,10 +327,14 @@ local function drawTimeline(points, profile, history)
                 if profile.normal then
                     tt:AddDoubleLine("Vs normal", pctText((pt.p / profile.normal - 1) * 100), 1, 1, 1, 1, 1, 1)
                 end
-                local avg = averageAt(pt.t)
+                local launch = Stonks.Skipped(pt.t)
+                local avg = not launch and averageAt(pt.t)
                 if avg then tt:AddDoubleLine(state.avg .. "-day average", coin(avg), GOLD[1], GOLD[2], GOLD[3], 1, 1, 1) end
                 if pt.src == "a" then
                     tt:AddLine("Auctionator's lowest price that day (no time of day).", DIM[1], DIM[2], DIM[3], true)
+                end
+                if launch then
+                    tt:AddLine("WoW Forever launch week (4-11 Nov 2026): left out of all averages.", DIM[1], DIM[2], DIM[3], true)
                 end
             end,
         }
@@ -842,7 +846,7 @@ local function createPanel()
         row("Mean", st.mean)
         row("Standard deviation", st.sd)
         GameTooltip:AddDoubleLine("Days seen", tostring(st.days), DIM[1], DIM[2], DIM[3], DIM[1], DIM[2], DIM[3])
-        GameTooltip:AddLine("Each day counts once with its lowest buyout. Averages move with each day seen; median and mean lean towards the last month. Prices more than 5x away from the 14-day average are ignored.", DIM[1], DIM[2], DIM[3], true)
+        GameTooltip:AddLine("Each day counts once with its lowest buyout. Averages move with each day seen; median and mean lean towards the last month. Prices more than 5x away from the 14-day average are ignored, and so is WoW Forever's launch week (4-11 Nov 2026).", DIM[1], DIM[2], DIM[3], true)
         GameTooltip:Show()
     end)
     header.stats:SetScript("OnLeave", function() GameTooltip:Hide() end)
