@@ -598,6 +598,9 @@ local function createWindow()
     frame:HookScript("OnHide", function()
         if SOUNDKIT and SOUNDKIT.IG_CHARACTER_INFO_CLOSE then PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE) end
         GameTooltip:Hide()
+        -- The item list (a table per item, thousands of them) is built again on the next open, so it doesn't sit in
+        -- memory while the window is closed.
+        built, keysCache = nil, nil
         -- The panel goes with the browser unless the auction house is open
         local ah = _G.AuctionFrame or _G.AuctionHouseFrame
         if ah and ah:IsShown() then Stonks:DockPanel() else Stonks:HidePanel() end

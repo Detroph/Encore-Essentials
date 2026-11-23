@@ -1,5 +1,10 @@
 # Encore Essentials
 
+## 0.2.4
+
+- Encore-Stonks: much lighter on memory. Opening the All items market view, the daily refresh of the item list's prices and item tooltips no longer build a table for every price of every item: market view about 640 MB of short-lived memory down to about 60 MB, the first login of each day about 390 MB down to about 10 MB (only items with new prices are worked out again). The item list's prices are no longer all kept in memory as tables (about 15 MB), and the browser's item list is let go when the window closes. Every average, chart and price is the same as before.
+- Encore-Stonks: an hour seen twice for the same item (after a logout or /reload within that hour) is saved once, with the lowest price and most units, as within one session. Once, on the first login with this version, Stonks merges the doubled hours already saved (about a quarter of all saved samples) and saves its price summaries again in a smaller form. No hour of prices is dropped, launch week included.
+
 ## 0.2.3
 
 - Encore-DB: Collections > Item sets are listed by class (Warrior, Paladin, Hunter, Rogue, Priest, Shaman, Mage, Warlock, Druid), each with its class icon, and every class shows all its sets: PvP, Zul'Gurub, Ruins and Temple of Ahn'Qiraj. Each set says where it comes from. Sets for no single class stay under Other sets. Dungeon and tier sets will slot in the same way when they are added.
