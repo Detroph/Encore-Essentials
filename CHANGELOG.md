@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## 0.2.4
+
+- Encore-Stonks: an hourly guild scan and a login summary no longer arrive at the same time. A guildmate who just finished a scan waits to share it while someone's login summary is being sent (up to 5 minutes before the end of the hour, then it shares anyway), and a login summary request waits while an hourly scan is still coming in. Works best when everyone has this version; older versions behave as before.
+
 ## 0.2.3
 
 - Encore-DB: Collections > Item sets are listed by class (Warrior, Paladin, Hunter, Rogue, Priest, Shaman, Mage, Warlock, Druid), each with its class icon, and every class shows all its sets: PvP, Zul'Gurub, Ruins and Temple of Ahn'Qiraj. Each set says where it comes from. Sets for no single class stay under Other sets. Dungeon and tier sets will slot in the same way when they are added.
