@@ -522,3 +522,66 @@ Q:Feature{
         end
     end,
 }
+
+---------------------------------------------------------------------------
+-- UI scaling
+---------------------------------------------------------------------------
+-- Sets UIParent's scale directly, so values under the game's 0.64 slider floor work.
+-- 768 / screen height gives a pixel-perfect UI; the presets are that for common screens.
+local SCALE_CHOICES = {
+    { "auto", "Auto (768 / screen height)" },
+    { "custom", "Custom" },
+    { "0.3556", "0.3556 (4K)" },
+    { "0.5333", "0.5333 (1440p)" },
+    { "0.6666", "0.6666 (1440p 125%)" },
+    { "0.7111", "0.7111 (1080p)" },
+    { "0.8888", "0.8888 (1080p 125%)" },
+}
+
+local function wantedScale(f)
+    local mode = f:Get("mode")
+    if mode == "auto" then
+        local _, h = GetPhysicalScreenSize()
+        if h and h > 0 then return 768 / h end
+        return nil
+    elseif mode == "custom" then
+        return f:Get("custom")
+    end
+    return tonumber(mode)
+end
+
+Q:Feature{
+    id = "uiScale", tab = "interface", section = "UI scaling", name = "Login UI scaling",
+    desc = "Sets the UI scale each time you log in, including values smaller than the game's slider allows. Turn it off to go back to the game's own scaling.",
+    defaults = { mode = "auto", custom = 0.64 },
+    options = {
+        { kind = "choice", key = "mode", name = "Scale", choices = SCALE_CHOICES },
+        { kind = "group", text = "Custom scale", when = function(self) return self:Get("mode") == "custom" end },
+        { kind = "slider", key = "custom", name = "Scale", min = 0.3, max = 1.2, step = 0.01, fmt = function(v) return ("%.2f"):format(v) end },
+    },
+    Enable = function(f)
+        if not f.original then f.original = UIParent:GetScale() end
+        local function apply()
+            local s = wantedScale(f)
+            if not s then return end
+            s = math.max(0.3, math.min(1.2, s))
+            if InCombatLockdown() then f.pending = true return end
+            f.pending = nil
+            if math.abs(UIParent:GetScale() - s) > 0.0001 then UIParent:SetScale(s) end
+        end
+        f.apply = apply
+        -- The game resets the scale when the window or its own scale setting changes.
+        f:On("UI_SCALE_CHANGED", function() C_Timer.After(0, apply) end)
+        f:On("DISPLAY_SIZE_CHANGED", function() C_Timer.After(0, apply) end)
+        f:On("PLAYER_ENTERING_WORLD", apply)
+        f:On("PLAYER_REGEN_ENABLED", function() if f.pending then apply() end end)
+        apply()
+    end,
+    OnOption = function(f) if f.apply then f.apply() end end,
+    Disable = function(f)
+        if InCombatLockdown() then return end
+        local s = f.original
+        if C_CVar.GetCVar("useUiScale") == "1" then s = tonumber(C_CVar.GetCVar("uiScale")) or s end
+        if s then UIParent:SetScale(s) end
+    end,
+}
