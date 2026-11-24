@@ -175,6 +175,18 @@ function Codec.decodeSummary(str)
     return rec
 end
 
+-- Just the prices and days of a record already checked by decodeSummary when it was received (realm.baseline):
+-- med, q25, q75, a3, a7, a14, days, or nil. No tables, for the charts and tooltips that read it for every item.
+function Codec.summaryPrices(str)
+    if type(str) ~= "string" then return nil end
+    local _, med, q25, q75, a3, a7, a14, days = str:match("^([^,]*),([^,]*),([^,]*),([^,]*),([^,]*),([^,]*),([^,]*),([^,]*),")
+    if not days then return nil end
+    med, q25, q75 = Codec.dec(med), Codec.dec(q25), Codec.dec(q75)
+    a3, a7, a14, days = Codec.dec(a3), Codec.dec(a7), Codec.dec(a14), Codec.dec(days)
+    if not (med and q25 and q75 and a3 and a7 and a14 and days) then return nil end
+    return med, q25, q75, a3, a7, a14, days
+end
+
 ---------------------------------------------------------------------------
 -- Small helpers
 ---------------------------------------------------------------------------
