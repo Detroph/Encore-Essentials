@@ -2,7 +2,7 @@
 
 ## 0.2.5.2 (unreleased)
 
-- Encore-QoL: the button drawer has its own icon: a drawstring bag with addon buttons peeking out, in the Encore frame. A new file, so the game needs a full restart (not /reload) after updating.
+- Encore-QoL: the button drawer has its own icon: a simple drawstring bag on a red disc with a gold rim, easy to read at small sizes. A new file, so the game needs a full restart (not /reload) after updating.
 - Encore-QoL: Button drawer is no longer see-through when the minimap is faded, so its buttons show at full strength on top of the background.
 - Encore-QoL: window and frame borders keep every edge at small UI scales (like 0.53 for 1440p), where some 1-pixel edges used to vanish.
 
