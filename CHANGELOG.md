@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## 0.2.4.6
+
+- Encore-QoL: Enemy bars show a power bar under each health bar: mana in blue, rage in red, energy in yellow. On by default, with a height setting (2 to 12 px), and both can be set per battleground. Like health, it fills in once the enemy has been your target, focus or mouseover or had a nameplate on screen; until then it shows faint in the class's usual colour, and in Alterac Valley it stays faint.
+
 ## 0.2.4.5
 
 - Encore-QoL: Resurrection timer looks, after the first test in game. Both rings have a thicker copper border (3 px, round or square) and a thinner progress ring. The Time box is now a square: the seconds large in the middle, "Time to resurrect" on two rows underneath. No box or border changes size when the numbers change.

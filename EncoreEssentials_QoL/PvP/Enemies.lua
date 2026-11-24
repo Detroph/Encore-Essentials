@@ -16,6 +16,15 @@ local FLAG_ICON = "|TInterface\\WorldStateFrame\\%sFlag:0|t "
 local HEALER_SPECS = { Holy = true, Discipline = true, Restoration = true, Mistweaver = true, Preservation = true }
 local CAN_HEAL = { PRIEST = true, DRUID = true, PALADIN = true, SHAMAN = true, MONK = true, EVOKER = true }
 local MAX_ROWS = 40
+-- Power colours (the game's own when it has them) and each class's usual power before it's been seen.
+local POWER_COLOR = { MANA = { 0, 0.44, 0.87 }, RAGE = { 1, 0, 0 }, ENERGY = { 1, 1, 0 }, FOCUS = { 1, 0.5, 0.25 }, RUNIC_POWER = { 0, 0.82, 1 } }
+if type(PowerBarColor) == "table" then
+    for k in pairs(POWER_COLOR) do
+        local c = PowerBarColor[k]
+        if type(c) == "table" and c.r then POWER_COLOR[k] = { c.r, c.g, c.b } end
+    end
+end
+local CLASS_POWER = { WARRIOR = "RAGE", ROGUE = "ENERGY", DEATHKNIGHT = "RUNIC_POWER" }
 
 local function inBattleground()
     local _, kind = IsInInstance()
@@ -93,6 +102,9 @@ local function readUnit(unit, near)
     local max = UnitHealthMax(unit)
     e.dead = UnitIsDeadOrGhost(unit)
     if max and max > 0 then e.hp = e.dead and 0 or math.floor(UnitHealth(unit) / max * 100 + 0.5); e.hpAt = now end
+    local ptype, ptoken = UnitPowerType(unit)
+    local pmax = UnitPowerMax(unit, ptype)
+    if pmax and pmax > 0 then e.pp = e.dead and 0 or UnitPower(unit, ptype) / pmax; e.ptoken = ptoken end
     if near then e.nearAt = now end
     if not e.class then e.class = select(2, UnitClass(unit)) end
 end
@@ -162,7 +174,7 @@ local function sampleList(count, now)
         local s = SAMPLE[(i - 1) % #SAMPLE + 1]
         local name = i > #SAMPLE and s[1] .. " " .. math.ceil(i / #SAMPLE) or s[1]
         local wave = math.sin(now / 3 + i)
-        local e = { name = name, class = s[2], spec = s[3], hp = math.max(5, math.floor(55 + 45 * wave)), hpAt = now,
+        local e = { name = name, class = s[2], spec = s[3], hp = math.max(5, math.floor(55 + 45 * wave)), hpAt = now, pp = 0.5 + 0.45 * math.cos(now / 4 + i), ptoken = CLASS_POWER[s[2]] or "MANA",
             nearAt = (i % 4 ~= 0) and now or nil, sample = true }
         list[#list + 1] = e
     end
@@ -214,6 +226,10 @@ local function makeRow(i)
     b.track = v:CreateTexture(nil, "BACKGROUND")
     b.track:SetColorTexture(0, 0, 0, 0.35)
     b.fill = v:CreateTexture(nil, "ARTWORK")
+    b.pfill = v:CreateTexture(nil, "ARTWORK")
+    b.pfill:SetTexture(WHITE)
+    b.ptrack = v:CreateTexture(nil, "BACKGROUND", nil, 1)
+    b.ptrack:SetColorTexture(0, 0, 0, 0.55)
     b.fill:SetTexture(WHITE)
     b.rankBox = v:CreateTexture(nil, "ARTWORK", nil, 2)
     b.rankBox:SetColorTexture(0, 0, 0, 0.65)
@@ -248,7 +264,10 @@ end
 -- Size and place every row. Out of combat only (the rows are secure).
 local function arrange(count, cfg)
     local h, w, fs = cfg.height, cfg.width, cfg.font
-    local iconW = cfg.icon and (h + 3) or 0
+    local ph = cfg.power and cfg.powerH or 0
+    local extra = ph > 0 and ph + 1 or 0     -- the power strip sits under the health bar
+    local rh = h + extra                     -- whole row height
+    local iconW = cfg.icon and (rh + 3) or 0
     local cols = cfg.style == "class"
     local rankW = cols and math.floor(fs * 1.6) + 4 or 0
     local rowW = rankW + iconW + w
@@ -262,7 +281,7 @@ local function arrange(count, cfg)
         groupsPerRow = math.max(1, cfg.perRow)
     end
     local colGap = cols and 14 or 8
-    local groupH = per * h + (per - 1) * gap
+    local groupH = per * rh + (per - 1) * gap
     local rowGap = cols and 0 or gap * 3
     local maxX, maxY = 0, 0
     for i = 1, MAX_ROWS do
@@ -273,11 +292,11 @@ local function arrange(count, cfg)
             local inG = (i - 1) % per
             local gx, gy = g % groupsPerRow, math.floor(g / groupsPerRow)
             local x = gx * (rowW + colGap)
-            local y = gy * (groupH + rowGap) + inG * (h + gap)
+            local y = gy * (groupH + rowGap) + inG * (rh + gap)
             b:ClearAllPoints()
             b:SetPoint("TOPLEFT", holder, "TOPLEFT", x, -y)
-            b:SetSize(rowW, h)
-            maxX, maxY = math.max(maxX, x + rowW), math.max(maxY, y + h)
+            b:SetSize(rowW, rh)
+            maxX, maxY = math.max(maxX, x + rowW), math.max(maxY, y + rh)
             -- Pieces inside the row.
             local font = STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF"
             b.rank:SetFont(W.FONT_TITLE, fs, "OUTLINE")
@@ -286,11 +305,20 @@ local function arrange(count, cfg)
             b.rank:SetShown(cols)
             b.icon:ClearAllPoints()
             b.icon:SetPoint("LEFT", b, "LEFT", rankW, 0)
-            b.icon:SetSize(h, h)
+            b.icon:SetSize(rh, rh)
             b.icon:SetShown(cfg.icon and true or false)
             b.track:ClearAllPoints()
             b.track:SetPoint("TOPLEFT", b, "TOPLEFT", rankW + iconW, 0)
-            b.track:SetPoint("BOTTOMRIGHT")
+            b.track:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", 0, extra)
+            b.ptrack:ClearAllPoints()
+            b.ptrack:SetPoint("TOPLEFT", b.track, "BOTTOMLEFT", 0, -1)
+            b.ptrack:SetPoint("TOPRIGHT", b.track, "BOTTOMRIGHT", 0, -1)
+            b.ptrack:SetHeight(math.max(1, ph))
+            b.ptrack:SetShown(ph > 0)
+            b.pfill:ClearAllPoints()
+            b.pfill:SetPoint("TOPLEFT", b.ptrack)
+            b.pfill:SetPoint("BOTTOMLEFT", b.ptrack)
+            b.pfill:SetShown(ph > 0)
             b.fill:ClearAllPoints()
             b.fill:SetPoint("TOPLEFT", b.track)
             b.fill:SetPoint("BOTTOMLEFT", b.track)
@@ -364,6 +392,12 @@ local function paint(b, e, rank, kind, now, cfg, best)
     if not f.fadeKnown then near = true end
     b.vis:SetAlpha(near and 1 or 0.32)
     b.glow:SetShown(best and true or false)
+    if cfg.power then
+        local c = (e.ptoken and POWER_COLOR[e.ptoken]) or POWER_COLOR[CLASS_POWER[e.class or ""] or "MANA"]
+        local known = showHP and e.pp
+        b.pfill:SetVertexColor(c[1], c[2], c[3], known and 0.95 or 0.35)
+        b.pfill:SetWidth(math.max(0.01, b.barW * (known and e.pp or 1)))
+    end
     local _, why = priority(e, kind, now)
     b.why = why
 end
@@ -373,6 +407,7 @@ local function config()
         style = f:Live("style"), max = tonumber(f:Live("maxShown")) or 15,
         height = tonumber(f:Live("height")) or 20, width = tonumber(f:Live("width")) or 210, font = tonumber(f:Live("font")) or 12,
         icon = f:Live("icon") and true or false, split = f:Live("split") and true or false, perRow = tonumber(f:Live("perRow")) or 2,
+        power = f:Live("power") and true or false, powerH = tonumber(f:Live("powerH")) or 4,
     }
 end
 
@@ -412,7 +447,7 @@ local function update()
 
     if not InCombatLockdown() then
         -- Out of combat: rows follow the priority order.
-        local key = table.concat({ count, cfg.style, cfg.height, cfg.width, cfg.font, tostring(cfg.icon), tostring(cfg.split), cfg.perRow }, ":")
+        local key = table.concat({ count, cfg.style, cfg.height, cfg.width, cfg.font, tostring(cfg.icon), tostring(cfg.split), cfg.perRow, tostring(cfg.power), cfg.powerH }, ":")
         if key ~= layoutKey then
             layoutKey = key
             arrange(count, cfg)
@@ -479,7 +514,7 @@ end
 f = Q.PvPScoped({
     id = "enemyBars", tab = "pvp", section = "Enemies", name = "Enemy bars",
     desc = "Every enemy as a class-coloured bar, best kill first: healers, the flag carrier and low health go up, enemies in range a little. Left-click targets, right-click focuses, also in combat (the order then holds and the new best target glows). Enemies out of nameplate range fade; health shows everywhere except Alterac Valley.",
-    defaults = { style = "class", maxShown = 15, height = 20, width = 210, font = 12, icon = true, split = false, perRow = 2, locked = false },
+    defaults = { style = "class", maxShown = 15, height = 20, width = 210, font = 12, icon = true, split = false, perRow = 2, power = true, powerH = 4, locked = false },
     detect = { { addon = "HighGround" } },
     options = {
         { kind = "group", text = "Look" },
@@ -489,6 +524,8 @@ f = Q.PvPScoped({
         { kind = "slider", key = "width", name = "Bar width", min = 80, max = 280, step = 5, fmt = function(v) return v .. " px" end },
         { kind = "slider", key = "font", name = "Font size", min = 8, max = 18, step = 1, fmt = function(v) return v .. " pt" end },
         { kind = "check", key = "icon", name = "Class icon in front of the bar" },
+        { kind = "check", key = "power", name = "Mana, rage and energy bar under the health" },
+        { kind = "slider", key = "powerH", name = "Power bar height", min = 2, max = 12, step = 1, fmt = function(v) return v .. " px" end },
         { kind = "group", text = "Class bars", when = function(self) return self:Get("style") == "class" end },
         { kind = "check", key = "split", name = "Columns of 10 (two columns at 20 enemies)" },
         { kind = "group", text = "Columns of five", when = function(self) return self:Get("style") == "five" end },
@@ -499,7 +536,7 @@ f = Q.PvPScoped({
         { kind = "button", name = "Reset position", always = true, onClick = function() savedPos().point = nil if holder and not InCombatLockdown() then placeHolder() end end },
         { kind = "note", text = "Unlocked, drag the bars to move them (out of combat). Right-click on a bar is focus, so lock them here." },
     },
-}, { "style", "maxShown", "height", "width", "font", "icon", "split", "perRow" })
+}, { "style", "maxShown", "height", "width", "font", "icon", "split", "perRow", "power", "powerH" })
 
 function f:Preview(on)
     if InCombatLockdown() then Q:Print("Enemy bars: preview after combat.") return end
