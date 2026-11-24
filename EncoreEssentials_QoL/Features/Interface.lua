@@ -263,6 +263,7 @@ local MOVABLE = {
     { key = "capture", name = "Capture bar", frames = { "UIWidgetBelowMinimapContainerFrame" } },
     { key = "ghost", name = "Ghost button", frames = { "GhostFrame" } },
     { key = "buffs", name = "Buffs", frames = { "BuffFrame" } },
+    { key = "groupLoot", name = "Group loot rolls", frames = { "GroupLootContainer", "GroupLootFrame1" } },
 }
 
 local function movableFrame(m)
@@ -274,7 +275,7 @@ end
 
 Q:Feature{
     id = "editModeExtras", tab = "interface", section = "Edit Mode extras", name = "Move more frames",
-    desc = "Adds blue movers to frames the game keeps fixed: durability doll, quest tracker, error text, zone text, capture bar, ghost button and buffs. They show while Edit Mode is open. Drag to move, mouse wheel to scale.",
+    desc = "Adds blue movers to frames the game keeps fixed: durability doll, quest tracker, error text, zone text, capture bar, ghost button, buffs and group loot rolls. They show while Edit Mode is open. Drag to move, mouse wheel to scale.",
     options = {
         { kind = "button", name = "Show movers now", onClick = function(f) f:ShowMovers(not f.moversShown) end },
         { kind = "button", name = "Reset all positions", onClick = function(f)
@@ -365,8 +366,13 @@ Q:Feature{
             if mover then
                 if f.moversShown and frame then
                     mover:ClearAllPoints()
-                    mover:SetAllPoints(frame)
-                    if (frame:GetWidth() or 0) < 30 then mover:SetSize(120, 30) end
+                    -- Empty frames (no loot roll, no buffs) have no size: give the mover one so it can be grabbed.
+                    if (frame:GetWidth() or 0) < 30 or (frame:GetHeight() or 0) < 20 then
+                        mover:SetPoint("CENTER", frame, "CENTER")
+                        mover:SetSize(math.max(frame:GetWidth() or 0, 160), math.max(frame:GetHeight() or 0, 40))
+                    else
+                        mover:SetAllPoints(frame)
+                    end
                     mover:Show()
                 else
                     mover:Hide()
