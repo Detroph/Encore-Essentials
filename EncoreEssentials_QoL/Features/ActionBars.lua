@@ -154,7 +154,7 @@ for _, bar in ipairs(BARS) do
         },
         options = {
             { kind = "choice", key = "mode", name = "Shows", choices = MODE_CHOICES },
-            { kind = "note", text = "Custom: show when any of these is true" },
+            { kind = "group", text = "Custom rules: show when any is true", when = function(f) return f:Get("mode") == "custom" end },
             { kind = "check", key = "show_combat", name = "In combat" },
             { kind = "check", key = "show_mouse", name = "Mouse over the bar" },
             { kind = "check", key = "show_target", name = "You have a target" },
@@ -163,11 +163,12 @@ for _, bar in ipairs(BARS) do
             { kind = "check", key = "show_casting", name = "Casting" },
             { kind = "check", key = "show_resting", name = "Resting" },
             { kind = "check", key = "show_lowHealth", name = "Below half health" },
-            { kind = "note", text = "Hide anyway when (any mode)" },
+            { kind = "group", text = "Hide anyway when" },
             { kind = "check", key = "hide_fishing", name = "Fishing pole equipped" },
             { kind = "check", key = "hide_mounted", name = "Mounted" },
             { kind = "check", key = "hide_taxi", name = "On a flight path" },
             { kind = "check", key = "hide_vehicle", name = "In a vehicle" },
+            { kind = "group", text = "See-through and fade" },
             { kind = "slider", key = "alphaIn", name = "Alpha in combat", min = 0, max = 100, step = 5, fmt = function(v) return v .. "%" end },
             { kind = "slider", key = "alphaOut", name = "Alpha out of combat", min = 0, max = 100, step = 5, fmt = function(v) return v .. "%" end },
             { kind = "slider", key = "fade", name = "Fade time", min = 0, max = 2, step = 0.1, fmt = function(v) return ("%.1f s"):format(v) end },
@@ -245,12 +246,13 @@ for _, t in ipairs(TEXTS) do
         { kind = "slider", key = "size", name = "Size", min = 6, max = 28, step = 1 },
         { kind = "choice", key = "outline", name = "Outline", choices = OUTLINES },
         { kind = "color", key = "color", name = "Colour" },
-        { kind = "choice", key = "anchor", name = "Position", choices = ANCHORS },
+        { kind = "group", text = "Position" },
+        { kind = "choice", key = "anchor", name = "Anchor", choices = ANCHORS },
         { kind = "slider", key = "x", name = "Move left or right", min = -20, max = 20, step = 1 },
         { kind = "slider", key = "y", name = "Move up or down", min = -20, max = 20, step = 1 },
     }
     if t.perBar then
-        options[#options + 1] = { kind = "note", text = "Hide keybinds on" }
+        options[#options + 1] = { kind = "group", text = "Hide keybinds on" }
         for _, bar in ipairs(BARS) do options[#options + 1] = { kind = "check", key = "hide_" .. bar.id, name = bar.name } end
     end
     local detect = { unpack(t.detect) }

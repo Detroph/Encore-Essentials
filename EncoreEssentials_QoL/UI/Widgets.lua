@@ -86,16 +86,26 @@ end
 -- Slider: { min, max, step, fmt(value) -> text, onChange(value), marker = value (a tick, e.g. the menu cap) }
 function W.Slider(parent, label, o)
     local f = CreateFrame("Frame", nil, parent)
-    f:SetSize(o.width or 300, 34)
-    f.label = W.Text(f, "GameFontHighlightSmall", label)
+    f:SetSize(o.width or 300, o.inline and 18 or 34)
+    f.label = W.Text(f, "GameFontHighlightSmall", label or "")
     f.label:SetPoint("TOPLEFT")
     f.value = W.Text(f, "GameFontNormalSmall", "", W.GOLD)
-    f.value:SetPoint("TOPRIGHT")
     local s = CreateFrame("Slider", nil, f)
     f.slider = s
     s:SetOrientation("HORIZONTAL")
-    s:SetPoint("TOPLEFT", 0, -16)
-    s:SetPoint("TOPRIGHT", 0, -16)
+    if o.inline then
+        -- One row: track, then the value at the right.
+        f.label:Hide()
+        f.value:SetPoint("RIGHT")
+        f.value:SetWidth(52)
+        f.value:SetJustifyH("RIGHT")
+        s:SetPoint("LEFT", 0, 0)
+        s:SetPoint("RIGHT", -58, 0)
+    else
+        f.value:SetPoint("TOPRIGHT")
+        s:SetPoint("TOPLEFT", 0, -16)
+        s:SetPoint("TOPRIGHT", 0, -16)
+    end
     s:SetHeight(14)
     s:SetMinMaxValues(o.min, o.max)
     s:SetValueStep(o.step or 1)
@@ -280,6 +290,47 @@ function W.Edit(parent, label, onChange)
         W.Color(self.label, locked and W.DIM or W.INK)
     end
     return f
+end
+
+-- On/off switch: a small track with a knob, teal when on. sw.onChange(value) on click.
+function W.Switch(parent)
+    local b = CreateFrame("Button", nil, parent)
+    b:SetSize(36, 18)
+    local track = b:CreateTexture(nil, "BACKGROUND")
+    track:SetAllPoints()
+    local edge = W.Border(b, W.DIM, 1)
+    local knob = b:CreateTexture(nil, "ARTWORK")
+    knob:SetSize(12, 12)
+    local hl = b:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetAllPoints()
+    hl:SetColorTexture(1, 0.82, 0, 0.12)
+    function b:SetChecked(on)
+        self.checked = on == true
+        knob:ClearAllPoints()
+        if self.checked then
+            knob:SetPoint("RIGHT", -3, 0)
+            knob:SetColorTexture(W.TEAL[1], W.TEAL[2], W.TEAL[3], 1)
+            track:SetColorTexture(0.03, 0.2, 0.2, 1)
+            self:SetBorderColor(W.TEAL)
+        else
+            knob:SetPoint("LEFT", 3, 0)
+            knob:SetColorTexture(W.DIM[1], W.DIM[2], W.DIM[3], 1)
+            track:SetColorTexture(0.04, 0.03, 0.02, 1)
+            self:SetBorderColor(W.DIM)
+        end
+    end
+    function b:GetChecked() return self.checked end
+    function b:SetLocked(locked)
+        self:SetEnabled(not locked)
+        self:SetAlpha(locked and 0.45 or 1)
+    end
+    b:SetScript("OnClick", function(self)
+        self:SetChecked(not self.checked)
+        PlaySound(self.checked and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
+        if self.onChange then self.onChange(self.checked) end
+    end)
+    b:SetChecked(false)
+    return b
 end
 
 -- Copper badge that names the addon owning a feature.

@@ -354,7 +354,7 @@ end
 
 local function onAddonMessage(_, prefix, msg, _, sender)
     if not BG.kind or not msg then return end
-    if sender and Ambiguate(sender, "none") == UnitName("player") then return end
+    if sender and Ambiguate(sender, "none") == Q.FullName("player") then return end
     if prefix == PREFIX then
         local kind, rest = msg:match("^(%a+):?(.*)$")
         if kind == "h" then

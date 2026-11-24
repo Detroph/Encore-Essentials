@@ -38,12 +38,13 @@ Open everything from the Encore crest on the minimap, the game's addon list butt
 - **Guild price sharing:** one claimed scan per hour, a login summary of what changed while you were away (AFK players send first), and *Share item* / *Share scan* chat links that guildmates import only after clicking and confirming. At most 400 bytes a second, nothing in combat or instances, only item, price, quantity and hour leave your client. See [`docs/stonks-guild-sharing.md`](docs/stonks-guild-sharing.md).
 
 ### Encore-QoL
-- **Everything starts off.** Turn on only what you want, in one window with tabs (Quality of life, Interface, Visual & audio, Combat, PvP, Professions), a search box and an Overview.
+- **Everything starts off.** Turn on only what you want, in one resizable window laid out like the game's Options: a tree of tabs and sections on the left (Quality of life, Interface, Visual & audio, Combat, PvP, Professions), a search box and an Overview.
 - **Knows your other addons.** When Enhance QoL, Leatrix Plus, BetterFishing, KelaGraphics, ErrorMonster, MinimapButtonBag, Bartender4 and others already do something, its switch is locked and names that addon. Encore never changes their settings; turn it off there and Encore's unlocks.
+- **Who rolled what:** a small window beside each group loot roll lists who picked Need, Greed or Pass, their rolls, the winner and who is still choosing.
 - **Action bars 1 to 6, pet and stance bars:** show always, never, in or out of combat, on mouseover or by your own rules (target, casting, group, fishing pole equipped, mounted...), with alpha and fade time. Button text: keybind, macro name, count and cooldown font, size, outline, colour and position.
 - **Minimap and frames:** square minimap, button drawer, wheel zoom, movers for frames the game keeps fixed, class colours, chat and tooltip tidy-ups.
 - **Visual & audio:** graphics sliders past the menu caps (ground clutter, view distance, particles, weather), cursor ring, mute sounds, max camera distance.
-- **PvP:** Alterac Valley and Arathi Basin frames in four styles each, with win prediction, capture timers, generals' health and officers. Right-click to lock or scale, Preview outside a battleground, timers shared with your group and with Capping users.
+- **PvP:** Alterac Valley and Arathi Basin frames in four styles each, with win prediction, capture timers, generals' health and officers, and a tooltip on every icon and bar. Right-click to lock or scale, Preview outside a battleground, timers shared with your group and with Capping users.
 - **One-button fishing:** one key casts and reels in, louder splash, auto loot, pole and lure, a fishing bar and a sortable catch log.
 
 ### Minimap button

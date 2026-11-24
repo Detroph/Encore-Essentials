@@ -307,6 +307,18 @@ function Q.SpellName(id)
     return GetSpellInfo and (GetSpellInfo(id)) or nil
 end
 
+-- A unit's whole name. On WoW Forever UnitName gives the first name and the surname apart, while chat and addon
+-- messages carry them joined ("Berya Ebonlocke"); elsewhere the second value is the realm and is left off.
+function Q.FullName(unit)
+    local name, second = UnitName(unit or "player")
+    if not name then return nil end
+    if second and second ~= "" and RegionalUniqueNamesEnabled and RegionalUniqueNamesEnabled() then
+        local consts = Constants and Constants.CharacterNameSeparatorConsts
+        return name .. (consts and consts.CHARACTERNAME_SURNAME_SEPARATOR or " ") .. second
+    end
+    return name
+end
+
 -- Shift held means "not this time" for every automation.
 function Q.Skip() return IsShiftKeyDown() end
 
