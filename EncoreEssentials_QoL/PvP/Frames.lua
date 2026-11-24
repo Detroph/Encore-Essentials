@@ -818,7 +818,7 @@ frameFeature{
 }
 
 function Q:TogglePreview()
-    for _, id in ipairs({ "avFrame", "abFrame" }) do
+    for _, id in ipairs({ "avFrame", "abFrame", "resTimer", "enemyBars" }) do
         local f = self.features[id]
         if f and f.Preview then f:Preview(not f.previewing) end
     end

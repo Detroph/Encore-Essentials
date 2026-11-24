@@ -323,6 +323,11 @@ local function send(prefix, msg)
     C_ChatInfo.SendAddonMessage(prefix, msg, "INSTANCE_CHAT")
 end
 
+-- Other PvP features send their own short messages ("kind:rest") through Encore's prefix and get them back
+-- through BG.onMessage[kind](rest, sender).
+BG.onMessage = {}
+function BG:Send(msg) send(PREFIX, msg) end
+
 function BG:SendHealth(id, pct)
     local now = GetTime()
     if lastHealthSent[id] and now - lastHealthSent[id] < 1 then return end
@@ -353,7 +358,8 @@ local function nodeByPoi(poiID)
 end
 
 local function onAddonMessage(_, prefix, msg, _, sender)
-    if not BG.kind or not msg then return end
+    if not msg then return end
+    if not BG.kind and select(2, IsInInstance()) ~= "pvp" then return end
     if sender and Ambiguate(sender, "none") == Q.FullName("player") then return end
     if prefix == PREFIX then
         local kind, rest = msg:match("^(%a+):?(.*)$")
@@ -371,6 +377,9 @@ local function onAddonMessage(_, prefix, msg, _, sender)
             end
         elseif kind == "tr" then
             BG:SendTimers()
+        elseif kind and BG.onMessage[kind] then
+            local ok, err = pcall(BG.onMessage[kind], rest, sender)
+            if not ok then geterrorhandler()(err) end
         end
     elseif prefix == CAPPING then
         if msg == "tr" then BG:SendTimers() return end
