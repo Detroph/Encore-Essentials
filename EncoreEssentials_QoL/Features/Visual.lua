@@ -17,7 +17,6 @@ end
 Q:Feature{
     id = "muteSounds", tab = "visual", section = "Sound", name = "Mute sounds",
     desc = "Mutes any game sound by its file ID (Wowhead's sound pages list them), for example a noisy mount or toy.",
-    idea = "Leatrix Plus, Enhance QoL",
     defaults = { ids = "" },
     options = { { kind = "edit", key = "ids", name = "Sound file IDs", tip = "File IDs separated by commas." } },
     detect = { { leatrix = "MuteGameSounds" }, { eqol = "soundEnabled" } },
@@ -43,7 +42,6 @@ local WHISPER_SOUNDS = {
 Q:Feature{
     id = "whisperSound", tab = "visual", section = "Sound", name = "Whisper sound",
     desc = "Plays a sound of your choice when someone whispers you.",
-    idea = "Enhance QoL",
     defaults = { sound = "RAID_WARNING" },
     options = {
         { kind = "choice", key = "sound", name = "Sound", choices = WHISPER_SOUNDS },
@@ -69,7 +67,6 @@ Q:Feature{
 Q:Feature{
     id = "audioSync", tab = "visual", section = "Sound", name = "Keep audio synced",
     desc = "Restarts the game's sound when you plug in or switch headsets, so sound follows your system's output device.",
-    idea = "Leatrix Plus",
     detect = { { leatrix = "AutoRestartSound" } },
     Enable = function(f)
         Q.SetCVar("Sound_OutputDriverIndex", "0")
@@ -97,7 +94,6 @@ Q:Feature{
 Q:Feature{
     id = "maxCamera", tab = "visual", section = "Camera and screen", name = "Max camera distance",
     desc = "Lets the camera zoom out further than the game's menu allows.",
-    idea = "Leatrix Plus",
     defaults = { factor = 4 },
     options = { { kind = "slider", key = "factor", name = "Zoom out up to", min = 1, max = 4, step = 0.1, fmt = function(v) return ("%.1fx"):format(v) end } },
     detect = { { leatrix = "MaxCameraZoom" } },
@@ -109,7 +105,6 @@ Q:Feature{
 Q:Feature{
     id = "screenEffects", tab = "visual", section = "Camera and screen", name = "Screen glow and flashes",
     desc = "Turns off the full-screen glow, the grey death screen and the red low-health flash.",
-    idea = "own idea",
     defaults = { glow = true, death = true, lowHealth = true },
     options = {
         { kind = "check", key = "glow", name = "No full-screen glow" },
@@ -137,7 +132,6 @@ Q:Feature{
 Q:Feature{
     id = "levelScreenshot", tab = "visual", section = "Camera and screen", name = "Screenshot on level up",
     desc = "Takes a screenshot each time you level up.",
-    idea = "own idea",
     defaults = { onlyMax = false },
     options = { { kind = "check", key = "onlyMax", name = "Only at max level" } },
     Enable = function(f)
@@ -157,7 +151,6 @@ local TRAIL = 10
 Q:Feature{
     id = "cursorRing", tab = "visual", section = "Camera and screen", name = "Cursor ring",
     desc = "A ring around the mouse cursor so you find it in busy fights, with an optional trail.",
-    idea = "Enhance QoL",
     defaults = { size = 48, color = { 0.92, 0.58, 0.22 }, combatOnly = false, trail = false },
     options = {
         { kind = "slider", key = "size", name = "Size", min = 20, max = 120, step = 4 },
@@ -252,7 +245,6 @@ end }
 Q:Feature{
     id = "graphicsCaps", tab = "visual", section = "Graphics past the menu caps", name = "Graphics sliders",
     desc = "Sliders for graphics settings the game allows by /console but caps lower in its Graphics menu: ground clutter, view distance, foliage, detail fade, particles and weather.",
-    idea = "Det",
     options = graphicsOptions,
     detect = { { addon = "KelaGraphics" }, { addon = "AdvancedInterfaceOptions" } },
     Enable = function(f)

@@ -22,7 +22,6 @@ end
 Q:Feature{
     id = "durability", tab = "combat", section = "Before the pull", name = "Durability warning",
     desc = "A warning on screen when your gear is below a set percent: on a ready check and when you enter a dungeon or raid.",
-    idea = "Leatrix Plus",
     defaults = { threshold = 30, readyCheck = true, instance = true },
     options = {
         { kind = "slider", key = "threshold", name = "Warn below", min = 5, max = 80, step = 5, fmt = function(v) return v .. "%" end },
@@ -82,7 +81,6 @@ end
 Q:Feature{
     id = "announce", tab = "combat", section = "Announce", name = "Interrupt and CC announce",
     desc = "Says in party or raid chat when you interrupt a cast, and when your crowd control breaks early. Never in /say.",
-    idea = "own idea",
     defaults = { interrupts = true, cc = true, solo = true },
     options = {
         { kind = "check", key = "interrupts", name = "Announce interrupts" },
@@ -161,7 +159,6 @@ end
 Q:Feature{
     id = "hideInCombat", tab = "combat", section = "In combat", name = "Hide in combat",
     desc = "Hides the chat, the minimap or your bags while you fight, and brings them back after.",
-    idea = "Enhance QoL",
     defaults = { chat = false, minimap = false, bags = true },
     options = {
         { kind = "check", key = "chat", name = "Chat" },

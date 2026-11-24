@@ -50,12 +50,15 @@ end
 
 function W.Tooltip(frame, title, body)
     frame:HookScript("OnEnter", function(self)
-        local t = type(title) == "function" and title(self) or title
-        if not t then return end
+        -- Not "type(title) == 'function' and title(self) or title": a nil result would fall back to the function.
+        local t = title
+        if type(t) == "function" then t = t(self) end
+        if type(t) ~= "string" and type(t) ~= "number" then return end
         GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
         GameTooltip:SetText(t, 1, 0.82, 0)
-        local b = type(body) == "function" and body(self) or body
-        if b then GameTooltip:AddLine(b, 0.95, 0.9, 0.81, true) end
+        local b = body
+        if type(b) == "function" then b = b(self) end
+        if type(b) == "string" then GameTooltip:AddLine(b, 0.95, 0.9, 0.81, true) end
         GameTooltip:Show()
     end)
     frame:HookScript("OnLeave", function() GameTooltip:Hide() end)

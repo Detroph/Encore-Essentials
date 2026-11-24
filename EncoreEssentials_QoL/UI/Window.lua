@@ -60,7 +60,11 @@ local function buildControl(row, f, o)
         c.text = W.Text(c, "GameFontNormalSmall", "", W.DIM)
         c.text:SetPoint("TOPLEFT")
         c.text:SetWidth(CONTENT_W - 60)
-        c.Refresh = function(self) self.text:SetText(type(o.text) == "function" and o.text(f) or o.text) end
+        c.Refresh = function(self)
+            local t = o.text
+            if type(t) == "function" then t = t(f) end
+            self.text:SetText(type(t) == "string" and t or "")
+        end
         c:Refresh()
         c.height = math.max(16, (c.text:GetStringHeight() or 12) + 4)
         c.always = true
@@ -96,11 +100,6 @@ local function buildRow(f)
     row.desc:SetPoint("TOPLEFT", 36, y)
     row.desc:SetWidth(CONTENT_W - 50)
     y = y - math.max(12, row.desc:GetStringHeight() or 12) - 4
-    if f.idea then
-        row.idea = W.Text(row, "GameFontNormalSmall", "Idea from " .. f.idea, W.DIM)
-        row.idea:SetPoint("TOPLEFT", 36, y)
-        y = y - 14
-    end
 
     row.controls = {}
     for _, o in ipairs(f.options or {}) do

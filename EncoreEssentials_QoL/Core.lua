@@ -189,7 +189,7 @@ local function cleanup(f)
     f._events, f._tickers = nil, nil
 end
 
--- Q:Feature{ id, tab, section, name, desc, idea, defaults = {}, options = {...},
+-- Q:Feature{ id, tab, section, name, desc, defaults = {}, options = {...},
 --            detect = {...} (see Detect.lua), Enable = fn(self), Disable = fn(self), OnOption = fn(self, key, v),
 --            needsReload = true when turning off can't be undone without /reload }
 function Q:Feature(def)

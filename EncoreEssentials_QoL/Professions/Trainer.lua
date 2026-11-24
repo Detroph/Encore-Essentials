@@ -18,7 +18,6 @@ end
 Q:Feature{
     id = "trainAll", tab = "professions", section = "Trainers", name = "Train all",
     desc = "A Train all button on trainers, with the total cost in gold, silver and copper.",
-    idea = "Leatrix Plus",
     detect = { { eqol = "showTrainAllButton" }, { leatrix = "ShowTrainAllButton" } },
     Enable = function(f)
         local function update()

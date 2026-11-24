@@ -612,7 +612,7 @@ local function frameFeature(def)
     options[#options + 1] = { kind = "note", text = "Right-click the frame to lock it or change its size. Unlocked, drag it to move it or use the mouse wheel to scale. Timers and boss health are shared with your battleground group (and with Capping users) whenever this is on." }
 
     return Q:Feature{
-        id = def.id, tab = "pvp", section = def.section, name = def.name, desc = def.desc, idea = def.idea,
+        id = def.id, tab = "pvp", section = def.section, name = def.name, desc = def.desc,
         defaults = { style = def.default, timers = true, prediction = true, onlyClose = false, opacity = 100 },
         options = options,
         detect = { { addon = "Capping" } },
@@ -647,7 +647,6 @@ end
 frameFeature{
     id = "avFrame", kind = "AV", section = "Battleground timers", name = "Alterac Valley frame",
     desc = "Enemy general's health, enemy captain and officers as icons, your own officers only when they're attacked, and tower, bunker and graveyard timers only while something is being capped.",
-    idea = "Det; data idea from Capping",
     default = "bars", point = { "TOPRIGHT", UIParent, "TOPRIGHT", -220, -200 },
     choices = { { "compact", "Compact list" }, { "strip", "Slim strip" }, { "sides", "Two sides" }, { "bars", "Timer bars" } },
 }
@@ -655,7 +654,6 @@ frameFeature{
 frameFeature{
     id = "abFrame", kind = "AB", section = "Battleground timers", name = "Arathi Basin frame",
     desc = "Score, who wins and when, the five bases with their owner, and a timer on each base being assaulted.",
-    idea = "Det; data idea from Capping",
     default = "compact", point = { "TOP", UIParent, "TOP", 0, -110 },
     choices = { { "compact", "Compact card" }, { "scorebar", "Score bar" }, { "list", "Base list" }, { "floating", "Floating" } },
 }

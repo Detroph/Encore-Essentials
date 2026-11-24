@@ -148,7 +148,6 @@ for _, bar in ipairs(BARS) do
         id = bar.id, tab = "interface", section = "Action bars",
         name = bar.name .. (bar.note and (" (" .. bar.note .. ")") or ""),
         desc = "When this bar shows, and how see-through it is in and out of combat.",
-        idea = "Enhance QoL",
         defaults = {
             mode = "mouseover", alphaIn = 100, alphaOut = 100, fade = 0.2, linger = 0.5,
             show_mouse = true, show_combat = true, hide_fishing = false, hide_mounted = false, hide_taxi = true, hide_vehicle = true,
@@ -277,7 +276,6 @@ for _, t in ipairs(TEXTS) do
     Q:Feature{
         id = t.id, tab = "interface", section = "Action bar text", name = t.name,
         desc = "Font, size, outline, colour and position of this text on every Blizzard action button.",
-        idea = "Enhance QoL",
         defaults = { show = true, font = "default", size = t.size, outline = "OUTLINE", color = { 1, 1, 1 }, anchor = t.anchor, x = t.x, y = t.y },
         options = options,
         detect = detect,
@@ -334,7 +332,6 @@ end
 Q:Feature{
     id = "rangeTint", tab = "interface", section = "Action bar text", name = "Range tint",
     desc = "The whole button turns a colour when your target is out of range, not just the keybind.",
-    idea = "Enhance QoL",
     defaults = { color = { 0.85, 0.15, 0.1 } },
     options = { { kind = "color", key = "color", name = "Out of range colour" } },
     detect = { { eqol = "actionBarFullRangeColoring" }, unpack(BAR_ADDONS) },
@@ -365,7 +362,6 @@ Q:Feature{
 Q:Feature{
     id = "hideBorders", tab = "interface", section = "Action bar text", name = "Hide button borders",
     desc = "Takes the frame art off action buttons, leaving just the icons.",
-    idea = "Enhance QoL",
     detect = { { eqol = "actionBarHideBorders" }, { addon = "MasqueBlizzBars" }, unpack(BAR_ADDONS) },
     Enable = function()
         eachButton(function(button)
