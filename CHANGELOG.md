@@ -1,16 +1,16 @@
 # Encore Essentials
 
-## 0.2.8
+## 0.2.4.5
 
 - Encore-QoL: Resurrection timer looks, after the first test in game. Both rings have a thicker copper border (3 px, round or square) and a thinner progress ring. The Time box is now a square: the seconds large in the middle, "Time to resurrect" on two rows underneath. No box or border changes size when the numbers change.
 
-## 0.2.7
+## 0.2.4.4
 
 - Encore-QoL: new in PvP > Battleground timers: **Resurrection timer**. Counts down to the next spirit healer wave (every 30 seconds) in every battleground, while you're dead and while you're alive. In the last 3 seconds it turns red and a "Die now" box shows underneath, so you can die just in time to come straight back. Four looks: ring with a round background, ring with a square background, small bar, or a "Time to resurrect" box, plus a size slider. The timer is shared with your battleground group, so it runs before you've died once. Drag it while unlocked; right-click it to lock or unlock.
 - Encore-QoL: new in PvP > Enemies: **Enemy bars**. Every enemy player as a class-coloured bar, best kill first (healers, the flag carrier and low health go up). Left-click targets, right-click focuses, also in combat; in combat the order holds and the new best target glows. Enemies out of nameplate range fade, and health shows everywhere except Alterac Valley. Class bars (optionally in columns of 10) or columns of five (1 to 8 columns per row), with bar height, bar width, font size, how many to show and a class icon in front of the bar.
 - Encore-QoL: both have **Customize for each battleground** (separate looks for Warsong Gulch, Arathi Basin and Alterac Valley), a Preview button, Lock position and Reset position.
 
-## 0.2.6
+## 0.2.4.3
 
 - Encore-QoL: the window is laid out like the game's Options window. On the left a tree: Overview, then each tab, which opens to show its sections. On the right the section's page: each feature has a bar with its switch, name and status, a line on what it does, then its settings as rows with the name on the left and the setting on the right, in groups (for an action bar: Shows, Custom rules, Hide anyway when, See-through and fade). Custom rules only show when Shows is set to Custom rules. Search lists every matching feature across all tabs.
 - Encore-QoL: drag the bottom right corner to resize the window (720 x 440 up to 1600 x 1100). The size and position are kept.
@@ -20,7 +20,7 @@
 - Encore-QoL: the window no longer says which addon a feature's idea came from. Credits stay in NOTICE and the README.
 - Encore-QoL: battleground messages you send yourself are no longer read back as a groupmate's (WoW Forever's first name and surname are now joined when comparing).
 
-## 0.2.5
+## 0.2.4.2
 
 - New module: **Encore-QoL** (folder `EncoreEssentials_QoL`). Open it from the Encore window, `/encore qol` or `/eqol`. Every feature starts off.
 - Each feature checks whether another addon already does it (Enhance QoL, Leatrix Plus, BetterFishing, KelaGraphics, ErrorMonster, MinimapButtonBag, Bartender4, Dominos, ElvUI, SexyMap, Capping and more). If one does, its switch is locked and names that addon. Encore never changes another addon's settings. The Overview tab lists who runs what; `/eqol check` checks again.
@@ -32,7 +32,7 @@
 - Professions: one-button fishing (set the key in Options > Keybindings > Encore-QoL; none by default), optional double right-click, louder splash and auto loot while fishing, best pole and lure, lure warning, fishing bar, sortable catch log per zone. Train all at trainers with the total cost. Professions keeps its own saved table so it can become its own addon later.
 - Encore-QoL is new and needs testing in game: battleground widgets, POI icons and officer NPC IDs on Forever, and bobber interaction for one-button fishing (uses the game's soft target Interact).
 
-## 0.2.4
+## 0.2.4.1
 
 - Encore-Stonks: much lighter on memory. Opening the All items market view, the daily refresh of the item list's prices and item tooltips no longer build a table for every price of every item: market view about 640 MB of short-lived memory down to about 60 MB, the first login of each day about 390 MB down to about 10 MB (only items with new prices are worked out again). The item list's prices are no longer all kept in memory as tables (about 15 MB), and the browser's item list is let go when the window closes. Every average, chart and price is the same as before.
 - Encore-Stonks: an hour seen twice for the same item (after a logout or /reload within that hour) is saved once, with the lowest price and most units, as within one session. Once, on the first login with this version, Stonks merges the doubled hours already saved (about a quarter of all saved samples) and saves its price summaries again in a smaller form. No hour of prices is dropped, launch week included.

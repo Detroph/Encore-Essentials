@@ -1,0 +1,55 @@
+# Renames releases and their tags, run by hand from the Actions tab.
+# Input: "old=new" pairs separated by commas, e.g. "v0.2.4-beta=v0.2.4.1-beta,v0.2.5-beta=v0.2.4.2-beta".
+# For each pair: a new tag on the same commit, the GitHub release moved to it and renamed, the old tag removed,
+# and "## X.Y.Z" headings in every renamed release's notes changed the same way. The uploaded zips keep their
+# file names. CurseForge files are not touched.
+name: Rename releases
+
+on:
+  workflow_dispatch:
+    inputs:
+      pairs:
+        description: "old=new tag pairs, comma separated"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  rename:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Rename
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PAIRS: ${{ inputs.pairs }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch --tags --force
+          IFS=',' read -ra LIST <<< "$PAIRS"
+          # Heading changes for the notes: "## 0.2.4" -> "## 0.2.4.1" and so on.
+          SUBS=""
+          for p in "${LIST[@]}"; do
+            old="${p%%=*}"; new="${p#*=}"
+            o="${old#v}"; o="${o%%-*}"; n="${new#v}"; n="${n%%-*}"
+            SUBS="$SUBS s/^## \\Q$o\\E(\\r?)\$/## $n\$1/m;"
+          done
+          for p in "${LIST[@]}"; do
+            old="${p%%=*}"; new="${p#*=}"
+            [[ "$new" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?(-(alpha|beta)[0-9]*)?$ ]] || { echo "bad tag: $new"; exit 1; }
+            sha=$(git rev-list -n1 "$old")
+            if ! git rev-parse -q --verify "refs/tags/$new" >/dev/null; then
+              git tag -a "$new" "$sha" -m "$new"
+              git push origin "refs/tags/$new"
+            fi
+            gh release view "$old" --json body --jq .body > notes.md
+            perl -0pi -e "$SUBS" notes.md
+            gh release edit "$old" --tag "$new" --title "$new" --notes-file notes.md
+            git push origin ":refs/tags/$old"
+            echo "$old -> $new ($sha)"
+          done
