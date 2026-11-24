@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## 0.2.4.7
+
+- Encore-QoL: Enemy bars have a Health text setting: percent (76%, as before), the real value (4.2k), both (4.2k · 76%) or none. It can be set per battleground.
+
 ## 0.2.4.6
 
 - Encore-QoL: Enemy bars show a power bar under each health bar: mana in blue, rage in red, energy in yellow. On by default, with a height setting (2 to 12 px), and both can be set per battleground. Like health, it fills in once the enemy has been your target, focus or mouseover or had a nameplate on screen; until then it shows faint in the class's usual colour, and in Alterac Valley it stays faint.
