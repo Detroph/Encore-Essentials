@@ -4,6 +4,8 @@
 --  * Login summary: a minute after login, out of combat, the player says HELLO; the best-placed guildmate (AFK
 --    players first, then freshest data) offers, the asker accepts one offer, and the summary arrives by whisper in
 --    self-contained blocks. If the sender goes away, the asker resumes from the last item it got with someone else.
+--  * One delivery at a time: an hourly scan waits while a login summary runs, and a hello waits while an hourly
+--    scan is coming in.
 --  * Received prices are kept apart from your own: guild samples in realm.guild (same format as your own samples,
 --    your own hour always wins, at most one guild sample per item per 4 hours unless the price moved more than 2%),
 --    summaries in realm.baseline, which fades out as your own data grows.
@@ -25,6 +27,13 @@ local BASELINE_FULL_DAYS = 20 -- the guild baseline fades out as your own days o
 local MUTE_MIN_CHECKS, MUTE_RATIO = 50, 0.3
 local ASK_TIMEOUT, BLOCK_TIMEOUT = 15, 60
 local RETRY = { 60, 120, 240, 480, 900 }
+-- One delivery at a time in the guild: an hourly scan waits while a login summary runs, and a login summary request
+-- waits while an hourly scan is coming in, so nobody gets both at once.
+local SUMMARY_HOLD = 300 -- seconds after a summary is accepted (about 120 KB at 400 bytes a second)
+local HELLO_HOLD = 30 -- seconds after a hello: the accept follows within about 20 seconds, or nothing does
+local SCAN_QUIET = 20 -- seconds without an hourly scan message before it counts as over
+local CLAIM_LATEST = 300 -- seconds before the end of the hour: from then on a claim no longer waits
+local HOLD_RETRY = 30
 
 local function hourNow() return floor(time() / 3600) end
 
@@ -303,6 +312,20 @@ local claims = {} -- [hour] = { name = claimer, hash = tie-break }
 local myClaim -- { hour, hash, at }
 local lastSlot = {} -- [itemID] = { price, qty } as last shared, for deltas
 local handledHour
+local helloAt, acceptAt, liveScanAt = 0, 0, 0 -- Comm.now() of the last guild hello, accept and hourly scan message
+local serving -- { asker }: the login summary we are sending (see the handshake below)
+local ask -- our request: { since, resume, offers = {}, chosen, lastBlock, tries }
+
+-- A login summary is being asked for or sent somewhere in the guild (or by us).
+local function summaryRunning()
+    local t = Comm.now()
+    return serving ~= nil or (ask ~= nil and ask.chosen ~= nil) or t - acceptAt < SUMMARY_HOLD or t - helloAt < HELLO_HOLD
+end
+Sync.SummaryRunning = summaryRunning
+
+-- Someone's hourly scan is coming in on the guild channel right now.
+local function hourlyIncoming() return Comm.now() - liveScanAt < SCAN_QUIET end
+Sync.HourlyIncoming = hourlyIncoming
 
 local function scanItemsFor(hour)
     local list = {}
@@ -356,6 +379,11 @@ local function tryClaim(hour)
         C_Timer.After(30, function() tryClaim(hour) end)
         return
     end
+    -- A login summary is running: share the scan after it, while there is still time left in the hour.
+    if summaryRunning() and (hour + 1) * 3600 - time() > CLAIM_LATEST then
+        C_Timer.After(HOLD_RETRY, function() tryClaim(hour) end)
+        return
+    end
     local list = scanItemsFor(hour)
     if #list < CLAIM_MIN_ITEMS then return end
     myClaim = { hour = hour, hash = myHash(hour) }
@@ -386,6 +414,7 @@ Comm.On("C", function(body, sender)
     local hour, count, hash = Codec.dec(f[1]), Codec.dec(f[2]), Codec.dec(f[3])
     if not hour or not count or not hash then return Comm.Reject("fields") end
     if math.abs(hour - hourNow()) > 1 then return Comm.Reject("hour") end
+    liveScanAt = Comm.now()
     local c = claims[hour]
     -- Two claims for one hour: the lower hash (then the lower name) keeps it.
     if c and c.name ~= sender and (hash > c.hash or (hash == c.hash and sender > c.name)) then return end
@@ -423,6 +452,7 @@ Comm.On("S", function(body, sender, channel)
         local hour = Codec.dec(body:match("^([^:]+):") or "")
         local c = hour and claims[hour]
         if c and c.name ~= sender then return end -- only the claimer of that hour is listened to
+        liveScanAt = Comm.now()
         if not c and hour then claims[hour] = { name = sender, hash = 0 } end
         acceptObsMessage(body, sender, true)
     elseif channel == "WHISPER" and Sync.Links and Sync.Links.ExpectScan(sender, body) then
@@ -433,9 +463,7 @@ end)
 ---------------------------------------------------------------------------
 -- Login summary handshake
 ---------------------------------------------------------------------------
-local ask -- our request: { since, resume, offers = {}, chosen, lastBlock, tries }
 local offerTimers = {} -- [asker] = timer handle (we are waiting to offer)
-local serving -- { asker }
 local pendingOffers = {} -- [asker] = { since, resume, at }: offers we made and wait to hear back on
 local noServe = {} -- [name] = true: offered but never sent anything this session (an older version that can't
                    -- read our name, or gone), passed over while anyone else offers
@@ -443,6 +471,8 @@ local noServe = {} -- [name] = true: offered but never sent anything this sessio
 local function startAsk(resume)
     if mode() == "off" or not IsInGuild() then return end
     if Comm.Busy() then C_Timer.After(30, function() startAsk(resume) end); return end
+    -- An hourly scan is coming in: ask once it is over, so the two don't arrive at the same time.
+    if hourlyIncoming() then C_Timer.After(HOLD_RETRY, function() startAsk(resume) end); return end
     local r = realm()
     if not r then return end
     ask = ask or { tries = 0 }
@@ -517,7 +547,9 @@ end
 
 -- Someone logged in and asks for past data.
 Comm.On("H", function(body, sender, channel)
-    if channel ~= "GUILD" or not sharing() then return end
+    if channel ~= "GUILD" then return end
+    helloAt = Comm.now()
+    if not sharing() then return end
     local f = Codec.fields(body, 2)
     local since, resume = f and Codec.dec(f[1]), f and Codec.dec(f[2])
     if not since or not resume then return Comm.Reject("fields") end
@@ -597,6 +629,7 @@ end
 
 Comm.On("A", function(body, sender, channel)
     if channel ~= "GUILD" then return end
+    acceptAt = Comm.now()
     local chosen = Codec.cleanName(body)
     if not chosen then return Comm.Reject("name") end
     local p = pendingOffers[sender]
