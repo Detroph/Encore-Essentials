@@ -233,6 +233,8 @@ local function buildRing(square)
     track:SetFrameLevel(r:GetFrameLevel() + 2)
     circle(track, "ARTWORK", 56, { 0, 0, 0 }, 0.65)
     local cd = CreateFrame("Cooldown", nil, track, "CooldownFrameTemplate")
+    -- The template fills its whole parent; without this the swipe covers the border too.
+    cd:ClearAllPoints()
     cd:SetSize(56, 56)
     cd:SetPoint("CENTER")
     if cd.SetSwipeTexture then cd:SetSwipeTexture(CIRCLE) end
