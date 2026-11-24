@@ -169,21 +169,18 @@ Q:Feature{
         f:Place()
         f.toggle:Show()
         f:Collect(true)
-        -- Addons make their buttons during loading, some after us: watch closely for the first 20 seconds
-        -- so they go straight into the drawer, then fall back to a slow sweep.
+        -- No timed sweeping: buttons are picked up when an addon loads, when LibDBIcon makes one,
+        -- and after every loading screen (plus one look a second later for addons that wait a frame).
         local LDBI = LibStub and LibStub("LibDBIcon-1.0", true)
         if LDBI and LDBI.RegisterCallback and not f.ldbiHooked then
             f.ldbiHooked = true
             LDBI.RegisterCallback(f, "LibDBIcon_IconCreated", function() if f.active then f:Collect() end end)
         end
-        f:On("PLAYER_ENTERING_WORLD", function() f:Collect() end)
         f:On("ADDON_LOADED", function() C_Timer.After(0, function() if f.active then f:Collect() end end) end)
-        local fast
-        fast = C_Timer.NewTicker(0.1, function()
-            if not f.active then fast:Cancel() return end
+        f:On("PLAYER_ENTERING_WORLD", function()
             f:Collect()
-        end, 200)
-        f:Ticker(5, function() f:Collect() end)
+            C_Timer.After(1, function() if f.active then f:Collect() end end)
+        end)
     end,
     Collect = function(f, force)
         local added = force
