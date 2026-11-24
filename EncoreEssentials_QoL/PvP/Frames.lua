@@ -47,14 +47,79 @@ local Renderer = {}
 Renderer.__index = Renderer
 
 local function newRenderer(holder)
-    return setmetatable({ holder = holder, pools = { tex = {}, text = {}, icon = {} }, used = { tex = 0, text = 0, icon = 0 } }, Renderer)
+    return setmetatable({ holder = holder, pools = { tex = {}, text = {}, icon = {}, hot = {} }, used = { tex = 0, text = 0, icon = 0, hot = 0 } }, Renderer)
+end
+
+---------------------------------------------------------------------------
+-- Tooltips on icons and bars. tip = { title, color, lines = { text or { text, color } } }, follows the cursor.
+---------------------------------------------------------------------------
+local function showTip(fr)
+    local tip = fr.tip
+    if not tip then return end
+    GameTooltip:SetOwner(fr, "ANCHOR_CURSOR")
+    local c = tip.color or W.GOLD
+    GameTooltip:SetText(tip.title or "", c[1], c[2], c[3])
+    for _, l in ipairs(tip.lines or {}) do
+        if type(l) == "table" then
+            local lc = l[2] or W.INK
+            GameTooltip:AddLine(l[1], lc[1], lc[2], lc[3], true)
+        else
+            GameTooltip:AddLine(l, W.INK[1], W.INK[2], W.INK[3], true)
+        end
+    end
+    GameTooltip:Show()
+end
+
+-- Hover only: clicks and drags still reach the frame underneath (move, right-click menu).
+local function hoverable(fr, holder)
+    if fr.SetMouseClickEnabled and fr.SetMouseMotionEnabled then
+        fr:SetMouseMotionEnabled(true)
+        fr:SetMouseClickEnabled(false)
+    else
+        fr:EnableMouse(true)
+        fr:SetScript("OnMouseDown", function(_, button)
+            if button == "LeftButton" and not holder:Saved().locked then holder:StartMoving() end
+        end)
+        fr:SetScript("OnMouseUp", function(_, button)
+            local stop = holder:GetScript("OnDragStop")
+            if button == "LeftButton" and stop then stop(holder) end
+            local up = holder:GetScript("OnMouseUp")
+            if up then up(holder, button) end
+        end)
+    end
+    fr:SetScript("OnEnter", showTip)
+    fr:SetScript("OnLeave", function() GameTooltip:Hide() end)
+end
+
+local function setTip(fr, tip)
+    fr.tip = tip
+    if GameTooltip:IsOwned(fr) then
+        if tip then showTip(fr) else GameTooltip:Hide() end
+    end
+end
+
+-- Invisible hover area over a bar or a row.
+function Renderer:Hot(x, y, w, h, tip)
+    local fr = self:_take("hot", function()
+        local f = CreateFrame("Frame", nil, self.holder)
+        f:SetFrameLevel(self.holder:GetFrameLevel() + 1)
+        hoverable(f, self.holder)
+        return f
+    end)
+    fr:SetPoint("TOPLEFT", self.holder, "TOPLEFT", x, -y)
+    fr:SetSize(math.max(1, w), math.max(1, h))
+    setTip(fr, tip)
+    return fr
 end
 
 function Renderer:Begin() for k in pairs(self.used) do self.used[k] = 0 end end
 
 function Renderer:End(w, h)
     for kind, pool in pairs(self.pools) do
-        for i = self.used[kind] + 1, #pool do pool[i]:Hide() end
+        for i = self.used[kind] + 1, #pool do
+            if pool[i].tip and GameTooltip:IsOwned(pool[i]) then GameTooltip:Hide() end
+            pool[i]:Hide()
+        end
     end
     self.holder:SetSize(math.max(20, w), math.max(10, h))
 end
@@ -70,6 +135,7 @@ local function take(self, kind, make)
     obj:Show()
     return obj
 end
+function Renderer:_take(kind, make) return take(self, kind, make) end
 
 function Renderer:Rect(x, y, w, h, r, g, b, a, layer)
     local t = take(self, "tex", function() return self.holder:CreateTexture(nil, "BACKGROUND") end)
@@ -129,6 +195,8 @@ function Renderer:Icon(x, y, size, tex, team, opts)
         fr.half = fr:CreateTexture(nil, "OVERLAY", nil, 2)
         fr.half:SetPoint("TOPLEFT", fr, "TOPLEFT", 0, 0)
         fr.half:SetPoint("BOTTOMRIGHT", fr, "TOP", 0, -3)
+        fr:SetFrameLevel(self.holder:GetFrameLevel() + 2)
+        hoverable(fr, self.holder)
         return fr
     end)
     f:SetSize(size, size)
@@ -145,6 +213,7 @@ function Renderer:Icon(x, y, size, tex, team, opts)
     local cc = opts.contestedBy and TEAM[opts.contestedBy]
     f.half:SetShown(cc ~= nil)
     if cc then f.half:SetColorTexture(cc[1], cc[2], cc[3], 1) end
+    setTip(f, opts.tip)
     return f
 end
 
@@ -288,10 +357,81 @@ local function avData(data)
     end
     local alive = 0
     for _, e in ipairs(officers.theirs) do if e.state ~= "dead" then alive = alive + 1 end end
-    return { me = me, enemy = enemy, officers = officers, timers = timers, general = general, alive = alive, score = data.score, now = now }
+    return { me = me, enemy = enemy, officers = officers, timers = timers, general = general, alive = alive, score = data.score, now = now, health = data.health, nodes = data.nodes }
 end
 
 local function nodeIcon(n) return ICON[n.kind] or ICON.tower end
+
+-- Tooltip text for the frames' icons and bars.
+local function seen(age)
+    if not age then return nil end
+    age = math.floor(age)
+    if age < 3 then return "just now" end
+    if age < 60 then return age .. " s ago" end
+    return clock(age) .. " ago"
+end
+
+local function nodeKind(n)
+    if n.kind == "tower" then return n.name:find("Bunker") and "Bunker" or "Tower" end
+    return ({ gy = "Graveyard", mine = "Mine", base = "Base" })[n.kind] or "Objective"
+end
+
+local function nodeTip(n, now, capTime)
+    local lines = {}
+    local kind = nodeKind(n)
+    if n.destroyed then
+        lines[#lines + 1] = { kind .. ", destroyed" .. (n.owner and (" by the " .. TEAM_NAME[n.owner]) or ""), W.DIM }
+    elseif n.owner then
+        lines[#lines + 1] = { kind .. ", held by the " .. TEAM_NAME[n.owner], TEAM_TEXT[n.owner] }
+    else
+        lines[#lines + 1] = { kind .. ", nobody holds it", W.DIM }
+    end
+    if n.contestedBy and n.ends and n.ends > now then
+        local done = n.kind == "tower" and "destroyed" or "taken"
+        lines[#lines + 1] = { ("%s assaulted it: %s in %s unless it's defended."):format(TEAM_NAME[n.contestedBy], done, clock(n.ends - now)), TEAM_TEXT[n.contestedBy] }
+    elseif n.contestedBy then
+        lines[#lines + 1] = { TEAM_NAME[n.contestedBy] .. " assaulted it.", TEAM_TEXT[n.contestedBy] }
+    end
+    if n.kind == "tower" then
+        for _, o in ipairs(BG.OFFICERS) do
+            if o.tower == n.name then lines[#lines + 1] = { o.name .. " stands here and dies when it is destroyed.", W.DIM } end
+        end
+    elseif n.kind == "base" then
+        lines[#lines + 1] = { "Each base held adds to its side's score. Capping takes " .. (capTime or 60) .. " s.", W.DIM }
+    end
+    return { title = n.name, lines = lines }
+end
+
+local function generalTip(team, g, pct, age, d)
+    local lines = { { TEAM_NAME[team] .. " general", TEAM_TEXT[team] } }
+    if pct then
+        lines[#lines + 1] = ("Health %d%% (seen %s)"):format(pct, seen(age) or "?")
+    else
+        lines[#lines + 1] = { "Health not seen yet. It shows as soon as someone in your group or a Capping user targets him.", W.DIM }
+    end
+    if team == d.enemy then
+        lines[#lines + 1] = ("Enemy officers still alive: %d of %d. Each one alive makes him stronger."):format(d.alive, #d.officers.theirs)
+    end
+    return { title = g.name, color = TEAM_TEXT[team], lines = lines }
+end
+
+local function officerTip(e, d)
+    local o = e.o
+    local role = o.captain and "captain" or (o.side == "A" and "marshal" or "warmaster")
+    local lines = { { TEAM_NAME[o.side] .. " " .. role .. (o.tower and (", " .. o.tower) or ""), TEAM_TEXT[o.side] } }
+    local h = d.health and d.health[o.id]
+    if e.state == "dead" then
+        lines[#lines + 1] = { o.tower and d.nodes and d.nodes[o.tower] and d.nodes[o.tower].destroyed and ("Dead: " .. o.tower .. " was destroyed.") or "Dead", W.DIM }
+    elseif e.state == "attacked" then
+        lines[#lines + 1] = { ("Under attack: %d%% health (seen %s)"):format(h and h.pct or 0, seen(h and (d.now - h.at)) or "?"), W.HORDE }
+    else
+        lines[#lines + 1] = "Alive"
+    end
+    if o.tower then
+        lines[#lines + 1] = { "Dies when " .. o.tower .. " is destroyed, or when killed.", W.DIM }
+    end
+    return { title = o.name, color = TEAM_TEXT[o.side], lines = lines }
+end
 
 local AV_STYLES = {}
 
@@ -305,7 +445,8 @@ AV_STYLES.compact = function(r, d, f)
     local reinf = (d.score.reinfH or d.score.reinfA) and (("|cffff9d8f%s|r  |cff8fc8ff%s|r"):format(d.score.reinfH or "?", d.score.reinfA or "?")) or nil
     local y = r:Card(W_, h, "Alterac Valley", reinf)
     if hasGeneral then
-        r:Icon(8, y, 22, ICON.general, d.enemy)
+        r:Icon(8, y, 22, ICON.general, d.enemy, { tip = generalTip(d.enemy, g, pct, age, d) })
+        r:Hot(36, y, W_ - 44, 22, generalTip(d.enemy, g, pct, age, d))
         r:Text(36, y, g.name, 12, TEAM_TEXT[d.enemy])
         r:Text(W_ - 40, y, pct .. "%", 12, W.INK, { justify = "RIGHT" })
         if age and age > 3 then r:Text(W_ - 8, y + 1, math.floor(age) .. "s", 10, W.DIM, { justify = "RIGHT" }) end
@@ -314,21 +455,24 @@ AV_STYLES.compact = function(r, d, f)
     end
     local x = 8
     for _, e in ipairs(d.officers.theirs) do
-        r:Icon(x, y, 22, e.o.captain and ICON.captain or ICON.officer, d.enemy, { dead = e.state == "dead", glow = e.state == "attacked" })
+        r:Icon(x, y, 22, e.o.captain and ICON.captain or ICON.officer, d.enemy, { dead = e.state == "dead", glow = e.state == "attacked", tip = officerTip(e, d) })
         x = x + 25
     end
     r:Text(W_ - 8, y + 5, d.alive .. " left", 11, TEAM_TEXT[d.enemy], { justify = "RIGHT" })
     y = y + 26
     for _, e in ipairs(d.officers.attacked) do
         r:Rect(6, y, W_ - 12, 22, 0.7, 0.04, 0.03, 0.3, "BORDER")
-        r:Icon(8, y + 1, 20, ICON.attacked, d.me)
+        r:Hot(6, y, W_ - 12, 22, officerTip(e, d))
+        r:Icon(8, y + 1, 20, ICON.attacked, d.me, { tip = officerTip(e, d) })
         r:Text(34, y + 5, e.o.name .. " under attack", 12, TEAM_TEXT[d.me])
         y = y + 26
     end
     if f:Get("timers") then
         for _, n in ipairs(d.timers) do
             local left = n.ends - d.now
-            r:Icon(8, y, 22, nodeIcon(n), n.contestedBy)
+            local tip = nodeTip(n, d.now, BG.CAP_TIME.AV)
+            r:Icon(8, y, 22, nodeIcon(n), n.contestedBy, { tip = tip })
+            r:Hot(36, y, W_ - 44, 22, tip)
             r:Text(36, y, short(n.name), 12, W.INK)
             r:Text(W_ - 8, y, clock(left), 12, W.GOLD, { justify = "RIGHT" })
             r:Bar(36, y + 15, W_ - 46, 5, 1 - left / (BG.CAP_TIME.AV or 240), n.contestedBy)
@@ -341,30 +485,31 @@ end
 -- 2 Slim strip: one line, icons only.
 AV_STYLES.strip = function(r, d, f)
     local x, H = 6, 36
-    local g, pct = d.general(d.enemy)
+    local g, pct, age = d.general(d.enemy)
     local w = 60 + 140 + #d.officers.theirs * 23 + (f:Get("timers") and #d.timers * 64 or 0) + 70
     r:Card(w, H)
     r:Icon(x, 9, 18, CREST, nil, { full = true })
     x = x + 24
-    r:Icon(x, 7, 22, ICON.general, d.enemy)
+    r:Icon(x, 7, 22, ICON.general, d.enemy, { tip = generalTip(d.enemy, g, pct, age, d) })
+    r:Hot(x + 26, 4, 106, 28, generalTip(d.enemy, g, pct, age, d))
     x = x + 26
     r:Text(x, 6, g.name .. " " .. (pct and pct .. "%" or "?"), 11, TEAM_TEXT[d.enemy])
     r:Bar(x, 22, 104, 6, (pct or 100) / 100, d.enemy)
     x = x + 114
     for _, e in ipairs(d.officers.theirs) do
-        r:Icon(x, 8, 20, e.o.captain and ICON.captain or ICON.officer, d.enemy, { dead = e.state == "dead", glow = e.state == "attacked" })
+        r:Icon(x, 8, 20, e.o.captain and ICON.captain or ICON.officer, d.enemy, { dead = e.state == "dead", glow = e.state == "attacked", tip = officerTip(e, d) })
         x = x + 23
     end
     x = x + 6
     if f:Get("timers") then
         for _, n in ipairs(d.timers) do
-            r:Icon(x, 8, 20, nodeIcon(n), n.contestedBy)
+            r:Icon(x, 8, 20, nodeIcon(n), n.contestedBy, { tip = nodeTip(n, d.now, BG.CAP_TIME.AV) })
             r:Text(x + 23, 12, clock(n.ends - d.now), 11, W.GOLD)
             x = x + 64
         end
     end
     for _, e in ipairs(d.officers.attacked) do
-        r:Icon(x, 8, 20, ICON.attacked, d.me, { glow = true })
+        r:Icon(x, 8, 20, ICON.attacked, d.me, { glow = true, tip = officerTip(e, d) })
         x = x + 24
     end
     r:Text(x + 4, 12, ("|cffff9d8f%s|r |cff8fc8ff%s|r"):format(d.score.reinfH or "?", d.score.reinfA or "?"), 12, W.INK)
@@ -378,24 +523,27 @@ AV_STYLES.sides = function(r, d, f)
     local W_, col = 420, 210
     local function side(team, x)
         local y = 34
-        local g, pct = d.general(team)
+        local g, pct, age = d.general(team)
         r:Text(x + 8, y, TEAM_NAME[team], 13, TEAM_TEXT[team])
         r:Text(x + col - 10, y, tostring((team == "A" and d.score.reinfA or d.score.reinfH) or "?"), 13, TEAM_TEXT[team], { justify = "RIGHT" })
         y = y + 20
-        r:Icon(x + 8, y, 20, ICON.general, team)
+        r:Icon(x + 8, y, 20, ICON.general, team, { tip = generalTip(team, g, pct, age, d) })
+        r:Hot(x + 34, y, col - 44, 20, generalTip(team, g, pct, age, d))
         r:Bar(x + 34, y + 7, col - 80, 7, (pct or 100) / 100, team)
         r:Text(x + col - 10, y + 3, pct and pct .. "%" or "?", 11, W.INK, { justify = "RIGHT" })
         y = y + 26
         local ix = x + 8
         for _, e in ipairs(team == d.enemy and d.officers.theirs or d.officers.mine) do
-            r:Icon(ix, y, 20, e.o.captain and ICON.captain or ICON.officer, team, { dead = e.state == "dead", glow = e.state == "attacked" })
+            r:Icon(ix, y, 20, e.o.captain and ICON.captain or ICON.officer, team, { dead = e.state == "dead", glow = e.state == "attacked", tip = officerTip(e, d) })
             ix = ix + 23
         end
         y = y + 26
         if f:Get("timers") then
             for _, n in ipairs(d.timers) do
                 if n.contestedBy == team then
-                    r:Icon(x + 8, y, 20, nodeIcon(n), team)
+                    local tip = nodeTip(n, d.now, BG.CAP_TIME.AV)
+                    r:Icon(x + 8, y, 20, nodeIcon(n), team, { tip = tip })
+                    r:Hot(x + 34, y, col - 44, 20, tip)
                     r:Text(x + 34, y + 3, short(n.name), 11, W.INK)
                     r:Text(x + col - 10, y + 3, clock(n.ends - d.now), 11, W.GOLD, { justify = "RIGHT" })
                     y = y + 24
@@ -420,12 +568,13 @@ end
 AV_STYLES.bars = function(r, d, f)
     local W_, H = 260, 24
     local y = 0
-    local function bar(team, frac, icon, label, right, glowRed)
+    local function bar(team, frac, icon, label, right, glowRed, tip)
+        r:Hot(0, y, W_, H, tip)
         r:Rect(0, y, W_, H, glowRed and 0.78 or 0.79, glowRed and 0.15 or 0.47, glowRed and 0.11 or 0.18, 1, "BACKGROUND")
         r:Rect(1, y + 1, W_ - 2, H - 2, 0.055, 0.04, 0.03, 0.9, "BACKGROUND")
         local c = TEAM[team] or W.GOLD
         if frac and frac > 0 then r:Rect(1, y + 1, (W_ - 2) * math.min(1, frac), H - 2, c[1], c[2], c[3], 0.45, "BORDER") end
-        r:Icon(3, y + 3, 18, icon, team)
+        r:Icon(3, y + 3, 18, icon, team, { tip = tip })
         r:Text(26, y + 6, label, 12, W.INK)
         if right then r:Text(W_ - 6, y + 6, right, 12, W.GOLD, { justify = "RIGHT" }) end
         y = y + H + 4
@@ -433,23 +582,29 @@ AV_STYLES.bars = function(r, d, f)
     for _, team in ipairs({ d.enemy, d.me }) do
         local g, pct, age = d.general(team)
         if pct or team == d.enemy then
-            bar(team, (pct or 100) / 100, ICON.general, g.name .. " " .. (pct and pct .. "%" or "?"), age and age > 3 and (math.floor(age) .. "s") or nil)
+            bar(team, (pct or 100) / 100, ICON.general, g.name .. " " .. (pct and pct .. "%" or "?"), age and age > 3 and (math.floor(age) .. "s") or nil, nil, generalTip(team, g, pct, age, d))
         end
     end
     if y > 0 then
         r:Gradient(4, y - 2, W_ - 8, 1, { 0.79, 0.47, 0.18, 0 }, { 0.79, 0.47, 0.18, 1 }, "BORDER")
         y = y + 2
     end
-    for _, e in ipairs(d.officers.attacked) do bar(d.me, 1, ICON.attacked, e.o.name .. " attacked", nil, true) end
+    for _, e in ipairs(d.officers.attacked) do bar(d.me, 1, ICON.attacked, e.o.name .. " attacked", nil, true, officerTip(e, d)) end
     if f:Get("timers") then
         for _, n in ipairs(d.timers) do
             local left = n.ends - d.now
-            bar(n.contestedBy, 1 - left / (BG.CAP_TIME.AV or 240), nodeIcon(n), short(n.name), clock(left))
+            bar(n.contestedBy, 1 - left / (BG.CAP_TIME.AV or 240), nodeIcon(n), short(n.name), clock(left), nil, nodeTip(n, d.now, BG.CAP_TIME.AV))
         end
     end
     r:Rect(0, y, W_, 20, 0.79, 0.47, 0.18, 1, "BACKGROUND")
     r:Rect(1, y + 1, W_ - 2, 18, 0.055, 0.04, 0.03, 0.9, "BACKGROUND")
     r:Icon(3, y + 2, 16, CREST, nil, { full = true })
+    local names = {}
+    for _, e in ipairs(d.officers.theirs) do
+        names[#names + 1] = { e.o.name .. ": " .. (e.state == "dead" and "dead" or e.state == "attacked" and "under attack" or "alive"), e.state == "dead" and W.DIM or TEAM_TEXT[d.enemy] }
+    end
+    names[#names + 1] = { ("Reinforcements: Horde %s, Alliance %s"):format(d.score.reinfH or "?", d.score.reinfA or "?"), W.INK }
+    r:Hot(0, y, W_, 20, { title = "Enemy officers", color = TEAM_TEXT[d.enemy], lines = names })
     r:Text(24, y + 4, ("Officers left: %d of %d"):format(d.alive, #d.officers.theirs), 11, TEAM_TEXT[d.enemy])
     r:Text(W_ - 6, y + 4, ("|cffff9d8f%s|r  |cff8fc8ff%s|r"):format(d.score.reinfH or "?", d.score.reinfA or "?"), 11, W.INK, { justify = "RIGHT" })
     y = y + 20
@@ -480,7 +635,8 @@ end
 local function pips(r, x, y, size, d, gap)
     for _, name in ipairs(BG.AB_NODES) do
         local n = d.nodes[name] or {}
-        r:Icon(x, y, size, ICON[name], n.owner, { contestedBy = n.contestedBy })
+        n.name, n.kind = n.name or name, n.kind or "base"
+        r:Icon(x, y, size, ICON[name], n.owner, { contestedBy = n.contestedBy, tip = nodeTip(n, d.now, BG.CAP_TIME.AB) })
         x = x + size + (gap or 4)
     end
     return x
@@ -546,7 +702,10 @@ AB_STYLES.list = function(r, d, f)
     y = y + 12
     for _, name in ipairs(BG.AB_NODES) do
         local n = d.nodes[name] or {}
-        r:Icon(8, y, 20, ICON[name], n.owner, { contestedBy = n.contestedBy })
+        n.name, n.kind = n.name or name, n.kind or "base"
+        local tip = nodeTip(n, d.now, BG.CAP_TIME.AB)
+        r:Icon(8, y, 20, ICON[name], n.owner, { contestedBy = n.contestedBy, tip = tip })
+        r:Hot(32, y, W_ - 40, 20, tip)
         r:Text(34, y + 4, name, 12, W.INK)
         if f:Get("timers") and n.ends and n.ends > d.now then
             r:Text(W_ - 8, y + 4, clock(n.ends - d.now), 12, W.GOLD, { justify = "RIGHT" })
@@ -612,7 +771,7 @@ local function frameFeature(def)
     options[#options + 1] = { kind = "note", text = "Right-click the frame to lock it or change its size. Unlocked, drag it to move it or use the mouse wheel to scale. Timers and boss health are shared with your battleground group (and with Capping users) whenever this is on." }
 
     return Q:Feature{
-        id = def.id, tab = "pvp", section = def.section, name = def.name, desc = def.desc, idea = def.idea,
+        id = def.id, tab = "pvp", section = def.section, name = def.name, desc = def.desc,
         defaults = { style = def.default, timers = true, prediction = true, onlyClose = false, opacity = 100 },
         options = options,
         detect = { { addon = "Capping" } },
@@ -647,7 +806,6 @@ end
 frameFeature{
     id = "avFrame", kind = "AV", section = "Battleground timers", name = "Alterac Valley frame",
     desc = "Enemy general's health, enemy captain and officers as icons, your own officers only when they're attacked, and tower, bunker and graveyard timers only while something is being capped.",
-    idea = "Det; data idea from Capping",
     default = "bars", point = { "TOPRIGHT", UIParent, "TOPRIGHT", -220, -200 },
     choices = { { "compact", "Compact list" }, { "strip", "Slim strip" }, { "sides", "Two sides" }, { "bars", "Timer bars" } },
 }
@@ -655,7 +813,6 @@ frameFeature{
 frameFeature{
     id = "abFrame", kind = "AB", section = "Battleground timers", name = "Arathi Basin frame",
     desc = "Score, who wins and when, the five bases with their owner, and a timer on each base being assaulted.",
-    idea = "Det; data idea from Capping",
     default = "compact", point = { "TOP", UIParent, "TOP", 0, -110 },
     choices = { { "compact", "Compact card" }, { "scorebar", "Score bar" }, { "list", "Base list" }, { "floating", "Floating" } },
 }

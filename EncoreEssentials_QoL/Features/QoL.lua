@@ -44,7 +44,6 @@ end
 Q:Feature{
     id = "autoRepair", tab = "qol", section = "Vendors", name = "Auto repair",
     desc = "Repairs all your gear when you open a vendor that can repair, and says what it cost.",
-    idea = "Leatrix Plus, Enhance QoL",
     defaults = { guild = true },
     options = { { kind = "check", key = "guild", name = "Use guild bank money first when allowed" } },
     detect = { { eqol = "autoRepair" }, { leatrix = "AutoRepairGear" } },
@@ -75,7 +74,6 @@ end
 Q:Feature{
     id = "sellJunk", tab = "qol", section = "Vendors", name = "Sell junk",
     desc = "Sells your grey items at any vendor and says how much they brought in.",
-    idea = "Leatrix Plus, Enhance QoL",
     defaults = { keep = "" },
     options = { { kind = "edit", key = "keep", name = "Never sell (item IDs)", tip = "Item IDs separated by commas, e.g. 6256, 2901. Turn on Tooltip IDs on this tab to see them." } },
     detect = { { eqol = "vendorPoorEnable" }, { leatrix = "AutoSellJunk" } },
@@ -116,7 +114,6 @@ Q:Feature{
 Q:Feature{
     id = "autoQuests", tab = "qol", section = "Quests and NPCs", name = "Auto quests",
     desc = "Accepts quests and turns them in. Skips repeatable quests and any reward you have to choose.",
-    idea = "Leatrix Plus, Enhance QoL",
     defaults = { accept = true, turnIn = true },
     options = {
         { kind = "check", key = "accept", name = "Accept quests" },
@@ -180,7 +177,6 @@ Q:Feature{
 Q:Feature{
     id = "autoGossip", tab = "qol", section = "Quests and NPCs", name = "Auto gossip",
     desc = "Picks the only talk option when an NPC has just one (flight master, banker, innkeeper).",
-    idea = "Leatrix Plus",
     detect = { { eqol = "autoChooseGossip" }, { leatrix = "AutomateGossip" } },
     Enable = function(f)
         f:On("GOSSIP_SHOW", function()
@@ -195,7 +191,6 @@ Q:Feature{
 Q:Feature{
     id = "autoDismount", tab = "qol", section = "Quests and NPCs", name = "Auto dismount",
     desc = "Gets you off your mount when a spell can't be cast mounted, and when you talk to a flight master.",
-    idea = "Leatrix Plus",
     detect = { { leatrix = "AutoDismount" } },
     Enable = function(f)
         local errors = {}
@@ -217,7 +212,6 @@ Q:Feature{
 Q:Feature{
     id = "fastLoot", tab = "qol", section = "Loot and bags", name = "Faster auto loot",
     desc = "Takes everything in the loot window at once when auto loot is on.",
-    idea = "Leatrix Plus, Enhance QoL",
     detect = { { eqol = "autoQuickLoot" }, { leatrix = "FasterLooting" } },
     Enable = function(f)
         local last = 0
@@ -234,7 +228,6 @@ Q:Feature{
 Q:Feature{
     id = "easyDelete", tab = "qol", section = "Loot and bags", name = "Easy delete",
     desc = "Fills in DELETE for you when you throw away a good item. You still press Okay.",
-    idea = "Leatrix Plus, Enhance QoL",
     detect = { { eqol = "deleteItemFillDialog" } },
     Enable = function(f)
         f:Hook("StaticPopup_Show", function(which)
@@ -249,7 +242,6 @@ Q:Feature{
 Q:Feature{
     id = "freeSlots", tab = "qol", section = "Loot and bags", name = "Free bag slots",
     desc = "Shows how many bag slots are free on the backpack button.",
-    idea = "Leatrix Plus",
     Enable = function(f)
         if C_CVar.GetCVar("displayFreeBagSlots") ~= nil then
             Q.SetCVar("displayFreeBagSlots", "1")
@@ -281,7 +273,6 @@ Q:Feature{
 Q:Feature{
     id = "vendorPrice", tab = "qol", section = "Loot and bags", name = "Vendor price in tooltip",
     desc = "Adds what an item sells for to its tooltip, for the whole stack too.",
-    idea = "Leatrix Plus",
     detect = { { leatrix = "ShowVendorPrice" } },
     Enable = function(f)
         if f.hooked then return end
@@ -310,7 +301,6 @@ Q:Feature{
 Q:Feature{
     id = "tooltipIDs", tab = "qol", section = "Loot and bags", name = "Tooltip IDs",
     desc = "Item, spell and NPC IDs at the bottom of tooltips.",
-    idea = "Enhance QoL",
     detect = { { eqol = function(p) return p.TooltipShowItemID or p.TooltipShowSpellID or p.TooltipShowNPCID end } },
     Enable = function(f)
         if f.hooked then return end
@@ -353,7 +343,6 @@ end
 Q:Feature{
     id = "summonsRes", tab = "qol", section = "Social", name = "Accept summons and resurrections",
     desc = "Accepts a warlock summon or a resurrection while you're out of combat.",
-    idea = "Leatrix Plus",
     defaults = { summon = true, res = true },
     options = {
         { kind = "check", key = "summon", name = "Accept summons" },
@@ -383,7 +372,6 @@ Q:Feature{
 Q:Feature{
     id = "invites", tab = "qol", section = "Social", name = "Invites",
     desc = "Accepts party invites from friends and guild members, and invites anyone who whispers you a keyword.",
-    idea = "Leatrix Plus, Enhance QoL",
     defaults = { accept = true, keyword = "inv" },
     options = {
         { kind = "check", key = "accept", name = "Accept invites from friends and guild" },
@@ -410,7 +398,6 @@ Q:Feature{
 Q:Feature{
     id = "blocks", tab = "qol", section = "Social", name = "Blocks",
     desc = "Declines duels, guild charters and party invites from people who aren't friends or guild members.",
-    idea = "Leatrix Plus, Enhance QoL",
     defaults = { duels = true, charters = true, strangers = false },
     options = {
         { kind = "check", key = "duels", name = "Block duels" },
@@ -445,7 +432,6 @@ local READING_FONTS = { "QuestFont", "QuestFontNormalSmall", "MailTextFontNormal
 Q:Feature{
     id = "readingText", tab = "qol", section = "Reading and travel", name = "Bigger reading text",
     desc = "Larger font for quest, mail and book text.",
-    idea = "Leatrix Plus",
     defaults = { size = 15 },
     options = { { kind = "slider", key = "size", name = "Text size", min = 11, max = 22, step = 1 } },
     Enable = function(f)
@@ -471,7 +457,6 @@ Q:Feature{
 Q:Feature{
     id = "flightTimes", tab = "qol", section = "Reading and travel", name = "Flight times",
     desc = "A bar with the time left on a flight path. Each route is timed the first time you fly it.",
-    idea = "Leatrix Plus",
     Enable = function(f)
         local times = f:Saved()
         if type(times.routes) ~= "table" then times.routes = {} end

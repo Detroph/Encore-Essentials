@@ -10,7 +10,6 @@ end
 Q:Feature{
     id = "bgRelease", tab = "pvp", section = "Battleground helpers", name = "Release in battlegrounds",
     desc = "Releases your spirit straight away when you die in a battleground. Not when a soulstone or a res is waiting.",
-    idea = "Leatrix Plus",
     defaults = { skipAV = false },
     options = { { kind = "check", key = "skipAV", name = "Not in Alterac Valley" } },
     detect = { { eqol = "autoReleasePvP" }, { leatrix = "AutoReleasePvP" } },
@@ -29,7 +28,6 @@ Q:Feature{
 Q:Feature{
     id = "bgQueue", tab = "pvp", section = "Battleground helpers", name = "Queue popup",
     desc = "When your battleground is ready: a sound, the game icon flashes in the taskbar, and the time left to enter shows on the popup.",
-    idea = "Leatrix Plus",
     Enable = function(f)
         f:On("UPDATE_BATTLEFIELD_STATUS", function()
             for i = 1, (GetMaxBattlefieldID and GetMaxBattlefieldID() or 3) do
@@ -66,7 +64,6 @@ Q:Feature{
 Q:Feature{
     id = "bgClutter", tab = "pvp", section = "Battleground helpers", name = "Hide clutter in battlegrounds",
     desc = "Hides the quest tracker and raid group labels while you're in a battleground.",
-    idea = "Leatrix Plus",
     trackers = function() return { _G.QuestWatchFrame, _G.WatchFrame, _G.ObjectiveTrackerFrame } end,
     Enable = function(f)
         local function update()

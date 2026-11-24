@@ -13,6 +13,7 @@ Core.lua
 Detect.lua
 UI\Widgets.lua
 Features\QoL.lua
+Features\Rolls.lua
 Features\ActionBars.lua
 Features\Interface.lua
 Features\Visual.lua

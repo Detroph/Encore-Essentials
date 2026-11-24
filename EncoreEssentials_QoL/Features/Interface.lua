@@ -32,7 +32,6 @@ local squareShape = function() return "SQUARE" end
 Q:Feature{
     id = "squareMinimap", tab = "interface", section = "Minimap", name = "Square minimap",
     desc = "Square map with a thin copper border. Addon buttons follow the square edge. Built for the Camelot skin.",
-    idea = "Leatrix Plus, Enhance QoL",
     defaults = { border = 2, scale = 100 },
     options = {
         { kind = "slider", key = "border", name = "Border width", min = 0, max = 6, step = 1 },
@@ -104,7 +103,6 @@ end
 Q:Feature{
     id = "buttonDrawer", tab = "interface", section = "Minimap", name = "Button drawer",
     desc = "Collects addon minimap buttons into one Encore drawer that opens from a single button. The Encore button stays on the map.",
-    idea = "Leatrix Plus, Enhance QoL",
     defaults = { columns = 5 },
     options = { { kind = "slider", key = "columns", name = "Buttons per row", min = 2, max = 10, step = 1 } },
     needsReload = true,
@@ -163,7 +161,6 @@ Q:Feature{
 Q:Feature{
     id = "minimapTidy", tab = "interface", section = "Minimap", name = "Wheel zoom and tidy",
     desc = "Zoom the minimap with the mouse wheel, and hide the buttons you don't use.",
-    idea = "Leatrix Plus",
     defaults = { zoomButtons = true, clock = false, tracking = false },
     options = {
         { kind = "check", key = "zoomButtons", name = "Hide zoom buttons" },
@@ -222,7 +219,6 @@ end
 Q:Feature{
     id = "editModeExtras", tab = "interface", section = "Edit Mode extras", name = "Move more frames",
     desc = "Adds blue movers to frames the game keeps fixed: durability doll, quest tracker, error text, zone text, capture bar, ghost button and buffs. They show while Edit Mode is open. Drag to move, mouse wheel to scale.",
-    idea = "Leatrix Plus, Enhance QoL",
     options = {
         { kind = "button", name = "Show movers now", onClick = function(f) f:ShowMovers(not f.moversShown) end },
         { kind = "button", name = "Reset all positions", onClick = function(f)
@@ -332,7 +328,6 @@ Q:Feature{
 Q:Feature{
     id = "questLevels", tab = "interface", section = "Other frames", name = "Quest log levels",
     desc = "Shows each quest's level in front of its name in the quest log.",
-    idea = "Leatrix Plus",
     detect = { { leatrix = "EnhanceQuestLevels" } },
     Enable = function(f)
         f:Hook("QuestLog_Update", function()
@@ -364,7 +359,6 @@ end
 Q:Feature{
     id = "classColorFrames", tab = "interface", section = "Other frames", name = "Class colored frames",
     desc = "Class colours on the names of the player, target, focus and party frames.",
-    idea = "Leatrix Plus",
     detect = { { leatrix = "ClassColFrames" }, { addon = "EnhanceQoLUnitFrames", replaced = true } },
     Enable = function(f)
         local function paint(frame)
@@ -388,7 +382,6 @@ Q:Feature{
 Q:Feature{
     id = "hideUnitFrames", tab = "interface", section = "Other frames", name = "Hide until mouseover",
     desc = "Your player or target frame stays hidden until the mouse is over it, or you're in combat.",
-    idea = "Enhance QoL",
     defaults = { player = true, target = false, combat = true },
     options = {
         { kind = "check", key = "player", name = "Player frame" },
@@ -418,7 +411,6 @@ Q:Feature{
 Q:Feature{
     id = "chatButtons", tab = "interface", section = "Chat and tooltip", name = "Hide chat buttons",
     desc = "Hides the chat menu, channel, social and scroll buttons next to the chat window.",
-    idea = "Leatrix Plus, Enhance QoL",
     detect = { { addon = "Chattynator", replaced = true }, { addon = "Prat-3.0", replaced = true }, { leatrix = "NoChatButtons" } },
     list = function()
         local l = { _G.ChatFrameMenuButton, _G.ChatFrameChannelButton, _G.QuickJoinToastButton, _G.FriendsMicroButton, _G.ChatFrameToggleVoiceDeafenButton, _G.ChatFrameToggleVoiceMuteButton }
@@ -432,7 +424,6 @@ Q:Feature{
 Q:Feature{
     id = "chatFade", tab = "interface", section = "Chat and tooltip", name = "Chat fade time",
     desc = "How long chat lines stay before they fade out.",
-    idea = "Enhance QoL",
     defaults = { seconds = 60 },
     options = { { kind = "slider", key = "seconds", name = "Lines stay for", min = 10, max = 600, step = 10, fmt = function(v) return v .. " s" end } },
     detect = { { eqol = "chatFrameFadeEnabled" }, { addon = "Chattynator", replaced = true } },
@@ -454,7 +445,6 @@ Q:Feature{
 Q:Feature{
     id = "tooltip", tab = "interface", section = "Chat and tooltip", name = "Tooltip",
     desc = "Tooltip size, the guild rank on player tooltips, and no unit tooltips in combat. Encore tooltips already follow the cursor.",
-    idea = "Leatrix Plus, Enhance QoL",
     defaults = { scale = 100, rank = true, hideCombat = false },
     options = {
         { kind = "slider", key = "scale", name = "Size", min = 60, max = 160, step = 5, fmt = function(v) return v .. "%" end },
@@ -496,7 +486,6 @@ Q:Feature{
 Q:Feature{
     id = "hideErrors", tab = "interface", section = "Hide clutter", name = "Hide error text",
     desc = "Stops the red error text (\"Not enough rage\", \"Out of range\") in the middle of the screen. Quest progress still shows.",
-    idea = "Leatrix Plus, Enhance QoL",
     detect = { { addon = "ErrorMonster" }, { eqol = "uiErrorFilterEnabled" }, { leatrix = "HideErrorMessages" } },
     Enable = function() UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE") end,
     Disable = function() UIErrorsFrame:RegisterEvent("UI_ERROR_MESSAGE") end,
@@ -505,7 +494,6 @@ Q:Feature{
 Q:Feature{
     id = "hideBossBanner", tab = "interface", section = "Hide clutter", name = "Hide boss banners",
     desc = "No big banner when a boss dies or loot drops.",
-    idea = "Enhance QoL",
     detect = { { eqol = "autoHideBossBanner" } },
     Enable = function(f)
         if BossBanner then
@@ -517,7 +505,6 @@ Q:Feature{
 Q:Feature{
     id = "hideRaidLabels", tab = "interface", section = "Hide clutter", name = "Hide raid group labels",
     desc = "Hides the \"Group 1\" to \"Group 8\" labels on raid frames.",
-    idea = "Leatrix Plus",
     Enable = function(f)
         local function hideLabels()
             for i = 1, 8 do

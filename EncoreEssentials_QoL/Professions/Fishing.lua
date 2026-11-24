@@ -251,7 +251,6 @@ local lureWarned = false
 fish = Q:Feature{
     id = "fishing", tab = "professions", section = "Fishing", name = "One-button fishing",
     desc = "One key casts Fishing, and the same key reels in when the bobber splashes. Set the key in Options > Keybindings > Encore-QoL; none is set by default. Out of combat only.",
-    idea = "EzFishing Forever, Better Fishing, Angleur",
     defaults = { doubleClick = false, loud = true, autoLoot = true, equip = false, lure = false, lureWarn = true, bar = true },
     options = {
         { kind = "note", text = function()
