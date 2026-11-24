@@ -9,7 +9,8 @@ local CHOICE = {
     need = { text = "Need", icon = "Interface\\Buttons\\UI-GroupLoot-Dice-Up", color = { 0.25, 0.9, 0.3 }, order = 1 },
     greed = { text = "Greed", icon = "Interface\\Buttons\\UI-GroupLoot-Coin-Up", color = { 1, 0.82, 0 }, order = 2 },
     de = { text = "Disenchant", icon = "Interface\\Buttons\\UI-GroupLoot-DE-Up", color = { 0.7, 0.5, 1 }, order = 3 },
-    pass = { text = "Pass", icon = "Interface\\Buttons\\UI-GroupLoot-Pass-Up", color = { 0.6, 0.6, 0.6 }, order = 4 },
+    pass = { text = "Pass", icon = "Interface\\Buttons\\UI-GroupLoot-Pass-Up", color = { 0.6, 0.6, 0.6 }, order = 5 },
+    transmog = { text = "Transmog", icon = "Interface\\Buttons\\UI-GroupLoot-Coin-Up", color = { 0.95, 0.5, 0.95 }, order = 4 },
 }
 
 -- Turns a game format string ("%s has selected Need for: %s", "%1$s ...") into a Lua pattern and the order of its
@@ -69,11 +70,14 @@ local function buildParsers()
     table.sort(parsers, function(a, b) return #a.pat > #b.pat end)
 end
 
-local function parse(msg)
+local function parse(msg, loose)
     if not parsers then buildParsers() end
     msg = stripHistory(msg)
     for _, p in ipairs(parsers) do
-        local caps = { msg:match(p.pat) }
+        local pat = p.pat
+        -- Second try: the line may carry extra text around it (a timestamp, a link, another prefix).
+        if loose then pat = pat:sub(2, -2) end
+        local caps = { msg:match(pat) }
         if caps[1] then
             local out = { kind = p.kind, choice = p.choice }
             -- order[c] = which value of the format the c-th capture is
@@ -88,9 +92,11 @@ local function parse(msg)
             if p.self then out.who = Q.FullName("player") end
             if out.who then out.who = Ambiguate(out.who, "none") end
             out.roll = tonumber(out.roll)
+            if out.who then out.who = out.who:gsub("^.*|h:?%s*", ""):gsub("^%[[%d:%s]+[AaPp]?[Mm]?%]%s*", "") end
             return out
         end
     end
+    if not loose then return parse(msg, true) end
 end
 
 local recent = {} -- last loot chat lines with an item, for /eqol rolls
@@ -143,6 +149,7 @@ end
 -- The window
 ---------------------------------------------------------------------------
 local pool = {}
+local layout -- set further down
 local WIDTH, ROW = 230, 18
 
 local function lootFrameFor(rollID)
@@ -192,7 +199,7 @@ local function newWindow()
     w.close = CreateFrame("Button", nil, w, "UIPanelCloseButton")
     w.close:SetSize(20, 20)
     w.close:SetPoint("TOPRIGHT", 0, 0)
-    w.close:SetScript("OnClick", function() if w.roll then w.roll.dismissed = true end w:Hide() end)
+    w.close:SetScript("OnClick", function() if w.roll then w.roll.dismissed = true end w:Hide() layout() end)
     w.rows = {}
     return w
 end
@@ -236,34 +243,33 @@ end
 
 local feature
 
+-- All windows that weren't dragged sit in one column beside the game's loot roll frames, oldest at the bottom,
+-- each right on top of the one before, so they never land on the minimap or overlap each other.
+function layout()
+    local container = _G.GroupLootContainer
+    local prev
+    for _, r in ipairs(order) do
+        local w = r.window
+        if w and w:IsShown() and not w.moved then
+            w:ClearAllPoints()
+            if prev then
+                w:SetPoint("BOTTOMLEFT", prev, "TOPLEFT", 0, 4)
+            elseif container and container.GetRight and container:GetRight() then
+                w:SetPoint("BOTTOMLEFT", container, "BOTTOMRIGHT", 6, 0)
+            else
+                w:SetPoint("BOTTOMLEFT", UIParent, "BOTTOM", 160, 220)
+            end
+            prev = w
+        end
+    end
+end
+
 local function draw(r)
     local w = r.window
     if not w then
         w = table.remove(pool) or newWindow()
         r.window, w.roll, w.moved = w, r, false
     end
-    -- Beside the game's roll frame while it shows; afterwards it stays where it was.
-    if not w.moved then
-        local lf = lootFrameFor(r.id)
-        if lf then
-            w:ClearAllPoints()
-            w:SetPoint("TOPLEFT", lf, "TOPRIGHT", 4, 0)
-            r.anchored = true
-        elseif not r.anchored then
-            w:ClearAllPoints()
-            local idx = 0
-            for i, o in ipairs(order) do if o == r then idx = i end end
-            w:SetPoint("TOPLEFT", UIParent, "CENTER", 220, 200 - (idx - 1) * 110)
-            r.anchored = true
-        elseif w:GetNumPoints() > 0 then
-            local left, top = w:GetLeft(), w:GetTop()
-            if left and top then
-                w:ClearAllPoints()
-                w:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", left, top)
-            end
-        end
-    end
-
     local name, _, quality = Q.GetItemInfo(r.link)
     local qualityColor = (C_Item and C_Item.GetItemQualityColor) or _G.GetItemQualityColor
     local hex = qualityColor and select(4, qualityColor(quality or 1))
@@ -281,7 +287,11 @@ local function draw(r)
     end)
     local waiting = {}
     if feature:Get("waiting") and not r.over then
-        for who in pairs(members) do if not r.players[who] then waiting[#waiting + 1] = who end end
+        if r.history then
+            for who in pairs(r.waiting or {}) do waiting[#waiting + 1] = who end
+        else
+            for who in pairs(members) do if not r.players[who] then waiting[#waiting + 1] = who end end
+        end
         table.sort(waiting)
     end
 
@@ -308,7 +318,7 @@ local function draw(r)
         row.icon:SetTexture(c.icon)
         row.icon:SetDesaturated(false)
         row.name:SetText(e.who == Q.FullName("player") and (e.who .. " (you)") or e.who)
-        W.Color(row.name, classColor(members[e.who]))
+        W.Color(row.name, classColor(e.p.class or members[e.who]))
         row.choice:SetText(c.text)
         W.Color(row.choice, c.color)
         row.roll:SetText(e.p.roll and tostring(e.p.roll) or (e.p.choice == "pass" and "" or "…"))
@@ -337,6 +347,7 @@ local function draw(r)
     for i = n + 1, #w.rows do w.rows[i]:Hide() end
     w:SetHeight(-y + 6)
     w:Show()
+    if not w.moved then layout() end
 end
 
 local function release(r)
@@ -348,6 +359,7 @@ local function release(r)
     end
     rolls[r.id] = nil
     for i, o in ipairs(order) do if o == r then table.remove(order, i) break end end
+    layout()
 end
 
 local function finish(r)
@@ -364,6 +376,80 @@ local function redraw(r)
     if r.dismissed then return end
     local ok, err = pcall(draw, r)
     if not ok then geterrorhandler()(err) end
+end
+
+---------------------------------------------------------------------------
+-- The game's own loot history (newer clients): every group member's choice and roll, and who is still choosing.
+-- When it's there it is the source of truth; the chat lines are the fallback for clients without it.
+---------------------------------------------------------------------------
+local STATE = { [0] = "need", [1] = "need", [2] = "transmog", [3] = "greed", [5] = "pass" } -- 4 = still choosing
+
+local function syncDrop(encounterID, lootListID)
+    local LH = C_LootHistory
+    if not (LH and LH.GetSortedInfoForDrop) then return end
+    local drop = LH.GetSortedInfoForDrop(encounterID, lootListID)
+    if type(drop) ~= "table" or not drop.itemHyperlink then return end
+    local key = encounterID .. ":" .. lootListID
+    local id = itemID(drop.itemHyperlink)
+    local r
+    for _, o in ipairs(order) do if o.lootKey == key then r = o break end end
+    if not r then
+        for _, o in ipairs(order) do
+            if not o.lootKey and o.itemID == id and not o.over then r = o break end
+        end
+    end
+    if not r then
+        if drop.winner or drop.allPassed then return end -- an old drop, not one rolling now
+        local rid = "history:" .. key
+        r = { id = rid, link = drop.itemHyperlink, itemID = id, players = {} }
+        rolls[rid] = r
+        order[#order + 1] = r
+    end
+    r.lootKey, r.history = key, true
+    r.players, r.waiting = {}, {}
+    for _, info in ipairs(drop.rollInfos or {}) do
+        local who = info.isSelf and Q.FullName("player") or (info.playerName and Ambiguate(info.playerName, "none"))
+        if who then
+            local choice = STATE[info.state]
+            if choice then
+                r.players[who] = { choice = choice, roll = info.roll, won = info.isWinner or nil, class = info.playerClass }
+            else
+                r.waiting[who] = true
+            end
+        end
+    end
+    if drop.winner and drop.winner.playerName then
+        local w = drop.winner
+        r.winner = w.isSelf and Q.FullName("player") or Ambiguate(w.playerName, "none")
+        local p = r.players[r.winner] or { choice = STATE[w.state] or "need", roll = w.roll, class = w.playerClass }
+        p.won = true
+        r.players[r.winner] = p
+    end
+    if drop.allPassed then r.allPassed = true end
+    if r.winner or r.allPassed then
+        if not r.over then
+            r.over = true
+            local keep = feature:Get("keep") or 20
+            C_Timer.After(keep, function() if rolls[r.id] == r then release(r) end end)
+        end
+    end
+    redraw(r)
+end
+
+local function syncEncounter(encounterID)
+    local LH = C_LootHistory
+    if not (LH and LH.GetSortedDropsForEncounter) then return end
+    for _, drop in ipairs(LH.GetSortedDropsForEncounter(encounterID) or {}) do
+        if drop.lootListID then syncDrop(encounterID, drop.lootListID) end
+    end
+end
+
+local function syncLatest()
+    local LH = C_LootHistory
+    if not (LH and LH.GetAllEncounterInfos) then return end
+    local list = LH.GetAllEncounterInfos() or {}
+    local last = list[#list]
+    if last and last.encounterID then syncEncounter(last.encounterID) end
 end
 
 feature = Q:Feature{
@@ -385,8 +471,10 @@ feature = Q:Feature{
             rolls[rollID] = r
             order[#order + 1] = r
             -- The game places its frame a moment later.
-            C_Timer.After(0.05, function() if rolls[rollID] == r then redraw(r) end end)
+            C_Timer.After(0.05, function() if rolls[rollID] == r then redraw(r) syncLatest() end end)
         end)
+        f:On("LOOT_HISTORY_UPDATE_DROP", function(_, encounterID, lootListID) syncDrop(encounterID, lootListID) end)
+        f:On("LOOT_HISTORY_UPDATE_ENCOUNTER", function(_, encounterID) syncEncounter(encounterID) end)
         f:On("CANCEL_LOOT_ROLL", function(_, rollID)
             local r = rolls[rollID]
             if r then
@@ -410,7 +498,7 @@ feature = Q:Feature{
                 order[#order + 1] = r
                 C_Timer.After(90, function() if rolls[id] == r then finish(r) end end)
             end
-            if not r then return end
+            if not r or r.history then return end
             if m.kind == "allpassed" then
                 r.allPassed = true
                 finish(r)
@@ -455,3 +543,4 @@ end
 
 -- For the preview in tests: parse one chat line.
 Q.ParseRollLine = parse
+Q.RollsOpen = function() return order end
