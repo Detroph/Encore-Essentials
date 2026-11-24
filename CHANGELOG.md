@@ -1,5 +1,10 @@
 # Encore Essentials
 
+## Unreleased
+
+- Encore-DB: Professions are sorted by what each recipe makes. Under All recipes, the middle list now has the recipe types (Weapons - Daggers, Axes, Maces, Swords ...; Armor - Head, Shoulder, Chest ...; Shields, Enhancements, Enchants by slot, Flasks, Elixirs, Potions, Transmutes, Explosives, Parts, Bags, Materials, Misc and more), then the item sets the profession makes, then the skill brackets as before. Weapons show one-handed and two-handed side by side, armour shows cloth, leather, mail and plate side by side, and potions show healing and mana apart from the rest. Each recipe still shows its skill-up levels in orange, yellow, green and grey.
+- Encore-DB: Reputations: a faction's rewards are split into groups (Armor, Weapons, Recipes, Consumables ...) under headings you can close and open again, for every standing. A group you close stays closed when you look at another faction.
+
 ## 0.2.3
 
 - Encore-DB: Collections > Item sets are listed by class (Warrior, Paladin, Hunter, Rogue, Priest, Shaman, Mage, Warlock, Druid), each with its class icon, and every class shows all its sets: PvP, Zul'Gurub, Ruins and Temple of Ahn'Qiraj. Each set says where it comes from. Sets for no single class stay under Other sets. Dungeon and tier sets will slot in the same way when they are added.
