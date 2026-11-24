@@ -1,0 +1,25 @@
+## Interface: 16001
+## Title: |cffeb9339Encore|r-QoL
+## Notes: Quality of life, interface, visual, combat, PvP battleground timers and one-button fishing for Encore Essentials. Every feature starts off, and stays out of the way when another addon already does it. /eqol opens it.
+## Author: Encore
+## X-License: GPL-3.0
+## Version: @project-version@
+## IconTexture: Interface\AddOns\EncoreEssentials\Media\encore-qol-icon
+## Dependencies: EncoreEssentials
+## OptionalDeps: EnhanceQoL, Leatrix_Plus, BetterFishing, Capping, KelaGraphics, ErrorMonster, MBB, Bartender4, Dominos, ElvUI, SexyMap, Chattynator
+## SavedVariables: EncoreQoLDB, EncoreQoLProfDB
+
+Core.lua
+Detect.lua
+UI\Widgets.lua
+Features\QoL.lua
+Features\ActionBars.lua
+Features\Interface.lua
+Features\Visual.lua
+Features\Combat.lua
+PvP\Data.lua
+PvP\Frames.lua
+PvP\Helpers.lua
+Professions\Fishing.lua
+Professions\Trainer.lua
+UI\Window.lua

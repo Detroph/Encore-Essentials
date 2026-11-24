@@ -1,0 +1,4 @@
+<Bindings>
+	<!-- One-button fishing (Professions tab). No key is set by default; pick one in Options > Keybindings > Encore-QoL. -->
+	<Binding name="CLICK EncoreQoLFishButton:LeftButton" header="ENCOREQOL" category="ADDONS"/>
+</Bindings>

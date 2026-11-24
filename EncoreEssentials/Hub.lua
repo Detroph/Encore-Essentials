@@ -25,6 +25,14 @@ Encore.MODULE_LIST = {
         missing = L.STONKS_MISSING,
         open = function() Encore:ToggleStonks() end,
     },
+    {
+        name = "Encore-QoL",
+        folder = "EncoreEssentials_QoL",
+        icon = MEDIA .. "encore-qol-icon",
+        desc = L.MODULE_QOL_DESC,
+        missing = L.QOL_MISSING,
+        open = function() Encore:ToggleQoL() end,
+    },
 }
 
 -- Modules are laid out as tiles, left to right, starting a new row after COLUMNS tiles.
