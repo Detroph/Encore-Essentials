@@ -14,8 +14,16 @@ local CHOICE = {
 
 -- Turns a game format string ("%s has selected Need for: %s", "%1$s ...") into a Lua pattern and the order of its
 -- values, so the same code reads every client language.
+-- Newer clients start each roll line with a loot history link: "|HlootHistory:%d|h[Loot]|h: ". It carries an
+-- extra number, so it's taken off both the format and the chat line before matching.
+local function stripHistory(text, isFormat)
+    if isFormat then return (text:gsub("^|HlootHistory:%%d|h.-|h:?%s*", "")) end
+    return (text:gsub("^|HlootHistory:%d+|h.-|h:?%s*", ""))
+end
+
 local function pattern(fmt)
     if type(fmt) ~= "string" or fmt == "" then return nil end
+    fmt = stripHistory(fmt, true)
     local order, n = {}, 0
     local p = fmt:gsub("[%%%(%)%.%+%-%*%?%[%]%^%$]", "%%%0")
     p = p:gsub("%%%%(%d)%%%$([sd])", function(i, k)
@@ -63,6 +71,7 @@ end
 
 local function parse(msg)
     if not parsers then buildParsers() end
+    msg = stripHistory(msg)
     for _, p in ipairs(parsers) do
         local caps = { msg:match(p.pat) }
         if caps[1] then
@@ -72,6 +81,10 @@ local function parse(msg)
                 local field = p.fields[arg]
                 if field then out[field] = caps[c] end
             end
+            -- Whatever the order, the item is the value with an item link in it.
+            if not (out.item and out.item:find("item:", 1, true)) then
+                for _, v in ipairs(caps) do if v:find("item:", 1, true) then out.item = v end end
+            end
             if p.self then out.who = Q.FullName("player") end
             if out.who then out.who = Ambiguate(out.who, "none") end
             out.roll = tonumber(out.roll)
@@ -79,6 +92,8 @@ local function parse(msg)
         end
     end
 end
+
+local recent = {} -- last loot chat lines with an item, for /eqol rolls
 
 local function itemID(link) return link and tonumber(link:match("item:(%d+)")) end
 
@@ -381,8 +396,20 @@ feature = Q:Feature{
         end)
         f:On("CHAT_MSG_LOOT", function(_, msg)
             local m = msg and parse(msg)
+            if msg and msg:find("|Hitem:", 1, true) then
+                recent[#recent + 1] = { msg = msg, ok = m and m.kind or false }
+                if #recent > 8 then table.remove(recent, 1) end
+            end
             if not m or not m.item then return end
             local r = rollFor(m.item, (m.kind ~= "rolled" and m.kind ~= "won") and m.who or nil)
+            if not r and m.kind ~= "allpassed" and m.kind ~= "won" then
+                -- A roll the game didn't announce to us (not eligible, or it started before a /reload).
+                local id = "chat:" .. (itemID(m.item) or m.item) .. ":" .. math.floor(GetTime())
+                r = { id = id, link = m.item, itemID = itemID(m.item), players = {}, chat = true }
+                rolls[id] = r
+                order[#order + 1] = r
+                C_Timer.After(90, function() if rolls[id] == r then finish(r) end end)
+            end
             if not r then return end
             if m.kind == "allpassed" then
                 r.allPassed = true
@@ -414,6 +441,17 @@ feature = Q:Feature{
         for i = #order, 1, -1 do release(order[i]) end
     end,
 }
+
+-- /eqol rolls: what the last loot lines looked like and whether they were read.
+function Q:RollDebug()
+    local f = self.features.whoRolled
+    self:Print("Who rolled what is %s. Last loot lines with an item:", f and f.status or "?")
+    if #recent == 0 then self:Print("  none yet (lines are only kept while the feature is on)") end
+    for _, l in ipairs(recent) do
+        self:Print("  %s -> %s", (l.msg:gsub("|", "||")), l.ok and l.ok or "not a roll line")
+    end
+    self:Print("  game text for Need: %s", tostring(_G.LOOT_ROLL_NEED):gsub("|", "||"))
+end
 
 -- For the preview in tests: parse one chat line.
 Q.ParseRollLine = parse

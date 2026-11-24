@@ -1,5 +1,10 @@
 # Encore Essentials
 
+## 0.2.5.1 (unreleased)
+
+- Encore-QoL: Who rolled what reads the roll lines of the newer loot chat, which start with a clickable loot-history link. Before, those lines were not recognised, so the window never opened. If a roll window was missed it is now started from the chat line itself.
+- Encore-QoL: `/eqol rolls` prints what Who rolled what last saw in loot chat, to help track down rolls it misses.
+
 ## 0.2.4
 
 Full release of everything in the 0.2.4.1 to 0.2.4.7 betas below, plus:

@@ -378,6 +378,8 @@ SlashCmdList.ENCOREQOL = function(input)
     if cmd == "check" then
         Q:Recheck()
         Q:Print("Checked all features against your other addons again.")
+    elseif cmd == "rolls" and Q.RollDebug then
+        Q:RollDebug()
     elseif cmd == "preview" and Q.TogglePreview then
         Q:TogglePreview()
     else
