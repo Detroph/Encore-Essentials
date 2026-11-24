@@ -1,0 +1,57 @@
+# Rebuilds a renamed release's zip under its new version, run by hand from the Actions tab.
+# Input: "old=new" tag pairs, comma separated (the release must already carry the new tag; see rename-tags.yml).
+# For each release: downloads the zip, writes the new version into the .toc files (and everywhere the packager
+# wrote the old one), renumbers the bundled CHANGELOG headings, zips it again under the new file name, rewrites
+# release.json, uploads both and removes the old zip. The addon code is unchanged.
+name: Rebuild renamed release zips
+
+on:
+  workflow_dispatch:
+    inputs:
+      pairs:
+        description: "old=new tag pairs, comma separated"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  rezip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rebuild
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PAIRS: ${{ inputs.pairs }}
+        run: |
+          set -euo pipefail
+          IFS=',' read -ra LIST <<< "$PAIRS"
+          SUBS=""
+          for p in "${LIST[@]}"; do
+            old="${p%%=*}"; new="${p#*=}"
+            o="${old#v}"; o="${o%%-*}"; n="${new#v}"; n="${n%%-*}"
+            SUBS="$SUBS s/^## \\Q$o\\E(\\r?)\$/## $n\$1/m;"
+          done
+          for p in "${LIST[@]}"; do
+            old="${p%%=*}"; new="${p#*=}"
+            [[ "$new" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?(-(alpha|beta)[0-9]*)?$ ]] || { echo "bad tag: $new"; exit 1; }
+            oldzip=$(gh release view "$new" --json assets --jq '.assets[].name' | grep -E '\.zip$' | head -1)
+            newzip="${oldzip/$old/$new}"
+            if [ "$oldzip" = "$newzip" ]; then echo "$new: $oldzip already named"; continue; fi
+            work=$(mktemp -d)
+            gh release download "$new" --pattern "$oldzip" --dir "$work"
+            mkdir "$work/x"
+            (cd "$work/x" && unzip -q "../$oldzip")
+            grep -rlF "$old" "$work/x" | while read -r f; do OLD="$old" NEW="$new" perl -pi -e 's/\Q$ENV{OLD}\E/$ENV{NEW}/g' "$f"; done
+            find "$work/x" -name CHANGELOG.md -exec perl -0pi -e "$SUBS" {} +
+            (cd "$work/x" && zip -q -r -X "../$newzip" .)
+            gh release download "$new" --pattern release.json --dir "$work" || true
+            if [ -f "$work/release.json" ]; then
+              OLD="$old" NEW="$new" perl -pi -e 's/\Q$ENV{OLD}\E/$ENV{NEW}/g' "$work/release.json"
+            fi
+            gh release upload "$new" "$work/$newzip" --clobber
+            [ -f "$work/release.json" ] && gh release upload "$new" "$work/release.json" --clobber
+            gh release delete-asset "$new" "$oldzip" --yes
+            echo "$new: $oldzip -> $newzip"
+          done
