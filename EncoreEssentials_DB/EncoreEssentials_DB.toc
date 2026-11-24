@@ -21,3 +21,5 @@ Templates.xml
 Window.lua
 QuestView.lua
 CollectionsView.lua
+ProfessionView.lua
+VendorGroups.lua

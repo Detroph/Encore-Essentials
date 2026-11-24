@@ -8,13 +8,33 @@ local Stonks = ns.Stonks
 local log, exp, floor = math.log, math.exp, math.floor
 local MIN_RATIO, MAX_RATIO = 0.2, 5 -- ignore prices more than 5x away from normal
 
--- Monday first: Lua's wday is 1 for Sunday.
+-- Local time without date(): date("*t") builds a new table on every call, and these run for every price of every
+-- item, which made Stonks churn through hundreds of MB of short-lived tables (Det, 2026-11-23). The offset from
+-- UTC is looked up once per UTC hour (daylight saving switches on the hour) and kept.
+local tzOffsets, tzCount = {}, 0
+local function tzOffset(t)
+    local h = floor(t / 3600)
+    local off = tzOffsets[h]
+    if not off then
+        local u = date("!*t", h * 3600)
+        u.isdst = date("*t", h * 3600).isdst
+        off = h * 3600 - time(u)
+        if tzCount > 5000 then tzOffsets, tzCount = {}, 0 end
+        tzOffsets[h], tzCount = off, tzCount + 1
+    end
+    return off
+end
+-- Days since 1 Jan 1970 in local time (one number per local date), and the local hour of day.
+local function localDay(t) return floor((t + tzOffset(t)) / 86400) end
+local function localHour(t) return floor((t + tzOffset(t)) / 3600) % 24 end
+Stonks.LocalDay, Stonks.LocalHour = localDay, localHour
+
+-- Monday first (1 Jan 1970 was a Thursday).
 function Stonks.WeekdayIndex(t)
-    local wday = date("*t", t).wday
-    return (wday + 5) % 7 + 1
+    return (localDay(t) + 3) % 7 + 1
 end
 
-local function dayKey(t) return date("%Y%m%d", t) end
+local dayKey = localDay
 
 -- WoW Forever's launch week, 4 to 11 November 2026 (local dates, both days included), is left out of every
 -- average, median and weekday/hour bar (Det, 2026-11-22): launch prices were nothing like normal ones. The prices
@@ -122,7 +142,7 @@ function Stonks:Fold(key, oldStr, keptStr, cutoffHour)
         for _, pt in ipairs(old) do
             local ratio = pt.p / normal
             if ratio >= MIN_RATIO and ratio <= MAX_RATIO then
-                local b = agg.hour[date("*t", pt.t).hour]
+                local b = agg.hour[localHour(pt.t)]
                 b.sum, b.n = b.sum + log(ratio), b.n + 1
             end
             local k = dayKey(pt.t)
@@ -246,12 +266,10 @@ function Stonks.StatAdd(st, day, x)
     end
 end
 
--- Price at a fraction (0..1) of the histogram, interpolated inside its 4% bin.
-local function histPercentile(hist, frac)
-    local bins, total = {}, 0
-    for k, c in pairs(hist) do bins[#bins + 1] = k; total = total + c end
+-- Price at a fraction (0..1) of the histogram, interpolated inside its 4% bin. bins: the histogram's bins, sorted
+-- (one list shared by the three percentiles an item needs); total: the sum of its counts.
+local function histPercentile(hist, bins, total, frac)
     if total == 0 then return nil end
-    table.sort(bins)
     local target, acc = frac * total, 0
     for _, k in ipairs(bins) do
         local c = hist[k]
@@ -263,22 +281,95 @@ local function histPercentile(hist, frac)
     end
     return exp((bins[#bins] + 1) * BIN_STEP)
 end
+local histBins = {}
 
 -- Statistics for an item: the saved running numbers brought up to date with the recent days.
 -- Returns nil without data, else { avg3, avg7, avg14, mean, sd, median, q25, q75, days, last }.
-function Stonks:ItemStats(key, points)
+-- Lowest price per day for an item, straight from the saved strings into two reused tables, without building a
+-- table per price like ItemSeries does. Same prices as Stonks.DailyLows(self:ItemSeries(key)) with guild sharing
+-- (Sync/Sync.lua): your own samples, guild samples in hours you have none, and Auctionator's days on dates you
+-- have no sample of your own. Fills lowDays (sorted day numbers) and lowPrice[day]; returns the count.
+local lowPrice, lowDays, ownHours, ownDays = {}, {}, {}, {}
+local function addLow(t, p)
+    if skipped(t) then return end
+    local d = Stonks.DayNumber(t)
+    local cur = lowPrice[d]
+    if not cur then lowDays[#lowDays + 1] = d end
+    if not cur or p < cur then lowPrice[d] = p end
+end
+
+local function leanDailyLows(self, key)
+    wipe(lowPrice); wipe(lowDays); wipe(ownHours); wipe(ownDays)
     local r = self.realmData
-    local st = Stonks.CopyStat(Stonks.ParseStat(r and r.stat[tostring(key)]))
+    local str = r and r.items[key]
+    if type(str) == "string" then
+        for h, p in str:gmatch("(%w+):(%w+):%w+;") do
+            h, p = tonumber(h, 36), tonumber(p, 36)
+            local t = h * 3600 + 1800
+            ownHours[h] = true
+            ownDays[localDay(t)] = true
+            addLow(t, p)
+        end
+    end
+    local pend = self:Pending(key)
+    if pend then
+        local t = pend[1] * 3600 + 1800
+        ownHours[pend[1]] = true
+        ownDays[localDay(t)] = true
+        addLow(t, pend[2])
+    end
+    local guild = r and r.guild and r.guild[key]
+    if type(guild) == "string" then
+        for h, p in guild:gmatch("(%w+):(%w+):%w+;") do
+            h = tonumber(h, 36)
+            if not ownHours[h] then addLow(h * 3600 + 1800, tonumber(p, 36)) end
+        end
+    end
+    if self:Settings().useAuctionator then
+        local entry = auctionatorEntry(key)
+        if entry then
+            local d0 = auctionatorDay0()
+            for day, high in pairs(entry.h) do
+                local d = tonumber(day)
+                local price = tonumber((type(entry.l) == "table" and entry.l[day]) or high)
+                if d and price then
+                    local t = d * 86400 + d0 + 12 * 3600
+                    if not ownDays[localDay(t)] then addLow(t, price) end
+                end
+            end
+        end
+    end
+    table.sort(lowDays)
+    return #lowDays
+end
+
+function Stonks:ItemStats(key, points)
+    key = tostring(key)
+    local r = self.realmData
+    local st = Stonks.ParseStat(r and r.stat[key]) -- a fresh table every call, safe to change
     local last
-    for _, d in ipairs(Stonks.DailyLows(points or self:ItemSeries(key))) do
-        Stonks.StatAdd(st, d.day, d.p)
-        last = d.p
+    if points then
+        for _, d in ipairs(Stonks.DailyLows(points)) do
+            Stonks.StatAdd(st, d.day, d.p)
+            last = d.p
+        end
+    else
+        for i = 1, leanDailyLows(self, key) do
+            local d = lowDays[i]
+            Stonks.StatAdd(st, d, lowPrice[d])
+            last = lowPrice[d]
+        end
     end
     if st.n == 0 then return nil end
+    wipe(histBins)
+    local total = 0
+    for k, c in pairs(st.hist) do histBins[#histBins + 1] = k; total = total + c end
+    table.sort(histBins)
     return {
         avg3 = st.e3, avg7 = st.e7, avg14 = st.e14,
         mean = st.m, sd = math.sqrt(math.max(0, st.v)),
-        median = histPercentile(st.hist, 0.5), q25 = histPercentile(st.hist, 0.25), q75 = histPercentile(st.hist, 0.75),
+        median = histPercentile(st.hist, histBins, total, 0.5), q25 = histPercentile(st.hist, histBins, total, 0.25),
+        q75 = histPercentile(st.hist, histBins, total, 0.75),
         days = st.n, last = last,
     }
 end
@@ -371,7 +462,7 @@ function Stonks.Profile(points, agg)
             if pt.src == "s" then
                 local lr = ratio(pt.p)
                 if lr then
-                    local b = profile.hour[date("*t", pt.t).hour]
+                    local b = profile.hour[localHour(pt.t)]
                     b.sum, b.n = b.sum + lr, b.n + 1
                     profile.hours = profile.hours + 1
                 end
@@ -430,6 +521,129 @@ local market, marketRunning, marketCallbacks = nil, false, {}
 function Stonks:InvalidateMarket() market = nil end
 function Stonks:CachedMarket() return market end
 
+-- One item's weekday and hour profile for the market, the same as Stonks.Profile(self:ItemSeries(key),
+-- self:ItemAgg(key)) but written into reused arrays instead of a table per price and per bucket: building the
+-- market used to make about 400 MB of short-lived tables for 33,000 items (Det, 2026-11-23). Returns false when
+-- the market would skip the item (fewer than 3 prices and no folded totals); otherwise the buckets are in
+-- mWeekSum/mWeekN[1..7] and mHourSum/mHourN[0..23].
+local mT, mP, mOwn, mFolded, mSorted = {}, {}, {}, {}, {}
+local mWeekSum, mWeekN, mHourSum, mHourN = {}, {}, {}, {}
+local mDayMin = {}
+local AGG_HOURS = {}
+for i = 1, #HOUR_CHARS do AGG_HOURS[HOUR_CHARS:sub(i, i)] = i - 1 end
+
+local function marketProfile(self, key)
+    for i = 1, 7 do mWeekSum[i], mWeekN[i] = 0, 0 end
+    for i = 0, 23 do mHourSum[i], mHourN[i] = 0, 0 end
+    wipe(ownHours); wipe(ownDays); wipe(mDayMin)
+    local n = 0
+    local function add(t, p, own, folded)
+        n = n + 1
+        mT[n], mP[n], mOwn[n], mFolded[n] = t, p, own, folded
+    end
+    local r = self.realmData
+    local str = r and r.items[key]
+    if type(str) == "string" then
+        for h, p in str:gmatch("(%w+):(%w+):%w+;") do
+            h = tonumber(h, 36)
+            local t = h * 3600 + 1800
+            ownHours[h] = true
+            ownDays[localDay(t)] = true
+            add(t, tonumber(p, 36), true, false)
+        end
+    end
+    local pend = self:Pending(key)
+    if pend then
+        local t = pend[1] * 3600 + 1800
+        ownHours[pend[1]] = true
+        ownDays[localDay(t)] = true
+        add(t, pend[2], true, false)
+    end
+    local aggStr = r and r.agg[key]
+    if self:Settings().useAuctionator then
+        local entry = auctionatorEntry(key)
+        if entry then
+            local foldedUntil = aggStr and (tonumber(aggStr:match("^u(%w+);") or "0", 36) or 0) * 3600 or 0
+            local d0 = auctionatorDay0()
+            for day, high in pairs(entry.h) do
+                local d = tonumber(day)
+                local price = tonumber((type(entry.l) == "table" and entry.l[day]) or high)
+                if d and price then
+                    local t = d * 86400 + d0 + 12 * 3600
+                    if not ownDays[localDay(t)] then add(t, price, false, t < foldedUntil) end
+                end
+            end
+        end
+    end
+    local guild = r and r.guild and r.guild[key]
+    if type(guild) == "string" then
+        for h, p in guild:gmatch("(%w+):(%w+):%w+;") do
+            h = tonumber(h, 36)
+            if not ownHours[h] then add(h * 3600 + 1800, tonumber(p, 36), true, false) end
+        end
+    end
+
+    -- Folded totals: your own, or the guild baseline's buckets when you have none (as ItemAgg does).
+    local hasAgg = false
+    if type(aggStr) == "string" then
+        hasAgg = true
+        for idx, cnt, sum in aggStr:gmatch("(%w):(%w+):(%-?%w+);") do
+            local count = tonumber(cnt, 36)
+            local v = sum:sub(1, 1) == "-" and -(tonumber(sum:sub(2), 36) or 0) or tonumber(sum, 36)
+            if count and v and count > 0 then
+                local w = tonumber(idx)
+                if w and w >= 1 and w <= 7 then
+                    mWeekSum[w], mWeekN[w] = v / 1000, count
+                else
+                    local hr = AGG_HOURS[idx]
+                    if hr then mHourSum[hr], mHourN[hr] = v / 1000, count end
+                end
+            end
+        end
+    else
+        local agg = self:ItemAgg(key) -- guild baseline (Sync/Sync.lua), or nil
+        if agg then
+            hasAgg = true
+            for i = 1, 7 do local b = agg.week[i]; if b and b.n > 0 then mWeekSum[i], mWeekN[i] = b.sum, b.n end end
+            for i = 0, 23 do local b = agg.hour[i]; if b and b.n > 0 then mHourSum[i], mHourN[i] = b.sum, b.n end end
+        end
+    end
+    if n < 3 and not hasAgg then return false end
+
+    local m = 0
+    for i = 1, n do
+        if not skipped(mT[i]) then m = m + 1; mSorted[m] = mP[i] end
+    end
+    if m == 0 then return true end
+    for i = m + 1, #mSorted do mSorted[i] = nil end
+    table.sort(mSorted)
+    local normal = m % 2 == 1 and mSorted[(m + 1) / 2] or (mSorted[m / 2] + mSorted[m / 2 + 1]) / 2
+    if not normal or normal <= 0 then return true end
+
+    for i = 1, n do
+        local t, p = mT[i], mP[i]
+        if not skipped(t) then
+            local d = localDay(t)
+            if not mFolded[i] and (not mDayMin[d] or p < mDayMin[d]) then mDayMin[d] = p end
+            if mOwn[i] then
+                local ratio = p / normal
+                if ratio >= MIN_RATIO and ratio <= MAX_RATIO then
+                    local h = localHour(t)
+                    mHourSum[h], mHourN[h] = mHourSum[h] + log(ratio), mHourN[h] + 1
+                end
+            end
+        end
+    end
+    for d, p in pairs(mDayMin) do
+        local ratio = p / normal
+        if ratio >= MIN_RATIO and ratio <= MAX_RATIO then
+            local w = (d + 3) % 7 + 1
+            mWeekSum[w], mWeekN[w] = mWeekSum[w] + log(ratio), mWeekN[w] + 1
+        end
+    end
+    return true
+end
+
 function Stonks:BuildMarket(callback, progress)
     if market then return callback(market) end
     marketCallbacks[#marketCallbacks + 1] = callback
@@ -451,18 +665,20 @@ function Stonks:BuildMarket(callback, progress)
                 for _, cb in ipairs(cbs) do cb(result) end
                 return
             end
-            local points = self:ItemSeries(key)
-            local agg = self:ItemAgg(key)
-            if #points >= 3 or agg then
-                local p = Stonks.Profile(points, agg)
+            if marketProfile(self, key) then
                 local used = false
-                for _, set in ipairs({ { p.week, result.week }, { p.hour, result.hour } }) do
-                    for idx, b in pairs(set[1]) do
-                        if b.n > 0 then
-                            local target = set[2][idx]
-                            target.sum, target.n = target.sum + b.sum / b.n, target.n + 1
-                            used = true
-                        end
+                for idx = 1, 7 do
+                    if mWeekN[idx] > 0 then
+                        local target = result.week[idx]
+                        target.sum, target.n = target.sum + mWeekSum[idx] / mWeekN[idx], target.n + 1
+                        used = true
+                    end
+                end
+                for idx = 0, 23 do
+                    if mHourN[idx] > 0 then
+                        local target = result.hour[idx]
+                        target.sum, target.n = target.sum + mHourSum[idx] / mHourN[idx], target.n + 1
+                        used = true
                     end
                 end
                 if used then result.items = result.items + 1 end
