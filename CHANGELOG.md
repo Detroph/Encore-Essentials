@@ -9,7 +9,8 @@
 - Encore-DB: Reputations: a faction's rewards are split into groups (Armor, Weapons, Recipes, Consumables ...) under headings you can close and open again, for every standing. A group you close stays closed when you look at another faction.
 - Encore-DB: 45 more dungeon drops that AtlasLoot Continued lists and Wowhead Forever confirms. Trash loot in The Drowned City (10), Krol'dok Stronghold (9), Alcaz Prison (9), Shaper's Terrace (3), City of Dalaran (2) and Ruins of Lordaeron (2). Tor'Rel's three drops under Izha'Rel and Tor'Rel. Sothos and Jarien's Heirlooms under Jarien and Sothos. The Arena Spoils (Lefty's Brass Knuckle, Malgen's Long Bow, Shroud of Arcane Mastery) under the Ring of Law. Each drop is listed where Wowhead Forever shows it.
 - Encore-DB: Guardians of Hyjal also shows the six blue rewards of its reputation quests as "Quest reward", with the quest's name: Work Well Done (Horn of Ve'han, Hermit's Pauldron, Wild Wristguards, Ring of Nature's Cycles, Ketharas' Linked Belt) and Return to Jereman (Jereman's Bauble).
-- Encore-DB: Collections > Item sets lists PvP sets, Zul'Gurub, Ruins of Ahn'Qiraj, Temple of Ahn'Qiraj and Other sets again. Inside each one the sets are grouped by class, one row per class with its class icon; pick a class to see its sets. Sets for no single class (Other sets) are listed one by one. Dungeon and tier sets will be grouped the same way when they are added.
+- Encore-DB: Collections > Item sets lists Zul'Gurub, Ruins of Ahn'Qiraj, Temple of Ahn'Qiraj and Other sets again, instead of one entry per class. Inside each one the sets are grouped by class: one row per class with its class icon, and picking a class shows its sets. Sets for no single class (Other sets) are listed one by one. Dungeon and tier sets will be grouped the same way when they are added.
+- Encore-DB: PvP sets moved to the PvP tab, under Item sets below the vendors, grouped by class the same way. Search takes you there too.
 
 ## 0.2.3
 
