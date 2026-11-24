@@ -168,17 +168,34 @@ Q:Feature{
         end
         f:Place()
         f.toggle:Show()
-        f:Collect()
+        f:Collect(true)
+        -- Addons make their buttons during loading, some after us: watch closely for the first 20 seconds
+        -- so they go straight into the drawer, then fall back to a slow sweep.
+        local LDBI = LibStub and LibStub("LibDBIcon-1.0", true)
+        if LDBI and LDBI.RegisterCallback and not f.ldbiHooked then
+            f.ldbiHooked = true
+            LDBI.RegisterCallback(f, "LibDBIcon_IconCreated", function() if f.active then f:Collect() end end)
+        end
+        f:On("PLAYER_ENTERING_WORLD", function() f:Collect() end)
+        f:On("ADDON_LOADED", function() C_Timer.After(0, function() if f.active then f:Collect() end end) end)
+        local fast
+        fast = C_Timer.NewTicker(0.1, function()
+            if not f.active then fast:Cancel() return end
+            f:Collect()
+        end, 200)
         f:Ticker(5, function() f:Collect() end)
     end,
-    Collect = function(f)
+    Collect = function(f, force)
+        local added = force
         for _, child in ipairs({ Minimap:GetChildren() }) do
             if isAddonButton(child) and not f.buttons[child] then
                 f.buttons[child] = true
                 child:SetParent(f.drawer)
                 if child.SetFrameStrata then child:SetFrameStrata("DIALOG") end
+                added = true
             end
         end
+        if not added then return end
         local list = {}
         for b in pairs(f.buttons) do list[#list + 1] = b end
         table.sort(list, function(a, b) return (a:GetName() or "") < (b:GetName() or "") end)
@@ -206,7 +223,7 @@ Q:Feature{
             t:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -4, -4)
         end
     end,
-    OnOption = function(f) f:Place() f:Collect() end,
+    OnOption = function(f) f:Place() f:Collect(true) end,
     Disable = function(f)
         if f.toggle then f.toggle:Hide() end
         for b in pairs(f.buttons or {}) do b:SetParent(Minimap) end
