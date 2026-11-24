@@ -130,7 +130,7 @@ Q:Feature{
             end)
             local icon = t:CreateTexture(nil, "ARTWORK")
             icon:SetAllPoints()
-            icon:SetTexture(Q.ICON)
+            icon:SetTexture(Q.MEDIA .. "encore-drawer-icon")
             t:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight", "ADD")
             -- Parented to the screen, not the minimap button: a faded minimap would make the drawer see-through.
             local drawer = CreateFrame("Frame", nil, UIParent)
