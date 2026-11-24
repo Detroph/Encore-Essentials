@@ -229,6 +229,10 @@ function BG:ScanPOIs()
         if n then
             local old = n.poi and n.poi.textureIndex
             n.poi = { id = poiID, textureIndex = info.textureIndex }
+            if type(info.position) == "table" and info.position.GetXY then
+                local x, y = info.position:GetXY()
+                if x and y then n.pos = { x, y } end
+            end
             local known = learned[info.textureIndex]
             if known and old ~= info.textureIndex then
                 if known:sub(1, 1) == "c" then

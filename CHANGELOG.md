@@ -1,5 +1,10 @@
 # Encore Essentials
 
+## 0.2.4.8
+
+- Encore-QoL: the Resurrection timer follows each graveyard's own clock. Every spirit healer brings the dead back every 30 seconds on its own beat, so one shared clock was wrong. The timer is now a list of your side's graveyards, each counting down to its next wave, with the one you'd come back at (the nearest your side holds) on top in gold and "Die now" in its last 3 seconds. Clocks are learned when you or a groupmate waits at a spirit healer and shared with the group by graveyard; a graveyard nobody has waited at yet shows "?". Assaulted bases drop off the list until they're held again.
+- Encore-QoL: in Warsong Gulch you can keep a single round timer instead of the list (on by default), with a round or square background. The small bar and time box looks are gone.
+
 ## 0.2.4.7
 
 - Encore-QoL: Enemy bars have a Health text setting: percent (76%, as before), the real value (4.2k), both (4.2k · 76%) or none. It can be set per battleground.
