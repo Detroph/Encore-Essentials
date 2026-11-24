@@ -5,7 +5,7 @@
 - Encore-QoL: Who rolled what reads the roll lines of the newer loot chat, which start with a clickable loot-history link. Before, those lines were not recognised, so the window never opened. If a roll window was missed it is now started from the chat line itself.
 - Encore-QoL: the Warsong Gulch round timer now looks like the mock-up: a thin gold ring inside the copper border. In game the gold filled the whole circle and hid the border.
 - Encore-QoL: new Login UI scaling (Interface > UI scaling): sets the UI scale at every login, with Auto (768 / screen height), Custom, and pixel-perfect presets for 4K, 1440p and 1080p at 100% and 125%. Goes below the game's 0.64 slider floor.
-- Encore-QoL: Button drawer: the addon buttons sit on top of the drawer again instead of under its background, and the drawer button on the minimap is bigger.
+- Encore-QoL: Button drawer: the addon buttons sit on top of the drawer again instead of under its background, and the drawer button on the minimap is bigger. It can now be resized (16 to 64) and dragged anywhere, with a lock option (right-click it to lock or unlock) and a reset.
 - Encore-QoL: `/eqol rolls` prints what Who rolled what last saw in loot chat, to help track down rolls it misses.
 
 ## 0.2.4
