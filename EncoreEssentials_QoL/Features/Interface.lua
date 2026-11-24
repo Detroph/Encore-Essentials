@@ -103,8 +103,9 @@ end
 Q:Feature{
     id = "buttonDrawer", tab = "interface", section = "Minimap", name = "Button drawer",
     desc = "Collects addon minimap buttons into one Encore drawer that opens from a single button. The Encore button stays on the map.",
-    defaults = { columns = 5, size = 32, locked = false },
+    defaults = { columns = 5, size = 32, locked = false, hover = true },
     options = {
+        { kind = "check", key = "hover", name = "Open on mouseover", tip = "Opens when the mouse is over the drawer button and closes 0.3 seconds after it leaves the button and the drawer." },
         { kind = "slider", key = "columns", name = "Buttons per row", min = 2, max = 10, step = 1 },
         { kind = "slider", key = "size", name = "Drawer button size", min = 16, max = 64, step = 2 },
         { kind = "check", key = "locked", name = "Lock drawer button", tip = "While unlocked, drag the drawer button to move it. Right-click it to lock or unlock." },
@@ -142,6 +143,17 @@ Q:Feature{
             W.Panel(drawer, 0.92)
             drawer:Hide()
             drawer:SetClampedToScreen(true)
+            -- Mouseover mode: open on enter, close 0.3 s after the mouse has left both the button and the drawer.
+            t:HookScript("OnEnter", function() if f:Get("hover") then drawer.away = 0 drawer:Show() end end)
+            drawer:SetScript("OnUpdate", function(self, elapsed)
+                if not f:Get("hover") then return end
+                if t:IsMouseOver() or self:IsMouseOver(4, -4, -4, 4) then
+                    self.away = 0
+                else
+                    self.away = (self.away or 0) + elapsed
+                    if self.away >= 0.3 then self:Hide() end
+                end
+            end)
             t:SetScript("OnClick", function(_, button)
                 if button == "RightButton" then
                     local lock = not f:Get("locked")
