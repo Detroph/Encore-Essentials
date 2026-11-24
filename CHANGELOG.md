@@ -1,5 +1,15 @@
 # Encore Essentials
 
+## 0.2.6
+
+- Encore-QoL: the window is laid out like the game's Options window. On the left a tree: Overview, then each tab, which opens to show its sections. On the right the section's page: each feature has a bar with its switch, name and status, a line on what it does, then its settings as rows with the name on the left and the setting on the right, in groups (for an action bar: Shows, Custom rules, Hide anyway when, See-through and fade). Custom rules only show when Shows is set to Custom rules. Search lists every matching feature across all tabs.
+- Encore-QoL: drag the bottom right corner to resize the window (720 x 440 up to 1600 x 1100). The size and position are kept.
+- Encore-QoL: new in Quality of life > Loot and bags: Who rolled what. A small window next to each group loot roll lists who picked Need, Greed or Pass, what each one rolled, who won, and who is still choosing (class coloured, winner on top). It stays 20 seconds after the roll ends (5 to 120), can be dragged or closed, and shows the item's tooltip on hover. It reads the game's own loot chat lines, so it works in any client language.
+- Encore-QoL: the Alterac Valley and Arathi Basin frames have tooltips. Hover a general, captain, marshal or warmaster for its side, health and when it was last seen, and a tower, bunker, graveyard, mine or base (icon or bar) for who holds it, who is assaulting it and the time left.
+- Encore-QoL: fixes the Lua error "Widgets.lua:56: bad argument #1 to 'SetText'" when hovering a feature's On · Encore or Off badge.
+- Encore-QoL: the window no longer says which addon a feature's idea came from. Credits stay in NOTICE and the README.
+- Encore-QoL: battleground messages you send yourself are no longer read back as a groupmate's (WoW Forever's first name and surname are now joined when comparing).
+
 ## 0.2.5
 
 - New module: **Encore-QoL** (folder `EncoreEssentials_QoL`). Open it from the Encore window, `/encore qol` or `/eqol`. Every feature starts off.
