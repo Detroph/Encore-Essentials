@@ -24,10 +24,25 @@ function W.Border(f, c, a, layer)
         t[i] = f:CreateTexture(nil, layer or "BORDER")
         t[i]:SetColorTexture(c[1], c[2], c[3], a or 1)
     end
-    t[1]:SetPoint("TOPLEFT"); t[1]:SetPoint("TOPRIGHT"); t[1]:SetHeight(1)
-    t[2]:SetPoint("BOTTOMLEFT"); t[2]:SetPoint("BOTTOMRIGHT"); t[2]:SetHeight(1)
-    t[3]:SetPoint("TOPLEFT"); t[3]:SetPoint("BOTTOMLEFT"); t[3]:SetWidth(1)
-    t[4]:SetPoint("TOPRIGHT"); t[4]:SetPoint("BOTTOMRIGHT"); t[4]:SetWidth(1)
+    t[1]:SetPoint("TOPLEFT"); t[1]:SetPoint("TOPRIGHT")
+    t[2]:SetPoint("BOTTOMLEFT"); t[2]:SetPoint("BOTTOMRIGHT")
+    t[3]:SetPoint("TOPLEFT"); t[3]:SetPoint("BOTTOMLEFT")
+    t[4]:SetPoint("TOPRIGHT"); t[4]:SetPoint("BOTTOMRIGHT")
+    -- At small UI scales (0.53 for 1440p) a 1-unit line is under one screen pixel and some edges vanish.
+    -- Keep each edge at least one real pixel, worked out again whenever the frame shows.
+    local function thickness()
+        local size = 1
+        local scale = f.GetEffectiveScale and f:GetEffectiveScale()
+        if PixelUtil and PixelUtil.GetNearestPixelSize and scale and scale > 0 then
+            size = PixelUtil.GetNearestPixelSize(1, scale, 1)
+        end
+        t[1]:SetHeight(size); t[2]:SetHeight(size); t[3]:SetWidth(size); t[4]:SetWidth(size)
+    end
+    for i = 1, 4 do
+        if t[i].SetSnapToPixelGrid then t[i]:SetSnapToPixelGrid(false); t[i]:SetTexelSnappingBias(0) end
+    end
+    thickness()
+    if f.HookScript then f:HookScript("OnShow", thickness) end
     function f:SetBorderColor(c2, a2) for _, x in ipairs(t) do x:SetColorTexture(c2[1], c2[2], c2[3], a2 or 1) end end
     return t
 end

@@ -132,8 +132,12 @@ Q:Feature{
             icon:SetAllPoints()
             icon:SetTexture(Q.ICON)
             t:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight", "ADD")
-            local drawer = CreateFrame("Frame", nil, t)
+            -- Parented to the screen, not the minimap button: a faded minimap would make the drawer see-through.
+            local drawer = CreateFrame("Frame", nil, UIParent)
             drawer.encoreDrawer = true
+            drawer:SetScript("OnShow", function()
+                for b in pairs(f.buttons or {}) do if b.SetAlpha then b:SetAlpha(1) end end
+            end)
             drawer:SetPoint("TOPRIGHT", t, "BOTTOMLEFT", 0, 0)
             drawer:SetFrameStrata("DIALOG")
             W.Panel(drawer, 0.92)
@@ -192,7 +196,7 @@ Q:Feature{
             if isAddonButton(child) and not f.buttons[child] then
                 f.buttons[child] = true
                 child:SetParent(f.drawer)
-                if child.SetFrameStrata then child:SetFrameStrata("DIALOG") end
+                if child.SetFrameStrata then child:SetFrameStrata("FULLSCREEN") end
                 added = true
             end
         end
@@ -204,8 +208,10 @@ Q:Feature{
         -- Buttons keep the minimap's low frame level when moved; lift them above the drawer's background.
         local level = f.drawer:GetFrameLevel() + 5
         for i, b in ipairs(list) do
-            if b.SetFrameStrata then b:SetFrameStrata("DIALOG") end
+            -- One strata above the drawer, so the buttons always draw over its background.
+            if b.SetFrameStrata then b:SetFrameStrata("FULLSCREEN") end
             if b.SetFrameLevel and b:GetFrameLevel() < level then b:SetFrameLevel(level) end
+            if b.SetAlpha then b:SetAlpha(1) end
             b:ClearAllPoints()
             b:SetPoint("TOPLEFT", f.drawer, "TOPLEFT", 4 + ((i - 1) % cols) * 34, -4 - math.floor((i - 1) / cols) * 34)
         end
@@ -227,6 +233,7 @@ Q:Feature{
     OnOption = function(f) f:Place() f:Collect(true) end,
     Disable = function(f)
         if f.toggle then f.toggle:Hide() end
+        if f.drawer then f.drawer:Hide() end
         for b in pairs(f.buttons or {}) do b:SetParent(Minimap) end
         f.buttons = {}
     end,

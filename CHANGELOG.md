@@ -1,5 +1,10 @@
 # Encore Essentials
 
+## 0.2.5.2 (unreleased)
+
+- Encore-QoL: Button drawer is no longer see-through when the minimap is faded, so its buttons show at full strength on top of the background.
+- Encore-QoL: window and frame borders keep every edge at small UI scales (like 0.53 for 1440p), where some 1-pixel edges used to vanish.
+
 ## 0.2.5.1
 
 - Encore-QoL: Who rolled what reads the roll lines of the newer loot chat, which start with a clickable loot-history link. Before, those lines were not recognised, so the window never opened. If a roll window was missed it is now started from the chat line itself.
