@@ -265,12 +265,13 @@ local function installViews()
 
     function Stonks:ItemStats(key, points)
         local own = origItemStats(self, key, points)
-        local b = baselineRec(key)
-        if not b then return own end
         local days = own and own.days or 0
-        if days >= BASELINE_FULL_DAYS then return own end
-        local base = { avg3 = b.a3, avg7 = b.a7, avg14 = b.a14, mean = b.med, sd = 0, median = b.med, q25 = b.q25, q75 = b.q75,
-            days = b.days, guild = true }
+        if days >= BASELINE_FULL_DAYS then return own end -- checked first: no need to decode the baseline then
+        local r = self.realmData
+        local med, q25, q75, a3, a7, a14, bdays = Codec.summaryPrices(r and r.baseline and r.baseline[tostring(key)])
+        if not med then return own end
+        local base = { avg3 = a3, avg7 = a7, avg14 = a14, mean = med, sd = 0, median = med, q25 = q25, q75 = q75,
+            days = bdays, guild = true }
         if not own then return base end
         local w = 1 - days / BASELINE_FULL_DAYS
         local out = {}

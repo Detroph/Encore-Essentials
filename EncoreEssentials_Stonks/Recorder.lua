@@ -15,7 +15,9 @@ local Encore = _G.EncoreEssentials
 local Stonks = Encore:RegisterModule("Stonks", {})
 ns.Stonks = Stonks
 
-Stonks.SCHEMA = 2 -- saved data version; 2 = launch week left out of the saved statistics (Stats.lua)
+-- saved data version; 2 = launch week left out of the saved statistics (Stats.lua), 3 = one sample per item per
+-- hour and base-36 summaries (Stonks:MigrateCompact below)
+Stonks.SCHEMA = 3
 Stonks.KEEP_DAYS_OPTIONS = { 7, 14, 30 }
 local DEFAULT_KEEP_DAYS = 7
 local SCAN_GAP = 120 -- seconds without a price before the next price counts as a new scan
@@ -27,16 +29,23 @@ local SCAN_GAP = 120 -- seconds without a price before the next price counts as 
 -- 7,000 items with one sample a day for 45 days is about 4 MB of saved data.
 ---------------------------------------------------------------------------
 local DIGITS = "0123456789abcdefghijklmnopqrstuvwxyz"
+local DIGIT_BYTES = { DIGITS:byte(1, 36) }
+local b36buf = {}
+-- Builds only the finished string (adding one digit at a time made a new string per digit).
 local function b36(n)
     n = math.floor(n)
     if n <= 0 then return "0" end
-    local s = ""
+    local len = 0
     while n > 0 do
         local r = n % 36
-        s = DIGITS:sub(r + 1, r + 1) .. s
+        len = len + 1
+        b36buf[len] = DIGIT_BYTES[r + 1]
         n = (n - r) / 36
     end
-    return s
+    for i = 1, math.floor(len / 2) do
+        b36buf[i], b36buf[len + 1 - i] = b36buf[len + 1 - i], b36buf[i]
+    end
+    return string.char(unpack(b36buf, 1, len))
 end
 Stonks.b36 = b36
 
@@ -100,8 +109,18 @@ end
 ---------------------------------------------------------------------------
 -- Recording
 ---------------------------------------------------------------------------
+-- Writes a pending sample. A sample for the same hour may already be saved (written at logout or a reload earlier
+-- in that hour): then the two are merged, lowest price and most units, instead of saving the hour twice. Up to
+-- 0.2.3 the hour was saved again, which was a quarter of all saved samples (Det, 2026-11-23).
 local function flush(key, s)
-    realmData.items[key] = (realmData.items[key] or "") .. b36(s[1]) .. ":" .. b36(s[2]) .. ":" .. b36(s[3]) .. ";"
+    local str = realmData.items[key] or ""
+    local lh, lp, lq = str:match("(%w+):(%w+):(%w+);$")
+    if lh and tonumber(lh, 36) == s[1] then
+        local p, q = math.min(tonumber(lp, 36), s[2]), math.max(tonumber(lq, 36), s[3])
+        realmData.items[key] = str:sub(1, #str - #lh - #lp - #lq - 3) .. b36(s[1]) .. ":" .. b36(p) .. ":" .. b36(q) .. ";"
+        return
+    end
+    realmData.items[key] = str .. b36(s[1]) .. ":" .. b36(s[2]) .. ":" .. b36(s[3]) .. ";"
 end
 
 function Stonks:FlushPending()
@@ -258,6 +277,88 @@ function Stonks:SetKeepDays(days)
 end
 
 ---------------------------------------------------------------------------
+-- Saved data version 3 (v0.2.4): every item's samples get one entry per hour (duplicates from before are merged,
+-- lowest price and most units, the same as recording does within an hour; no hour is dropped), and the saved
+-- summaries are dropped so they are saved again in the smaller base-36 form. Runs over every realm, a few hundred
+-- items per frame, and only moves the version to 3 when every item is done.
+---------------------------------------------------------------------------
+local function compactSamples(str)
+    local byHour, hours = {}, {}
+    local dup = false
+    for h, p, q in str:gmatch("(%w+):(%w+):(%w+);") do
+        local hn, pn, qn = tonumber(h, 36), tonumber(p, 36), tonumber(q, 36)
+        if hn and pn and qn then
+            local s = byHour[hn]
+            if s then
+                dup = true
+                if pn < s[1] then s[1] = pn end
+                if qn > s[2] then s[2] = qn end
+            else
+                byHour[hn] = { pn, qn }
+                hours[#hours + 1] = hn
+            end
+        end
+    end
+    if not dup then return str end
+    table.sort(hours)
+    local parts = {}
+    for i, h in ipairs(hours) do
+        local s = byHour[h]
+        parts[i] = b36(h) .. ":" .. b36(s[1]) .. ":" .. b36(s[2]) .. ";"
+    end
+    return table.concat(parts)
+end
+Stonks.CompactSamples = compactSamples
+
+function Stonks:MigrateCompact(onDone)
+    local jobs = {}
+    for _, realm in pairs(db.realms) do
+        if type(realm) == "table" then
+            realm.sum = {}
+            if type(realm.items) == "table" then
+                for k in pairs(realm.items) do jobs[#jobs + 1] = { realm.items, k } end
+            end
+        end
+    end
+    local i = 1
+    local ticker
+    ticker = C_Timer.NewTicker(0, function()
+        for _ = 1, 300 do
+            local job = jobs[i]
+            if not job then
+                ticker:Cancel()
+                onDone()
+                return
+            end
+            local items, k = job[1], job[2]
+            if type(items[k]) == "string" then items[k] = compactSamples(items[k]) end
+            i = i + 1
+        end
+    end)
+end
+
+-- Runs the saved-data version steps in order, each one only once its version is reached.
+function Stonks:MigrateSavedData()
+    local v = tonumber(db.schema) or 1
+    if v < 3 then
+        -- Saved summaries are only a cache; old ones are in the earlier decimal form, so they go right away.
+        for _, realm in pairs(db.realms) do
+            if type(realm) == "table" then realm.sum = {} end
+        end
+    end
+    if v < 2 then
+        C_Timer.After(5, function()
+            Stonks:MigrateLaunchWeek(function()
+                db.schema = 2
+                Stonks:MigrateSavedData()
+            end)
+        end)
+    elseif v < 3 then
+        C_Timer.After(5, function() Stonks:MigrateCompact(function() db.schema = 3 end) end)
+    end
+end
+
+---------------------------------------------------------------------------
 -- Events (handler is set before any registration)
 ---------------------------------------------------------------------------
 local events = CreateFrame("Frame")
@@ -271,9 +372,7 @@ events:SetScript("OnEvent", function(self, event, arg1)
             -- Auctionator missing, disabled or changed: try once more after its own late setup.
             C_Timer.After(2, hookAuctionator)
         end
-        if (tonumber(db.schema) or 1) < 2 then
-            C_Timer.After(5, function() Stonks:MigrateLaunchWeek(function() db.schema = 2 end) end)
-        end
+        Stonks:MigrateSavedData()
         C_Timer.After(10, function() Stonks:Prune() end)
     elseif event == "PLAYER_LOGOUT" then
         Stonks:FlushPending()
