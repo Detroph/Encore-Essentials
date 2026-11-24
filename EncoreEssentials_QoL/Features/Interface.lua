@@ -111,8 +111,8 @@ Q:Feature{
         if not f.toggle then
             local t = CreateFrame("Button", nil, Minimap)
             t.encoreDrawer = true
-            t:SetSize(22, 22)
-            t:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -2)
+            t:SetSize(32, 32)
+            t:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -4, -4)
             t:SetFrameLevel(Minimap:GetFrameLevel() + 8)
             local icon = t:CreateTexture(nil, "ARTWORK")
             icon:SetAllPoints()
@@ -144,7 +144,11 @@ Q:Feature{
         for b in pairs(f.buttons) do list[#list + 1] = b end
         table.sort(list, function(a, b) return (a:GetName() or "") < (b:GetName() or "") end)
         local cols = f:Get("columns")
+        -- Buttons keep the minimap's low frame level when moved; lift them above the drawer's background.
+        local level = f.drawer:GetFrameLevel() + 5
         for i, b in ipairs(list) do
+            if b.SetFrameStrata then b:SetFrameStrata("DIALOG") end
+            if b.SetFrameLevel and b:GetFrameLevel() < level then b:SetFrameLevel(level) end
             b:ClearAllPoints()
             b:SetPoint("TOPLEFT", f.drawer, "TOPLEFT", 4 + ((i - 1) % cols) * 34, -4 - math.floor((i - 1) / cols) * 34)
         end
