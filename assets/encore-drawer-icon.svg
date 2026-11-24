@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Encore-QoL button drawer icon: the Encore Essentials frame around a drawstring bag with addon buttons peeking out -->
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff0c4"/><stop offset=".22" stop-color="#f4b866"/><stop offset=".5" stop-color="#c47a2c"/>
+      <stop offset=".72" stop-color="#f2ad5c"/><stop offset="1" stop-color="#7a4313"/>
+    </linearGradient>
+    <linearGradient id="goldText" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff3cf"/><stop offset=".45" stop-color="#f6bd6c"/><stop offset=".55" stop-color="#d98a36"/><stop offset="1" stop-color="#9a571c"/>
+    </linearGradient>
+    <radialGradient id="field" cx=".5" cy=".38" r=".7">
+      <stop offset="0" stop-color="#d3170f"/><stop offset=".5" stop-color="#8f0805"/><stop offset="1" stop-color="#3c0100"/>
+    </radialGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a8fbf8"/><stop offset=".45" stop-color="#16cbcb"/><stop offset="1" stop-color="#046f70"/>
+    </linearGradient>
+    <radialGradient id="gem" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#e6ffff"/><stop offset=".4" stop-color="#22d6d6"/><stop offset="1" stop-color="#035c5d"/>
+    </radialGradient>
+    <filter id="drop" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity=".6"/></filter>
+        <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7a3410"/><stop offset=".55" stop-color="#4a1c07"/><stop offset="1" stop-color="#260b02"/>
+    </linearGradient>
+    <linearGradient id="lidWood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9a4716"/><stop offset="1" stop-color="#4d1d07"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#a8fbf8" stop-opacity=".95"/><stop offset=".45" stop-color="#16cbcb" stop-opacity=".55"/><stop offset="1" stop-color="#16cbcb" stop-opacity="0"/>
+    </radialGradient>
+    <symbol id="star" viewBox="-40 -40 80 80">
+      <path d="M0-38L11-11 38 0 11 11 0 38-11 11-38 0-11-11Z" fill="url(#gold)" stroke="#2a1404" stroke-width="3"/>
+      <path d="M0-15L7 0 0 15-7 0Z" fill="url(#gem)" stroke="#2a1404" stroke-width="1.5"/>
+    </symbol>
+    <symbol id="spark" viewBox="-20 -20 40 40">
+      <path d="M0-19L4-4 19 0 4 4 0 19-4 4-19 0-4-4Z" fill="#d8ffff" stroke="#046f70" stroke-width="1.5"/>
+    </symbol>
+    <clipPath id="fieldClip"><circle cx="256" cy="256" r="183"/></clipPath>
+    <linearGradient id="leather" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a65a24"/><stop offset=".5" stop-color="#6b3010"/><stop offset="1" stop-color="#2e1004"/>
+    </linearGradient>
+    <linearGradient id="leatherTop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b8692c"/><stop offset="1" stop-color="#5a260b"/>
+    </linearGradient>
+    <radialGradient id="btn" cx=".4" cy=".35" r=".7">
+      <stop offset="0" stop-color="#3a3a46"/><stop offset="1" stop-color="#0e0e14"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#drop)">
+    <use href="#star" x="216" y="6" width="80" height="80"/>
+    <use href="#star" x="216" y="426" width="80" height="80"/>
+    <use href="#star" x="6" y="216" width="80" height="80"/>
+    <use href="#star" x="426" y="216" width="80" height="80"/>
+    <circle cx="256" cy="256" r="214" fill="url(#gold)" stroke="#2a1404" stroke-width="5"/>
+    <circle cx="256" cy="256" r="196" fill="#1b0a03"/>
+    <circle cx="256" cy="256" r="190" fill="none" stroke="url(#teal)" stroke-width="5"/>
+    <circle cx="256" cy="256" r="183" fill="url(#field)"/>
+  </g>
+  <g clip-path="url(#fieldClip)">
+    <path d="M256 110L274 238 400 256 274 274 256 402 238 274 112 256 238 238Z" fill="#000" fill-opacity=".18"/>
+    <ellipse cx="256" cy="176" rx="130" ry="70" fill="url(#glow)"/>
+    <ellipse cx="256" cy="388" rx="128" ry="15" fill="#000" fill-opacity=".45"/>
+  </g>
+  <g stroke="#1d0802" stroke-linejoin="round" filter="url(#drop)">
+    <!-- three addon buttons peeking out of the bag -->
+    <g stroke-width="5">
+      <circle cx="198" cy="150" r="34" fill="url(#gold)"/><circle cx="198" cy="150" r="24" fill="url(#btn)"/>
+      <path d="M186 150h24M198 138v24" stroke="#a8fbf8" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="314" cy="150" r="34" fill="url(#gold)"/><circle cx="314" cy="150" r="24" fill="url(#btn)"/>
+      <path d="M302 160l12-22 12 22z" fill="#f6bd6c" stroke="none"/>
+      <circle cx="256" cy="126" r="38" fill="url(#gold)"/><circle cx="256" cy="126" r="27" fill="url(#btn)"/>
+      <circle cx="256" cy="126" r="11" fill="url(#gem)" stroke-width="3"/>
+    </g>
+    <!-- ruffled top of the bag -->
+    <path d="M168 214C160 186 176 170 196 178C206 160 230 162 240 176C250 160 276 160 284 176C296 162 320 164 324 180C344 172 358 190 344 214Z" fill="url(#leatherTop)" stroke-width="6"/>
+    <!-- bag body -->
+    <path d="M190 214C150 248 128 290 132 330C136 372 182 392 256 392C330 392 376 372 380 330C384 290 362 248 322 214Z" fill="url(#leather)" stroke-width="7"/>
+    <path d="M176 262C160 290 156 320 166 346" fill="none" stroke="#c47a2c" stroke-opacity=".35" stroke-width="5" stroke-linecap="round"/>
+    <!-- gold drawstring cinch -->
+    <path d="M178 214Q256 236 334 214" fill="none" stroke="url(#gold)" stroke-width="12" stroke-linecap="round"/>
+    <path d="M178 214Q256 236 334 214" fill="none" stroke="#1d0802" stroke-width="2"/>
+    <path d="M300 222C312 252 300 270 286 282M310 220C330 246 330 266 322 282" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="286" cy="286" r="8" fill="url(#gold)" stroke-width="3"/><circle cx="322" cy="286" r="8" fill="url(#gold)" stroke-width="3"/>
+    <!-- front medallion -->
+    <circle cx="256" cy="312" r="40" fill="url(#gold)" stroke-width="6"/>
+    <circle cx="256" cy="312" r="28" fill="#1b0a03" stroke-width="3"/>
+    <path d="M256 290L262 306 278 312 262 318 256 334 250 318 234 312 250 306Z" fill="url(#gem)" stroke="#035c5d" stroke-width="2"/>
+  </g>
+  <use href="#spark" x="368" y="150" width="34" height="34"/>
+  <use href="#spark" x="118" y="182" width="24" height="24"/>
+</svg>
