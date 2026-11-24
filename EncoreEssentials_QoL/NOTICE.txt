@@ -13,6 +13,8 @@ Ideas, not code
   no licence) gets its data; no Capping code is used. Encore reads and answers
   Capping's addon messages so both addons share timers in a battleground.
   EzFishing Forever (MIT) inspired one-button fishing; no code is copied.
+  HighGround (kemicofa, MIT) inspired the resurrection timer and the enemy bars
+  (secure target and focus rows); no code is copied.
 
 Font
   Media/MarcellusSC.ttf - Marcellus SC by Astigmatic (Brian J. Bonislawsky),

@@ -20,6 +20,9 @@ Features\Visual.lua
 Features\Combat.lua
 PvP\Data.lua
 PvP\Frames.lua
+PvP\Scope.lua
+PvP\ResTimer.lua
+PvP\Enemies.lua
 PvP\Helpers.lua
 Professions\Fishing.lua
 Professions\Trainer.lua

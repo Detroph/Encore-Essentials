@@ -1,5 +1,11 @@
 # Encore Essentials
 
+## 0.2.7
+
+- Encore-QoL: new in PvP > Battleground timers: **Resurrection timer**. Counts down to the next spirit healer wave (every 30 seconds) in every battleground, while you're dead and while you're alive. In the last 3 seconds it turns red and a "Die now" box shows underneath, so you can die just in time to come straight back. Four looks: ring with a round background, ring with a square background, small bar, or a "Time to resurrect" box, plus a size slider. The timer is shared with your battleground group, so it runs before you've died once. Drag it while unlocked; right-click it to lock or unlock.
+- Encore-QoL: new in PvP > Enemies: **Enemy bars**. Every enemy player as a class-coloured bar, best kill first (healers, the flag carrier and low health go up). Left-click targets, right-click focuses, also in combat; in combat the order holds and the new best target glows. Enemies out of nameplate range fade, and health shows everywhere except Alterac Valley. Class bars (optionally in columns of 10) or columns of five (1 to 8 columns per row), with bar height, bar width, font size, how many to show and a class icon in front of the bar.
+- Encore-QoL: both have **Customize for each battleground** (separate looks for Warsong Gulch, Arathi Basin and Alterac Valley), a Preview button, Lock position and Reset position.
+
 ## 0.2.6
 
 - Encore-QoL: the window is laid out like the game's Options window. On the left a tree: Overview, then each tab, which opens to show its sections. On the right the section's page: each feature has a bar with its switch, name and status, a line on what it does, then its settings as rows with the name on the left and the setting on the right, in groups (for an action bar: Shows, Custom rules, Hide anyway when, See-through and fade). Custom rules only show when Shows is set to Custom rules. Search lists every matching feature across all tabs.

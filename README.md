@@ -9,7 +9,7 @@ Encore Essentials is the addon suite of **Encore**, a Horde guild on the EU PvP 
 | `EncoreEssentials/` | Encore Essentials | Core: settings, the `/encore` command, the minimap crest button and the Encore Essentials window that opens the modules. Always loaded. |
 | `EncoreEssentials_DB/` | Encore-DB | Dungeon loot, dungeon quests, world epics and rares, recipes, PvP and reputation vendors. Loads only when you open it. |
 | `EncoreEssentials_Stonks/` | Encore-Stonks | Auction price history by date, weekday and hour from Auctionator scans, shared with your guild. |
-| `EncoreEssentials_QoL/` | Encore-QoL | Quality of life, interface, visual and combat options, battleground timers for Alterac Valley and Arathi Basin, and one-button fishing. Every feature starts off. |
+| `EncoreEssentials_QoL/` | Encore-QoL | Quality of life, interface, visual and combat options, battleground timers for Alterac Valley and Arathi Basin, a resurrection timer and enemy bars, and one-button fishing. Every feature starts off. |
 
 Open everything from the Encore crest on the minimap, the game's addon list button, or `/encore`.
 
@@ -44,7 +44,7 @@ Open everything from the Encore crest on the minimap, the game's addon list butt
 - **Action bars 1 to 6, pet and stance bars:** show always, never, in or out of combat, on mouseover or by your own rules (target, casting, group, fishing pole equipped, mounted...), with alpha and fade time. Button text: keybind, macro name, count and cooldown font, size, outline, colour and position.
 - **Minimap and frames:** square minimap, button drawer, wheel zoom, movers for frames the game keeps fixed, class colours, chat and tooltip tidy-ups.
 - **Visual & audio:** graphics sliders past the menu caps (ground clutter, view distance, particles, weather), cursor ring, mute sounds, max camera distance.
-- **PvP:** Alterac Valley and Arathi Basin frames in four styles each, with win prediction, capture timers, generals' health and officers, and a tooltip on every icon and bar. Right-click to lock or scale, Preview outside a battleground, timers shared with your group and with Capping users.
+- **PvP:** Alterac Valley and Arathi Basin frames in four styles each, with win prediction, capture timers, generals' health and officers, and a tooltip on every icon and bar. Right-click to lock or scale, Preview outside a battleground, timers shared with your group and with Capping users. A resurrection timer for every battleground with a "Die now" warning, and enemy bars sorted by kill priority (left-click target, right-click focus, also in combat), each customizable per battleground.
 - **One-button fishing:** one key casts and reels in, louder splash, auto loot, pole and lure, a fishing bar and a sortable catch log.
 
 ### Minimap button
