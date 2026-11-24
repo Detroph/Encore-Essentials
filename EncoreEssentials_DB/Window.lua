@@ -294,6 +294,7 @@ end
 -- Vendor standings are 4..8 or "r<PvP rank>".
 local function standingText(s)
     if type(s) == "number" then return standingLabel(s) end
+    if s == "q" then return "Quest reward" end
     if type(s) == "string" then return "PvP rank " .. (s:match("%d+") or s) end
     return ""
 end
@@ -1135,7 +1136,8 @@ local function lootBlocks()
                     cells[#cells + 1] = cellFromInfo(e[1], info, {
                         cost = e[3] and coin(e[3]),
                         standing = (state.standing == nil and e[2] ~= nil) and standingText(e[2]) or nil,
-                        sortv = { cost = e[3], standing = type(e[2]) == "number" and e[2] or tonumber(tostring(e[2]):match("%d+") or "") },
+                        from = e[4],
+                        sortv = { cost = e[3], standing = type(e[2]) == "number" and e[2] or e[2] == "q" and 9 or tonumber(tostring(e[2]):match("%d+") or "") },
                     })
                 end
             end
