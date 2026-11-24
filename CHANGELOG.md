@@ -1,6 +1,6 @@
 # Encore Essentials
 
-## 0.2.5.1 (unreleased)
+## 0.2.5.1
 
 - Encore-QoL: Who rolled what reads the roll lines of the newer loot chat, which start with a clickable loot-history link. Before, those lines were not recognised, so the window never opened. If a roll window was missed it is now started from the chat line itself.
 - Encore-QoL: the Warsong Gulch round timer now looks like the mock-up: a thin gold ring inside the copper border. In game the gold filled the whole circle and hid the border.
