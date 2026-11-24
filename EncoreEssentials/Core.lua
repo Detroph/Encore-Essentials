@@ -109,6 +109,16 @@ function Encore:ToggleStonks()
     if stonks then stonks:Toggle() end
 end
 
+-- Opens or closes the Encore-QoL window. It loads with the game, since its features run from login.
+function Encore:ToggleQoL()
+    local qol = self.modules.QoL or _G.EncoreQoL
+    if not qol then
+        self:Print(L.QOL_MISSING)
+        return
+    end
+    qol:Toggle()
+end
+
 function Encore:ShowInfo()
     local build, buildNumber, _, interface = GetBuildInfo()
     self:Print(L.INFO_ADDON, self.version, self.db.schema)
@@ -124,6 +134,7 @@ local function showHelp()
     Encore:Print(L.HELP_HEADER)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_DB)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_STONKS)
+    DEFAULT_CHAT_FRAME:AddMessage(L.HELP_QOL)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_MINIMAP)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_OPTIONS)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_INFO)
@@ -140,6 +151,7 @@ local COMMANDS = {
     end,
     db = function() Encore:ToggleDB() end,
     stonks = function() Encore:ToggleStonks() end,
+    qol = function() Encore:ToggleQoL() end,
     options = function() Encore:OpenOptions() end,
     config = function() Encore:OpenOptions() end,
     minimap = function()

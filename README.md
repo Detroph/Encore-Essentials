@@ -2,13 +2,14 @@
 
 **A loot, quest and recipe database plus hourly auction price graphs with guild sharing, built for World of Warcraft: Forever.**
 
-Encore Essentials is the addon suite of **Encore**, a Horde guild on the EU PvP realms. Three addons ship together:
+Encore Essentials is the addon suite of **Encore**, a Horde guild on the EU PvP realms. Four addons ship together:
 
 | Folder | In-game name | What it does |
 |---|---|---|
 | `EncoreEssentials/` | Encore Essentials | Core: settings, the `/encore` command, the minimap crest button and the Encore Essentials window that opens the modules. Always loaded. |
 | `EncoreEssentials_DB/` | Encore-DB | Dungeon loot, dungeon quests, world epics and rares, recipes, PvP and reputation vendors. Loads only when you open it. |
 | `EncoreEssentials_Stonks/` | Encore-Stonks | Auction price history by date, weekday and hour from Auctionator scans, shared with your guild. |
+| `EncoreEssentials_QoL/` | Encore-QoL | Quality of life, interface, visual and combat options, battleground timers for Alterac Valley and Arathi Basin, and one-button fishing. Every feature starts off. |
 
 Open everything from the Encore crest on the minimap, the game's addon list button, or `/encore`.
 
@@ -36,12 +37,21 @@ Open everything from the Encore crest on the minimap, the game's addon list butt
 - **Item tooltips** with the 3, 7 and 14-day averages.
 - **Guild price sharing:** one claimed scan per hour, a login summary of what changed while you were away (AFK players send first), and *Share item* / *Share scan* chat links that guildmates import only after clicking and confirming. At most 400 bytes a second, nothing in combat or instances, only item, price, quantity and hour leave your client. See [`docs/stonks-guild-sharing.md`](docs/stonks-guild-sharing.md).
 
+### Encore-QoL
+- **Everything starts off.** Turn on only what you want, in one window with tabs (Quality of life, Interface, Visual & audio, Combat, PvP, Professions), a search box and an Overview.
+- **Knows your other addons.** When Enhance QoL, Leatrix Plus, BetterFishing, KelaGraphics, ErrorMonster, MinimapButtonBag, Bartender4 and others already do something, its switch is locked and names that addon. Encore never changes their settings; turn it off there and Encore's unlocks.
+- **Action bars 1 to 6, pet and stance bars:** show always, never, in or out of combat, on mouseover or by your own rules (target, casting, group, fishing pole equipped, mounted...), with alpha and fade time. Button text: keybind, macro name, count and cooldown font, size, outline, colour and position.
+- **Minimap and frames:** square minimap, button drawer, wheel zoom, movers for frames the game keeps fixed, class colours, chat and tooltip tidy-ups.
+- **Visual & audio:** graphics sliders past the menu caps (ground clutter, view distance, particles, weather), cursor ring, mute sounds, max camera distance.
+- **PvP:** Alterac Valley and Arathi Basin frames in four styles each, with win prediction, capture timers, generals' health and officers. Right-click to lock or scale, Preview outside a battleground, timers shared with your group and with Capping users.
+- **One-button fishing:** one key casts and reels in, louder splash, auto loot, pole and lure, a fishing bar and a sortable catch log.
+
 ### Minimap button
 The Encore crest sits under the day and night indicator at the same size at any resolution or UI scale, and minimap button collectors (EnhanceQoL's button sink, MinimapButtonBag) leave it alone.
 
 ## Install
 
-From CurseForge: install **Encore Essentials** with the CurseForge app, or download the zip and unzip it into your WoW Forever folder's `Interface\AddOns`, so that `Interface\AddOns\EncoreEssentials`, `EncoreEssentials_DB` and `EncoreEssentials_Stonks` exist. Encore-Stonks needs [Auctionator](https://www.curseforge.com/wow/addons/auctionator) for scanning.
+From CurseForge: install **Encore Essentials** with the CurseForge app, or download the zip and unzip it into your WoW Forever folder's `Interface\AddOns`, so that `Interface\AddOns\EncoreEssentials`, `EncoreEssentials_DB`, `EncoreEssentials_Stonks` and `EncoreEssentials_QoL` exist. Encore-Stonks needs [Auctionator](https://www.curseforge.com/wow/addons/auctionator) for scanning.
 
 ## Commands
 
@@ -50,6 +60,7 @@ From CurseForge: install **Encore Essentials** with the CurseForge app, or downl
 | `/encore` | List the commands |
 | `/encore db` | Open Encore-DB |
 | `/encore stonks` | Open Encore-Stonks |
+| `/encore qol` or `/eqol` | Open Encore-QoL (`/eqol check` checks your other addons again, `/eqol preview` shows the battleground frames) |
 | `/encore minimap` | Show or hide the minimap button |
 | `/encore info` | Addon version, game build and saved-data details |
 | `/encore reset` | Restore default settings |
@@ -83,6 +94,7 @@ The script finds your `_forever_` folder (or asks for it), creates `Interface\Ad
    mklink /J "<FOREVER>\Interface\AddOns\EncoreEssentials" "C:\dev\Encore-Essentials\EncoreEssentials"
    mklink /J "<FOREVER>\Interface\AddOns\EncoreEssentials_DB" "C:\dev\Encore-Essentials\EncoreEssentials_DB"
    mklink /J "<FOREVER>\Interface\AddOns\EncoreEssentials_Stonks" "C:\dev\Encore-Essentials\EncoreEssentials_Stonks"
+   mklink /J "<FOREVER>\Interface\AddOns\EncoreEssentials_QoL" "C:\dev\Encore-Essentials\EncoreEssentials_QoL"
    ```
    If `Interface\AddOns` does not exist yet, create it first. Junctions (`/J`) need no administrator rights.
 4. Start the game. On the character screen, open **AddOns** and check that *Encore Essentials*, *Encore-DB* and *Encore-Stonks* are listed and enabled.

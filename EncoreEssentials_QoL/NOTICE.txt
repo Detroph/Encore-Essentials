@@ -1,0 +1,19 @@
+Encore-QoL - credits and licences
+=================================
+
+Encore-QoL is part of Encore Essentials, Copyright (C) 2026 the Encore Essentials
+authors, licensed under GPL-3.0 (see LICENSE in the repository).
+
+Ideas, not code
+  Leatrix Plus, Enhance QoL, Better Fishing and Angleur are All Rights Reserved.
+  Encore-QoL takes feature ideas from them and is written on the WoW API with its
+  own code. It reads their saved settings at runtime only to tell you when they
+  already do something (and never changes them).
+  The battleground data plan was worked out by reading how Capping (BigWigsMods,
+  no licence) gets its data; no Capping code is used. Encore reads and answers
+  Capping's addon messages so both addons share timers in a battleground.
+  EzFishing Forever (MIT) inspired one-button fishing; no code is copied.
+
+Font
+  Media/MarcellusSC.ttf - Marcellus SC by Astigmatic (Brian J. Bonislawsky),
+  from Google Fonts, under the SIL Open Font License 1.1 (Media/OFL.txt).

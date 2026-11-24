@@ -1,11 +1,12 @@
 # CurseForge packaging (BigWigs packager / CurseForge automatic packaging).
-# The repository holds three addon folders; each becomes a top-level folder in the zip.
+# The repository holds four addon folders; each becomes a top-level folder in the zip.
 package-as: EncoreEssentials
 
 move-folders:
   EncoreEssentials/EncoreEssentials: EncoreEssentials
   EncoreEssentials/EncoreEssentials_DB: EncoreEssentials_DB
   EncoreEssentials/EncoreEssentials_Stonks: EncoreEssentials_Stonks
+  EncoreEssentials/EncoreEssentials_QoL: EncoreEssentials_QoL
 
 ignore:
   - tools
