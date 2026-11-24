@@ -1,7 +1,10 @@
 # Encore Essentials
 
-## Unreleased
+## 0.2.4
 
+- Encore-Stonks: much lighter on memory. Opening the All items market view, the daily refresh of the item list's prices and item tooltips no longer build a table for every price of every item: market view about 640 MB of short-lived memory down to about 60 MB, the first login of each day about 390 MB down to about 10 MB (only items with new prices are worked out again). The item list's prices are no longer all kept in memory as tables (about 15 MB), and the browser's item list is let go when the window closes. Every average, chart and price is the same as before.
+- Encore-Stonks: an hour seen twice for the same item (after a logout or /reload within that hour) is saved once, with the lowest price and most units, as within one session. Once, on the first login with this version, Stonks merges the doubled hours already saved (about a quarter of all saved samples) and saves its price summaries again in a smaller form. No hour of prices is dropped, launch week included.
+- Encore-Stonks: an hourly guild scan and a login summary no longer arrive at the same time. A guildmate who just finished a scan waits to share it while someone's login summary is being sent (up to 5 minutes before the end of the hour, then it shares anyway), and a login summary request waits while an hourly scan is still coming in. Works best when everyone has this version; older versions behave as before.
 - Encore-DB: Professions are sorted by what each recipe makes. Under All recipes, the middle list now has the recipe types (Weapons - Daggers, Axes, Maces, Swords ...; Armor - Head, Shoulder, Chest ...; Shields, Enhancements, Enchants by slot, Flasks, Elixirs, Potions, Transmutes, Explosives, Parts, Bags, Materials, Misc and more), then the item sets the profession makes, then the skill brackets as before. Weapons show one-handed and two-handed side by side, armour shows cloth, leather, mail and plate side by side, and potions show healing and mana apart from the rest. Each recipe still shows its skill-up levels in orange, yellow, green and grey.
 - Encore-DB: Reputations: a faction's rewards are split into groups (Armor, Weapons, Recipes, Consumables ...) under headings you can close and open again, for every standing. A group you close stays closed when you look at another faction.
 
