@@ -136,7 +136,8 @@ local state = {
     search = "",
     collapsed = {}, -- tree headers closed by the player
     inst = nil, boss = 1, -- Dungeons & Raids
-    prof = nil, bracket = 1, -- Professions
+    prof = nil, bracket = 1, -- Professions: a skill bracket (1 = all recipes), a category key (ProfessionView.lua) or "sets"
+    repOpen = {}, -- Reputations: [item group] = false once the player closes it
     vendor = {}, standing = nil, -- PvP and Reputations: vendor index per tab, standing shown
     iconSize = "normal", -- item icon size: "small", "normal" or "large"
     randomOpen = {}, -- [instance/boss] = true or false once the player opens or closes its random drops
@@ -845,10 +846,6 @@ end
 local function sectionRows()
     local rows = {}
     local tab = TAB_BY_KEY[state.tab]
-    local function foreverMeta(n)
-        if highlightOn() and n > 0 then return ("  ·  %s%d new or changed in WoW Forever|r"):format(TEAL_HEX, n) end
-        return ""
-    end
     if state.tab == "dungeons" then
         local inst = state.inst and Loot.instances[state.inst]
         if not inst then return rows end
@@ -920,28 +917,7 @@ local function sectionRows()
             end
         end
     elseif state.tab == "professions" then
-        local prof = state.prof
-        if not prof then return rows end
-        local list = recipesOf(prof)
-        local n = 0
-        for _, r in ipairs(list) do if r.new or r.changed then n = n + 1 end end
-        rows[#rows + 1] = { kind = "head", title = prof, meta = ("%d recipes"):format(#list) .. foreverMeta(n) }
-        for i, b in ipairs(SKILL_BRACKETS) do
-            local count, nForever = 0, 0
-            for _, r in ipairs(list) do
-                if inBracket(r, b) then
-                    count = count + 1
-                    if r.new or r.changed then nForever = nForever + 1 end
-                end
-            end
-            if count > 0 then
-                rows[#rows + 1] = {
-                    kind = "sec", text = b.text, sub = (b.sub and (b.sub .. "  ·  ") or "") .. count .. " recipes",
-                    pip = nForever, selected = state.bracket == i,
-                    onClick = function() state.bracket = i; clearSearch(); renderAll() end,
-                }
-            end
-        end
+        ns.ProfessionView.sections(rows)
     elseif tab and tab.vendorKind then
         local v = state.vendor[state.tab]
         local vendor = v and Loot.vendors[v]
@@ -1144,25 +1120,7 @@ local function lootBlocks()
         end
         return blocks, ("%s, %s: %d items shown"):format(title, band.text:lower(), #cells)
     elseif state.tab == "professions" then
-        local prof = state.prof
-        if not prof then return { emptyLine("Pick a profession on the left.") }, "" end
-        local b = SKILL_BRACKETS[state.bracket] or SKILL_BRACKETS[1]
-        blocks[#blocks + 1] = heading(prof .. ": " .. b.text)
-        local cells, total = {}, 0
-        for _, r in ipairs(recipesOf(prof)) do
-            if inBracket(r, b) then
-                total = total + 1
-                local c = recipeCell(r)
-                if passesRecipe(r, c) then cells[#cells + 1] = c end
-            end
-        end
-        if #cells > 0 then
-            blocks[#blocks + 1] = grid(cells)
-            blocks[#blocks].defaultSort = "skill" -- lowest skill to learn first, from a recipe or a trainer
-        else
-            blocks[#blocks + 1] = emptyLine(total > 0 and FILTERED or "No recipes here.")
-        end
-        return blocks, ("%s: %d recipes shown. Click a recipe for reagents and how to learn it."):format(prof, #cells)
+        return ns.ProfessionView.blocks()
     elseif tab.vendorKind then
         local v = state.vendor[state.tab]
         local vendor = v and Loot.vendors[v]
@@ -1182,7 +1140,23 @@ local function lootBlocks()
                 end
             end
         end
-        if #cells > 0 then
+        if #cells > 0 and tab.vendorKind == "faction" and ns.VendorGroups then
+            -- Reputation rewards in groups (armour, weapons, recipes ...) the player can close and open again.
+            for _, g in ipairs(ns.VendorGroups(cells)) do
+                local open = state.repOpen[g.key] ~= false
+                blocks[#blocks + 1] = {
+                    kind = "toggle", open = open, text = ("%s (%d)"):format(g.text, #g.cells),
+                    onClick = function()
+                        state.repOpen[g.key] = not open
+                        renderLoot(true)
+                    end,
+                }
+                if open then
+                    blocks[#blocks + 1] = grid(g.cells)
+                    blocks[#blocks].layoutCells = cells -- all groups share one layout
+                end
+            end
+        elseif #cells > 0 then
             blocks[#blocks + 1] = grid(cells)
         else
             blocks[#blocks + 1] = emptyLine(total > 0 and FILTERED or "No items.")
@@ -1217,7 +1191,7 @@ local function listWidth()
     return fw - (12 + TREE_W + 6 + SEC_W + 6) - 12 - 6 - 14
 end
 
-local function makeLayout(cells, width, heads)
+local function makeLayout(cells, width, heads, forceN)
     local present = {}
     for _, col in ipairs(COLUMNS) do
         for _, c in ipairs(cells) do
@@ -1249,7 +1223,7 @@ local function makeLayout(cells, width, heads)
         end
     end
     local smallest = lead + ICON_W + NAME_MIN + 12 + keep + 4
-    local n = math.max(2, math.min(4, math.floor((width + TILE_GAP) / (smallest + TILE_GAP))))
+    local n = forceN or math.max(2, math.min(4, math.floor((width + TILE_GAP) / (smallest + TILE_GAP))))
     local tileW = math.floor((width - (n - 1) * TILE_GAP) / n)
     for _, key in ipairs(DROP_FIRST) do
         if lead + ICON_W + NAME_MIN + 12 + fixedWidth() + 4 <= tileW then break end
@@ -1302,22 +1276,40 @@ local function packRows(blocks)
     local width = listWidth()
     for _, b in ipairs(blocks) do
         if b.kind == "grid" then
-            local layout = makeLayout(b.layoutCells or b.cells, width, b.heads)
+            local layout = makeLayout(b.layoutCells or b.cells, width, b.heads, b.split and #b.split)
             local key, desc = state.sort.key, state.sort.desc
             if not key then key, desc = b.defaultSort, false end
             local known = key == "name"
             for _, col in ipairs(layout.cols) do if col.key == key then known = true end end
             -- The list's own order (profession recipes by skill) still applies when its column is hidden
-            if key and (known or key == b.defaultSort) then b.cells = ns.SortCells(b.cells, key, desc) end
+            local doSort = key and (known or key == b.defaultSort)
+            if doSort then b.cells = ns.SortCells(b.cells, key, desc) end
             layout.sortKey, layout.sortDesc = known and key or nil, desc
             rows[#rows + 1] = { kind = "cols", layout = layout }
-            -- Fill down each column first, then the next column, so the sorted order reads top to bottom.
-            local total = #b.cells
-            local height = math.ceil(total / layout.n)
-            for r = 1, height do
-                local slice = {}
-                for col = 1, layout.n do slice[col] = b.cells[(col - 1) * height + r] end
-                rows[#rows + 1] = { kind = "cells", cells = slice, layout = layout }
+            if b.split then
+                -- Lists side by side (one- and two-handed weapons, armour types): each fills its own column, titled
+                -- in the Name heading.
+                local lists, height = {}, 0
+                layout.titles = {}
+                for i, part in ipairs(b.split) do
+                    lists[i] = doSort and ns.SortCells(part.cells, key, desc) or part.cells
+                    layout.titles[i] = part.title
+                    height = math.max(height, #lists[i])
+                end
+                for r = 1, height do
+                    local slice = {}
+                    for col = 1, #lists do slice[col] = lists[col][r] end
+                    rows[#rows + 1] = { kind = "cells", cells = slice, layout = layout }
+                end
+            else
+                -- Fill down each column first, then the next column, so the sorted order reads top to bottom.
+                local total = #b.cells
+                local height = math.ceil(total / layout.n)
+                for r = 1, height do
+                    local slice = {}
+                    for col = 1, layout.n do slice[col] = b.cells[(col - 1) * height + r] end
+                    rows[#rows + 1] = { kind = "cells", cells = slice, layout = layout }
+                end
             end
         else
             rows[#rows + 1] = b
@@ -1796,7 +1788,7 @@ local function initColsRow(row, d)
             elseif h.lead then
                 h.lead:Hide()
             end
-            head("name", h.name, x0 + L.lead + L.iconW, math.max(40, L.nameW), "Name")
+            head("name", h.name, x0 + L.lead + L.iconW, math.max(40, L.nameW), L.titles and L.titles[i] or "Name")
             for _, fs in pairs(h.cols) do fs:Hide() end
             for _, col in ipairs(L.cols) do
                 local fs = h.cols[col.key]
@@ -2753,7 +2745,11 @@ local function createWindow()
         refreshPending = true
         C_Timer.After(0.3, function()
             refreshPending = false
-            if frame:IsShown() then renderLoot(true) end
+            if frame:IsShown() then
+                renderLoot(true)
+                -- Profession categories and item sets count items the game has just loaded.
+                if state.tab == "professions" then renderSections() end
+            end
         end)
     end)
 
@@ -2780,6 +2776,7 @@ end
 ns.UI = {
     state = state, settings = settings, rowKinds = ROW_KINDS, lineFonts = LINE_FONTS,
     heading = heading, textLine = textLine, emptyLine = emptyLine, grid = grid,
+    recipesOf = recipesOf, skillBrackets = SKILL_BRACKETS, inBracket = inBracket,
     itemInfo = itemInfo, cellFromInfo = cellFromInfo, recipeCell = recipeCell, passesRecipe = passesRecipe, passesInfo = passesInfo, coin = coin,
     mapName = mapName, setPin = setPin, highlightOn = highlightOn,
     setColor = setColor, gradient = gradient, addBorder = addBorder, onRowClick = onRowClick,
