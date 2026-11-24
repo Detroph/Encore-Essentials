@@ -103,17 +103,34 @@ end
 Q:Feature{
     id = "buttonDrawer", tab = "interface", section = "Minimap", name = "Button drawer",
     desc = "Collects addon minimap buttons into one Encore drawer that opens from a single button. The Encore button stays on the map.",
-    defaults = { columns = 5 },
-    options = { { kind = "slider", key = "columns", name = "Buttons per row", min = 2, max = 10, step = 1 } },
+    defaults = { columns = 5, size = 32, locked = false },
+    options = {
+        { kind = "slider", key = "columns", name = "Buttons per row", min = 2, max = 10, step = 1 },
+        { kind = "slider", key = "size", name = "Drawer button size", min = 16, max = 64, step = 2 },
+        { kind = "check", key = "locked", name = "Lock drawer button", tip = "While unlocked, drag the drawer button to move it. Right-click it to lock or unlock." },
+        { kind = "button", name = "Reset button position", onClick = function(f) f:Saved().pos = nil f:Place() end },
+    },
     needsReload = true,
     detect = { { eqol = "enableMinimapButtonBin" }, { addon = "MBB" }, { addon = "MinimapButtonBag" }, { addon = "MinimapButtonButton" } },
     Enable = function(f)
         if not f.toggle then
             local t = CreateFrame("Button", nil, Minimap)
             t.encoreDrawer = true
-            t:SetSize(32, 32)
-            t:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -4, -4)
             t:SetFrameLevel(Minimap:GetFrameLevel() + 8)
+            t:SetMovable(true)
+            t:SetClampedToScreen(true)
+            t:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+            t:RegisterForDrag("LeftButton")
+            t:SetScript("OnDragStart", function(self) if not f:Get("locked") then self:StartMoving() end end)
+            t:SetScript("OnDragStop", function(self)
+                self:StopMovingOrSizing()
+                -- Saved as the offset of the button's centre from the minimap's centre, so it follows the minimap.
+                local bx, by = self:GetCenter()
+                local mx, my = Minimap:GetCenter()
+                local s = self:GetEffectiveScale() / Minimap:GetEffectiveScale()
+                if bx and mx then f:Saved().pos = { bx * s - mx, by * s - my } end
+                f:Place()
+            end)
             local icon = t:CreateTexture(nil, "ARTWORK")
             icon:SetAllPoints()
             icon:SetTexture(Q.ICON)
@@ -124,10 +141,20 @@ Q:Feature{
             drawer:SetFrameStrata("DIALOG")
             W.Panel(drawer, 0.92)
             drawer:Hide()
-            t:SetScript("OnClick", function() drawer:SetShown(not drawer:IsShown()) end)
-            W.Tooltip(t, "Addon buttons", "Click to open or close the drawer.")
+            drawer:SetClampedToScreen(true)
+            t:SetScript("OnClick", function(_, button)
+                if button == "RightButton" then
+                    local lock = not f:Get("locked")
+                    f:Set("locked", lock)
+                    Q:Print(lock and "Drawer button locked. Right-click it again to move it." or "Drawer button unlocked: drag it to move it, right-click to lock.")
+                    return
+                end
+                drawer:SetShown(not drawer:IsShown())
+            end)
+            W.Tooltip(t, "Addon buttons", "Click to open or close the drawer.\nRight-click to lock or unlock; drag to move while unlocked.")
             f.toggle, f.drawer, f.buttons = t, drawer, {}
         end
+        f:Place()
         f.toggle:Show()
         f:Collect()
         f:Ticker(5, function() f:Collect() end)
@@ -154,7 +181,20 @@ Q:Feature{
         end
         f.drawer:SetSize(8 + math.min(#list, cols) * 34, 8 + math.ceil(math.max(1, #list) / cols) * 34)
     end,
-    OnOption = function(f) f:Collect() end,
+    Place = function(f)
+        local t = f.toggle
+        if not t then return end
+        local size = f:Get("size") or 32
+        t:SetSize(size, size)
+        t:ClearAllPoints()
+        local pos = f:Saved().pos
+        if type(pos) == "table" and pos[1] then
+            t:SetPoint("CENTER", Minimap, "CENTER", pos[1], pos[2])
+        else
+            t:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -4, -4)
+        end
+    end,
+    OnOption = function(f) f:Place() f:Collect() end,
     Disable = function(f)
         if f.toggle then f.toggle:Hide() end
         for b in pairs(f.buttons or {}) do b:SetParent(Minimap) end
