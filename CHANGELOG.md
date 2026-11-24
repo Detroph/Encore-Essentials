@@ -1,6 +1,6 @@
 # Encore Essentials
 
-## 0.2.5.2 (unreleased)
+## 0.2.5.2
 
 - Encore-QoL: the button drawer has its own icon: a shaded leather drawstring bag with a teal gem clasp on a red disc with a gold rim, bold enough to read at small sizes. A new file, so the game needs a full restart (not /reload) after updating.
 - Encore-QoL: Button drawer is no longer see-through when the minimap is faded, so its buttons show at full strength on top of the background.
