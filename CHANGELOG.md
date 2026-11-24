@@ -1,5 +1,10 @@
 # Encore Essentials
 
+## Unreleased
+
+- Encore-DB: 45 more dungeon drops that AtlasLoot Continued lists and Wowhead Forever confirms. Trash loot in The Drowned City (10), Krol'dok Stronghold (9), Alcaz Prison (9), Shaper's Terrace (3), City of Dalaran (2) and Ruins of Lordaeron (2). Tor'Rel's three drops under Izha'Rel and Tor'Rel. Sothos and Jarien's Heirlooms under Jarien and Sothos. The Arena Spoils (Lefty's Brass Knuckle, Malgen's Long Bow, Shroud of Arcane Mastery) under the Ring of Law. Each drop is listed where Wowhead Forever shows it.
+- Encore-DB: Guardians of Hyjal also shows the six blue rewards of its reputation quests as "Quest reward", with the quest's name: Work Well Done (Horn of Ve'han, Hermit's Pauldron, Wild Wristguards, Ring of Nature's Cycles, Ketharas' Linked Belt) and Return to Jereman (Jereman's Bauble).
+
 ## 0.2.3
 
 - Encore-DB: Collections > Item sets are listed by class (Warrior, Paladin, Hunter, Rogue, Priest, Shaman, Mage, Warlock, Druid), each with its class icon, and every class shows all its sets: PvP, Zul'Gurub, Ruins and Temple of Ahn'Qiraj. Each set says where it comes from. Sets for no single class stay under Other sets. Dungeon and tier sets will slot in the same way when they are added.

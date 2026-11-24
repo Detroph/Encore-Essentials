@@ -14,6 +14,10 @@
 //   quests | loot | professions | extras
 //   extras-script   writes tools/out/wowhead-extras-sweep.js, to paste into the browser console on wowhead.com/forever;
 //                   save the wowhead-extras.json it downloads in tools/out/, then run the extras step
+//   leads-script    writes tools/out/wowhead-leads-sweep.js: Wowhead Forever item lists for the AtlasLoot leads the loot
+//                   step left out; save the wowhead-leads.json it downloads in tools/out/, then run the loot step.
+//                   Also tools/out/wowhead-faction-quests-sweep.js: quest rewards of the factions in
+//                   faction-quest-rewards.mjs (wowhead-faction-quests.json)
 //   wowhead-script  writes tools/out/wowhead-sweep.js, to paste into the browser console on wowhead.com/forever
 //   import <files>  reads the wowhead-drops-*.json files the browser script downloaded
 // --download first downloads the sources again: the ForeverDB files, foreverchanges.pro pages and missing Wowhead
@@ -76,6 +80,8 @@ const steps = {
     if (!fs.existsSync(path.join(DIR, 'out', 'wowhead-drops.json')))
       console.log('\nNo tools/out/wowhead-drops.json yet: building without Wowhead boss pages. Run "node tools/refresh.mjs wowhead-script" for them.');
     run('loot/build-loot.mjs');
+    if (src.has('atlasloot') || src.has('atlasloot-check')) run('loot/atlasloot-additions.mjs');
+    run('loot/faction-quest-rewards.mjs');
   },
   professions() {
     if (download) run('loot/foreverdb-files.mjs');
@@ -99,6 +105,10 @@ const steps = {
     run('loot/wowhead-extras-script.mjs');
   },
   all() { steps.quests(); steps.loot(); steps.professions(); steps.extras(); },
+  'leads-script'() {
+    run('loot/atlasloot-additions.mjs', 'script');
+    run('loot/faction-quest-rewards.mjs', 'script');
+  },
   'wowhead-script'() {
     run('loot/wowhead-browser-script.mjs', '--pause', String(cfg.wowheadPauseSeconds || 8));
   },
