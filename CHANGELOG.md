@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## 0.2.8
+
+- Encore-QoL: Resurrection timer looks, after the first test in game. Both rings have a thicker copper border (3 px, round or square) and a thinner progress ring. The Time box is now a square: the seconds large in the middle, "Time to resurrect" on two rows underneath. No box or border changes size when the numbers change.
+
 ## 0.2.7
 
 - Encore-QoL: new in PvP > Battleground timers: **Resurrection timer**. Counts down to the next spirit healer wave (every 30 seconds) in every battleground, while you're dead and while you're alive. In the last 3 seconds it turns red and a "Die now" box shows underneath, so you can die just in time to come straight back. Four looks: ring with a round background, ring with a square background, small bar, or a "Time to resurrect" box, plus a size slider. The timer is shared with your battleground group, so it runs before you've died once. Drag it while unlocked; right-click it to lock or unlock.

@@ -104,15 +104,21 @@ end
 
 local function buildRing(square)
     local r = CreateFrame("Frame", nil, holder)
-    r:SetSize(80, 80)
+    r:SetSize(84, 84)
     r:SetPoint("TOP")
+    -- A 3 px copper border around a dark background, round or square.
     if square then
-        local b = box(r, 70, 70)
-        b:SetPoint("CENTER")
-        b:SetFrameLevel(r:GetFrameLevel())
+        local edge = r:CreateTexture(nil, "BACKGROUND", nil, 0)
+        edge:SetColorTexture(W.COPPER[1], W.COPPER[2], W.COPPER[3], 0.95)
+        edge:SetSize(78, 78)
+        edge:SetPoint("CENTER")
+        local fill = r:CreateTexture(nil, "BACKGROUND", nil, 1)
+        fill:SetColorTexture(BOX_BG[1], BOX_BG[2], BOX_BG[3], 0.95)
+        fill:SetSize(72, 72)
+        fill:SetPoint("CENTER")
     else
-        circle(r, "BACKGROUND", 76, W.COPPER, 0.9, 0)
-        circle(r, "BACKGROUND", 73, BOX_BG, 0.95, 1)
+        circle(r, "BACKGROUND", 82, W.COPPER, 0.95, 0)
+        circle(r, "BACKGROUND", 76, BOX_BG, 0.95, 1)
     end
     local track = CreateFrame("Frame", nil, r)
     track:SetAllPoints()
@@ -129,10 +135,12 @@ local function buildRing(square)
     local top = CreateFrame("Frame", nil, r)
     top:SetAllPoints()
     top:SetFrameLevel(cd:GetFrameLevel() + 2)
-    circle(top, "ARTWORK", 44, BOX_BG, 1)
+    circle(top, "ARTWORK", 49, BOX_BG, 1)
     local num = top:CreateFontString(nil, "OVERLAY")
     font(num, 18, true)
     num:SetPoint("CENTER", 0, -1)
+    num:SetWidth(44)
+    num:SetJustifyH("CENTER")
     r.cd, r.num = cd, num
     function r:Draw(l, late)
         local waveStart = GetTime() + l - WAVE
@@ -159,6 +167,8 @@ local function buildBar()
     local time = b:CreateFontString(nil, "OVERLAY")
     font(time, 14, true)
     time:SetPoint("TOPRIGHT", -8, -5)
+    time:SetWidth(44)
+    time:SetJustifyH("RIGHT")
     local track = b:CreateTexture(nil, "ARTWORK")
     track:SetColorTexture(0, 0, 0, 0.6)
     track:SetPoint("BOTTOMLEFT", 8, 6)
@@ -180,18 +190,27 @@ local function buildBar()
 end
 
 local function buildBox()
-    local b = box(holder, 210, 32)
+    -- A fixed square: the seconds large in the middle, "Time to / resurrect" underneath. Nothing resizes.
+    local b = box(holder, 84, 84)
     b:SetPoint("TOP")
-    local text = b:CreateFontString(nil, "OVERLAY")
-    font(text, 15, true)
-    text:SetPoint("CENTER")
-    b.text = text
+    local num = b:CreateFontString(nil, "OVERLAY")
+    font(num, 30, true)
+    num:SetPoint("TOP", 0, -10)
+    num:SetSize(76, 34)
+    num:SetJustifyH("CENTER")
+    local label = b:CreateFontString(nil, "OVERLAY")
+    font(label, 11, true)
+    label:SetPoint("BOTTOM", 0, 9)
+    label:SetSize(76, 28)
+    label:SetJustifyH("CENTER")
+    label:SetText("Time to\nresurrect")
+    b.num, b.label = num, label
     function b:Draw(l, late)
-        self.text:SetText(("Time to resurrect %02d:%02d"):format(0, math.ceil(l)))
-        W.Color(self.text, late and RED_TEXT or W.GOLD)
+        self.num:SetText(math.ceil(l))
+        W.Color(self.num, late and RED_TEXT or W.GOLD)
+        W.Color(self.label, late and RED_TEXT or W.INK)
         self:SetBorderColor(late and RED or W.COPPER, 0.9)
         if late then self.bg:SetColorTexture(0.27, 0.03, 0.02, 0.94) else self.bg:SetColorTexture(BOX_BG[1], BOX_BG[2], BOX_BG[3], 0.92) end
-        self:SetWidth(math.max(150, (self.text:GetStringWidth() or 190) + 28))
     end
     return b
 end
