@@ -89,42 +89,11 @@ Q:Feature{
 }
 
 -- Addon buttons (LibDBIcon and others parented to the minimap) gathered into one drawer.
--- Map pins (quest givers, innkeepers, mailboxes, gathering nodes from Questie, HandyNotes, TomTom, GatherMate...)
--- are also buttons on the minimap. They are left alone: only real addon buttons go in the drawer.
-local PIN_WORDS = { "Pin", "pin", "Node", "node", "Questie", "HandyNotes", "TomTom", "GatherMate", "Waypoint", "Arrow",
-    "Tracking", "Blip", "POI", "Icon%d", "Note" }
-
-local function isMapPin(child)
-    for _, lib in ipairs({ "HereBeDragons-Pins-2.0", "HereBeDragons-Pins-1.0" }) do
-        local hbd = LibStub and LibStub(lib, true)
-        if hbd and type(hbd.activeMinimapPins) == "table" and hbd.activeMinimapPins[child] then return true end
-        if hbd and type(hbd.minimapPins) == "table" and hbd.minimapPins[child] then return true end
-    end
-    return false
-end
-
+-- Only LibDBIcon buttons, the standard minimap button almost every addon uses. Map pins (Questie, HandyNotes,
+-- innkeepers, mailboxes) and hand-made buttons stay on the minimap.
 local function isAddonButton(child)
     local name = child.GetName and child:GetName() or ""
-    if name:find("^LibDBIcon10_") then return true end
-    if child.encoreDrawer then return false end
-    if child:GetObjectType() ~= "Button" or not child:IsShown() then return false end
-    if name == "" or isMapPin(child) then return false end
-    for _, skip in ipairs({ "MiniMap", "Minimap", "GameTime", "TimeManager", "Queue", "EncoreEssentials" }) do
-        if name:find(skip, 1, true) then return false end
-    end
-    for _, word in ipairs(PIN_WORDS) do
-        if name:find(word) then return false end
-    end
-    -- Addon buttons sit on the minimap's rim; pins sit inside it.
-    local cx, cy = child:GetCenter()
-    local mx, my = Minimap:GetCenter()
-    if cx and mx then
-        local s = child:GetEffectiveScale() / Minimap:GetEffectiveScale()
-        local dx, dy = cx * s - mx, cy * s - my
-        local radius = (Minimap:GetWidth() or 140) / 2
-        if (dx * dx + dy * dy) ^ 0.5 < radius * 0.7 then return false end
-    end
-    return true
+    return name:find("^LibDBIcon10_") ~= nil and not child.encoreDrawer
 end
 
 Q:Feature{
@@ -211,10 +180,9 @@ Q:Feature{
     end,
     Collect = function(f, force)
         local added = force
-        -- Give back anything that turned out to be a map pin.
+        -- Give back anything collected by an older, looser rule.
         for b in pairs(f.buttons) do
-            local name = b.GetName and b:GetName() or ""
-            if not name:find("^LibDBIcon10_") and isMapPin(b) then
+            if not isAddonButton(b) then
                 f.buttons[b] = nil
                 b:SetParent(Minimap)
                 added = true
