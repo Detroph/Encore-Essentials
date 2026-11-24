@@ -8,6 +8,8 @@
 - Encore-QoL: Button drawer: the addon buttons sit on top of the drawer again instead of under its background, and the drawer button on the minimap is bigger. It can now be resized (16 to 64) and dragged anywhere, with a lock option (right-click it to lock or unlock) and a reset. The drawer opens on mouseover and closes 0.3 seconds after the mouse leaves (can be turned off to open by click).
 - Encore-QoL: Button drawer picks up addon buttons as soon as they're made at login, instead of up to 5 seconds later, and no longer re-checks the minimap on a timer: only when an addon loads and after each loading screen.
 - Encore-QoL: Move more frames can now move the group loot roll window (Need/Greed/Pass).
+- Encore-QoL: Who rolled what reads the game's own loot history where the client has it: everyone's Need, Greed, Transmog or Pass, their roll, the winner, and who is still choosing come straight from the game instead of chat. Chat lines are still read as a fallback, and now also match when extra text surrounds them.
+- Encore-QoL: Who rolled what windows sit in one tidy column beside the game's loot roll frames, each right above the last, instead of fixed spots that could cover the minimap. Dragged windows stay where you put them.
 - Encore-QoL: `/eqol rolls` prints what Who rolled what last saw in loot chat, to help track down rolls it misses.
 
 ## 0.2.4
