@@ -78,37 +78,44 @@ Q:Feature{
     options = { { kind = "edit", key = "keep", name = "Never sell (item IDs)", tip = "Item IDs separated by commas, e.g. 6256, 2901. Turn on Tooltip IDs on this tab to see them." } },
     detect = { { eqol = "vendorPoorEnable" }, { leatrix = "AutoSellJunk" } },
     Enable = function(f)
+        -- Grey means grey twice over: the bag slot and the item's own info must both say Poor (quality 0).
+        local function isJunk(info, keep)
+            if type(info) ~= "table" or info.quality ~= 0 or info.hasNoValue or not info.itemID or keep[info.itemID] then return false end
+            local _, _, quality, _, _, _, _, _, _, _, price = Q.GetItemInfo(info.itemID)
+            return quality == 0 and (price or 0) > 0, price or 0
+        end
         f:On("MERCHANT_SHOW", function()
+            -- A vendor that fires MERCHANT_SHOW twice must not start a second run over the same slots.
+            if f.sellTicker then f.sellTicker:Cancel() f.sellTicker = nil end
             if Q.Skip() then return end
             local keep = keepList(f:Get("keep"))
-            local queue, total = {}, 0
+            local queue = {}
             for bag = 0, NUM_BAG_SLOTS or 4 do
                 for slot = 1, Q.GetContainerNumSlots(bag) or 0 do
                     local info = Q.GetContainerItemInfo(bag, slot)
-                    if type(info) == "table" and info.quality == 0 and not info.hasNoValue and info.itemID and not keep[info.itemID] then
-                        local price = select(11, Q.GetItemInfo(info.itemID)) or 0
-                        if price > 0 then
-                            queue[#queue + 1] = { bag, slot, info.itemID }
-                            total = total + price * (info.stackCount or 1)
-                        end
-                    end
+                    if isJunk(info, keep) then queue[#queue + 1] = { bag, slot, info.itemID } end
                 end
             end
             if #queue == 0 then return end
-            local i = 0
-            local ticker
-            ticker = C_Timer.NewTicker(0.15, function()
+            local i, sold, total = 0, 0, 0
+            local function finish()
+                if f.sellTicker then f.sellTicker:Cancel() f.sellTicker = nil end
+                if sold > 0 then Q:Print("Sold %d junk item%s for %s.", sold, sold == 1 and "" or "s", Q.Coins(total)) end
+            end
+            f.sellTicker = C_Timer.NewTicker(0.15, function()
                 i = i + 1
                 local item = queue[i]
-                if not item or not MerchantFrame:IsShown() then ticker:Cancel() return end
+                if not item or not MerchantFrame:IsShown() then finish() return end
                 -- Look again right before selling: bags can be sorted or items moved between ticks, and only
                 -- the same grey item may ever be sold from that slot.
                 local now = Q.GetContainerItemInfo(item[1], item[2])
-                if type(now) == "table" and now.itemID == item[3] and now.quality == 0 and not now.isLocked then
+                local junk, price = isJunk(now, keep)
+                if junk and now.itemID == item[3] and not now.isLocked then
                     Q.UseContainerItem(item[1], item[2])
+                    sold, total = sold + 1, total + price * (now.stackCount or 1)
                 end
+                if i >= #queue then finish() end
             end, #queue)
-            Q:Print("Sold %d junk item%s for %s.", #queue, #queue == 1 and "" or "s", Q.Coins(total))
         end)
     end,
 }
