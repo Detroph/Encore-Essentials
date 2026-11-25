@@ -150,6 +150,7 @@ end
 ---------------------------------------------------------------------------
 local pool = {}
 local layout -- set further down
+local updateCounts -- set further down
 local WIDTH, ROW = 230, 18
 
 local function lootFrameFor(rollID)
@@ -347,6 +348,7 @@ local function draw(r)
     end
     for i = n + 1, #w.rows do w.rows[i]:Hide() end
     w:SetHeight(-y + 6)
+    updateCounts(r)
     if feature:Get("hover") then
         -- Only while the mouse is on this roll's Need or Greed button, beside its loot frame.
         local fr = r.hovered
@@ -366,16 +368,39 @@ end
 
 -- Hover mode: hook the Need and Greed (and Transmog) buttons of each game loot roll frame once.
 local hookedFrames = {}
+-- Each roll button with the choice it stands for.
 local function rollButtons(fr)
     local name = fr.GetName and fr:GetName()
     local list = {}
-    local candidates = { fr.NeedButton, fr.GreedButton, fr.TransmogButton,
-        name and _G[name .. "RollButton"], name and _G[name .. "NeedButton"], name and _G[name .. "GreedButton"] }
-    for i = 1, 6 do -- not ipairs: any of them can be missing
-        local b = candidates[i]
-        if type(b) == "table" and b.HookScript then list[b] = true end
+    local candidates = {
+        { fr.NeedButton, "need" }, { fr.GreedButton, "greed" }, { fr.TransmogButton, "transmog" },
+        { name and _G[name .. "RollButton"], "need" }, { name and _G[name .. "NeedButton"], "need" },
+        { name and _G[name .. "GreedButton"], "greed" },
+    }
+    for i = 1, #candidates do -- any of them can be missing
+        local b, choice = candidates[i][1], candidates[i][2]
+        if type(b) == "table" and b.HookScript then list[b] = choice end
     end
     return list
+end
+
+-- A small number under each Need, Greed and Transmog button: how many picked it so far.
+function updateCounts(r)
+    local fr = lootFrameFor(r.id)
+    if not fr then return end
+    local n = { need = 0, greed = 0, transmog = 0 }
+    for _, p in pairs(r.players or {}) do
+        if n[p.choice] then n[p.choice] = n[p.choice] + 1 end
+    end
+    for b, choice in pairs(rollButtons(fr)) do
+        if not b.encoreCount then
+            b.encoreCount = b:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+            b.encoreCount:SetPoint("TOP", b, "BOTTOM", 0, 1)
+        end
+        local c = n[choice] or 0
+        b.encoreCount:SetText(c > 0 and tostring(c) or "")
+        b.encoreCount:SetShown(feature and feature.active and true or false)
+    end
 end
 
 local function hookLootFrame(fr)
