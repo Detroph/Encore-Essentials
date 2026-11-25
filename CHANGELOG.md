@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## 0.2.5.6 (unreleased)
+
+- Encore-QoL: Sell junk checks each bag slot again right before it sells, and only sells when it still holds the same grey item. Before, sorting bags or moving items while the vendor window opened could put a different item in a slot it had planned to sell.
+
 ## 0.2.5.5
 
 - Encore-QoL: Button drawer: the addon buttons are now the top layer, above the drawer's background and border, so they no longer look dark. The layer lock LibDBIcon puts on its buttons is now always lifted before moving them (on WoW Forever the check for it could miss, which kept them under the background). Buttons also stay fully visible in the drawer when an addon fades minimap buttons.
