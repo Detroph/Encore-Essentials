@@ -2,6 +2,7 @@
 
 ## 0.2.5.7 (unreleased)
 
+- Encore-QoL: Who rolled what shows only while the mouse is on a roll's Need or Greed button, right beside that roll (new option "Only while hovering Need or Greed", on). Turn it off to get a window for every roll as before.
 - Encore-QoL: Who rolled what closes 5 seconds after a roll is won or everyone passed (was 20). The "Stays after the roll ends" slider now goes from 1 to 60 seconds in steps of 1.
 
 ## 0.2.5.6
