@@ -89,6 +89,19 @@ Q:Feature{
 }
 
 -- Addon buttons (LibDBIcon and others parented to the minimap) gathered into one drawer.
+-- LibDBIcon locks its buttons at MEDIUM strata, level 8 (SetFixedFrameStrata/Level), so plain SetFrameStrata
+-- calls are ignored. Unlock, move, lock again.
+local function setLayer(b, strata, level)
+    local fs = b.IsFrameStrataFixed and b:IsFrameStrataFixed()
+    local fl = b.IsFrameLevelFixed and b:IsFrameLevelFixed()
+    if fs then b:SetFixedFrameStrata(false) end
+    if fl then b:SetFixedFrameLevel(false) end
+    if strata then b:SetFrameStrata(strata) end
+    if level then b:SetFrameLevel(level) end
+    if fs then b:SetFixedFrameStrata(true) end
+    if fl then b:SetFixedFrameLevel(true) end
+end
+
 -- Only LibDBIcon buttons, the standard minimap button almost every addon uses. Map pins (Questie, HandyNotes,
 -- innkeepers, mailboxes) and hand-made buttons stay on the minimap.
 local function isAddonButton(child)
@@ -189,6 +202,7 @@ Q:Feature{
             if not isAddonButton(b) then
                 f.buttons[b] = nil
                 b:SetParent(Minimap)
+                setLayer(b, "MEDIUM", 8)
                 added = true
             end
         end
@@ -196,7 +210,7 @@ Q:Feature{
             if isAddonButton(child) and not f.buttons[child] then
                 f.buttons[child] = true
                 child:SetParent(f.drawer)
-                if child.SetFrameStrata then child:SetFrameStrata("FULLSCREEN") end
+                setLayer(child, "FULLSCREEN")
                 added = true
             end
         end
@@ -209,8 +223,7 @@ Q:Feature{
         local level = f.drawer:GetFrameLevel() + 5
         for i, b in ipairs(list) do
             -- One strata above the drawer, so the buttons always draw over its background.
-            if b.SetFrameStrata then b:SetFrameStrata("FULLSCREEN") end
-            if b.SetFrameLevel and b:GetFrameLevel() < level then b:SetFrameLevel(level) end
+            setLayer(b, "FULLSCREEN", math.max(level, b:GetFrameLevel()))
             if b.SetAlpha then b:SetAlpha(1) end
             b:ClearAllPoints()
             b:SetPoint("TOPLEFT", f.drawer, "TOPLEFT", 4 + ((i - 1) % cols) * 34, -4 - math.floor((i - 1) / cols) * 34)
@@ -234,7 +247,7 @@ Q:Feature{
     Disable = function(f)
         if f.toggle then f.toggle:Hide() end
         if f.drawer then f.drawer:Hide() end
-        for b in pairs(f.buttons or {}) do b:SetParent(Minimap) end
+        for b in pairs(f.buttons or {}) do b:SetParent(Minimap) setLayer(b, "MEDIUM", 8) end
         f.buttons = {}
     end,
 }
