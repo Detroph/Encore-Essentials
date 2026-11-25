@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## 0.2.5.4 (unreleased)
+
+- Encore-QoL: the button drawer's icon is now a gold "E" on a red disc with a gold rim. Same file name, so a /reload is not enough: restart the game after updating.
+
 ## 0.2.5.3
 
 - Encore-QoL: Button drawer: the addon buttons really sit on top of the drawer now. LibDBIcon locks its buttons' drawing layer, which silently undid the earlier fix; the drawer unlocks it, moves the buttons above its background and locks it again (and puts them back as they were when the drawer is turned off).
