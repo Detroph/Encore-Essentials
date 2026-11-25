@@ -71,51 +71,133 @@ local function keepList(text)
     return keep
 end
 
+-- Sell junk is ported from Dejunk's seller (src/services/seller.lua, Dejunk 3.5.1 by moody,
+-- https://github.com/moody/Dejunk, MIT licence, see NOTICE.txt), cut down to grey items only.
+-- What it keeps from Dejunk: start 0.1 s after the vendor opens; one item per tick at network latency
+-- (at least 0.2 s); every sale re-checks the slot still holds the same item, unlocked and not refundable;
+-- sold slots are remembered and the bags are scanned again in batches; the run stops when the vendor closes
+-- or says it doesn't buy; Safe sell stops after 12 items, all of which the vendor's Buyback tab can return.
+local SAFE_SELL_LIMIT = 12
+local ERR_DOESNT_BUY = _G.ERR_VENDOR_DOESNT_BUY
+
+local function atMerchant() return (MerchantFrame and MerchantFrame:IsShown()) or false end
+
+local function latency()
+    local _, _, home, world = GetNetStats()
+    return math.max(math.max(home or 0, world or 0) * 0.001, 0.2)
+end
+
+local function itemLocation(bag, slot)
+    return ItemLocation and ItemLocation.CreateFromBagAndSlot and ItemLocation:CreateFromBagAndSlot(bag, slot)
+end
+
+local function isLocked(bag, slot, info)
+    local loc = itemLocation(bag, slot)
+    if loc and C_Item and C_Item.IsLocked then
+        local ok, locked = pcall(C_Item.IsLocked, loc)
+        if ok then return locked end
+        return true
+    end
+    return info and info.isLocked or false
+end
+
+local function isRefundable(bag, slot)
+    local fn = (C_Container and C_Container.GetContainerItemPurchaseInfo) or _G.GetContainerItemPurchaseInfo
+    if not fn then return false end
+    local ok, a, b, c, d, e, f, refundSeconds = pcall(fn, bag, slot, false)
+    if not ok then return false end
+    if type(a) == "table" then refundSeconds = a.refundSeconds end
+    return (refundSeconds or 0) > 0
+end
+
+local function containerItemID(bag, slot)
+    if C_Container and C_Container.GetContainerItemID then return C_Container.GetContainerItemID(bag, slot) end
+    local info = Q.GetContainerItemInfo(bag, slot)
+    return type(info) == "table" and info.itemID or nil
+end
+
 Q:Feature{
     id = "sellJunk", tab = "qol", section = "Vendors", name = "Sell junk",
-    desc = "Sells your grey items at any vendor and says how much they brought in.",
-    defaults = { keep = "" },
-    options = { { kind = "edit", key = "keep", name = "Never sell (item IDs)", tip = "Item IDs separated by commas, e.g. 6256, 2901. Turn on Tooltip IDs on this tab to see them." } },
+    desc = "Sells your grey items at any vendor and says how much they brought in. Only ever grey (Poor) items.",
+    defaults = { keep = "", safeSell = true },
+    options = {
+        { kind = "check", key = "safeSell", name = "Safe sell (12 at most)", tip = "Sells at most 12 items per visit, so every one of them can be bought back from the vendor's Buyback tab." },
+        { kind = "edit", key = "keep", name = "Never sell (item IDs)", tip = "Item IDs separated by commas, e.g. 6256, 2901. Turn on Tooltip IDs on this tab to see them." },
+    },
     detect = { { eqol = "vendorPoorEnable" }, { leatrix = "AutoSellJunk" } },
     Enable = function(f)
-        -- Grey means grey twice over: the bag slot and the item's own info must both say Poor (quality 0).
-        local function isJunk(info, keep)
-            if type(info) ~= "table" or info.quality ~= 0 or info.hasNoValue or not info.itemID or keep[info.itemID] then return false end
+        local run = { id = 0, attempted = {}, count = 0, batch = 0, total = 0 }
+
+        -- Junk is grey twice over: the bag slot and the item's own info must both say Poor (quality 0),
+        -- it must have a sell price and must not be on the keep list.
+        local function junkAt(bag, slot, keep)
+            local info = Q.GetContainerItemInfo(bag, slot)
+            if type(info) ~= "table" or info.quality ~= 0 or info.hasNoValue or not info.itemID or keep[info.itemID] then return nil end
             local _, _, quality, _, _, _, _, _, _, _, price = Q.GetItemInfo(info.itemID)
-            return quality == 0 and (price or 0) > 0, price or 0
+            if quality ~= 0 or (price or 0) <= 0 then return nil end
+            return { bag = bag, slot = slot, id = info.itemID, price = price * (info.stackCount or 1) }
         end
-        f:On("MERCHANT_SHOW", function()
-            -- A vendor that fires MERCHANT_SHOW twice must not start a second run over the same slots.
-            if f.sellTicker then f.sellTicker:Cancel() f.sellTicker = nil end
-            if Q.Skip() then return end
+
+        local function stop()
+            if run.ticker then run.ticker:Cancel() run.ticker = nil end
+            run.id = run.id + 1
+            if run.count > 0 then
+                Q:Print("Sold %d junk item%s for %s.", run.count, run.count == 1 and "" or "s", Q.Coins(run.total))
+            end
+            run.count, run.batch, run.total, run.attempted = 0, 0, 0, {}
+        end
+
+        local function fetch()
             local keep = keepList(f:Get("keep"))
-            local queue = {}
+            local list = {}
             for bag = 0, NUM_BAG_SLOTS or 4 do
                 for slot = 1, Q.GetContainerNumSlots(bag) or 0 do
-                    local info = Q.GetContainerItemInfo(bag, slot)
-                    if isJunk(info, keep) then queue[#queue + 1] = { bag, slot, info.itemID } end
+                    local item = junkAt(bag, slot, keep)
+                    if item and run.attempted[bag .. ":" .. slot] ~= item.id then list[#list + 1] = item end
                 end
             end
-            if #queue == 0 then return end
-            local i, sold, total = 0, 0, 0
-            local function finish()
-                if f.sellTicker then f.sellTicker:Cancel() f.sellTicker = nil end
-                if sold > 0 then Q:Print("Sold %d junk item%s for %s.", sold, sold == 1 and "" or "s", Q.Coins(total)) end
-            end
-            f.sellTicker = C_Timer.NewTicker(0.15, function()
-                i = i + 1
-                local item = queue[i]
-                if not item or not MerchantFrame:IsShown() then finish() return end
-                -- Look again right before selling: bags can be sorted or items moved between ticks, and only
-                -- the same grey item may ever be sold from that slot.
-                local now = Q.GetContainerItemInfo(item[1], item[2])
-                local junk, price = isJunk(now, keep)
-                if junk and now.itemID == item[3] and not now.isLocked then
-                    Q.UseContainerItem(item[1], item[2])
-                    sold, total = sold + 1, total + price * (now.stackCount or 1)
+            -- Cheapest last, so table.remove sells the most valuable first (as Dejunk does).
+            table.sort(list, function(a, b) return a.price < b.price end)
+            return list, keep
+        end
+
+        local sellBatch
+        sellBatch = function()
+            if not atMerchant() then return stop() end
+            local list, keep = fetch()
+            if #list == 0 then return stop() end
+            run.batch = 0
+            run.ticker = C_Timer.NewTicker(latency(), function()
+                if not atMerchant() or (f:Get("safeSell") and run.count >= SAFE_SELL_LIMIT) then return stop() end
+                local item = table.remove(list)
+                if not item then
+                    if run.ticker then run.ticker:Cancel() run.ticker = nil end
+                    if run.batch == 0 then return stop() end
+                    -- Let the bags settle, then look again for anything left.
+                    local id = run.id
+                    C_Timer.After(0.4, function() if run.id == id and f.active then sellBatch() end end)
+                    return
                 end
-                if i >= #queue then finish() end
-            end, #queue)
+                -- Still the same grey item in that slot, not locked, not refundable: only then sell.
+                local now = junkAt(item.bag, item.slot, keep)
+                if now and now.id == item.id and containerItemID(item.bag, item.slot) == item.id
+                    and not isLocked(item.bag, item.slot) and not isRefundable(item.bag, item.slot) then
+                    Q.UseContainerItem(item.bag, item.slot)
+                    run.attempted[item.bag .. ":" .. item.slot] = item.id
+                    run.count, run.batch, run.total = run.count + 1, run.batch + 1, run.total + now.price
+                end
+            end)
+        end
+
+        f:On("MERCHANT_SHOW", function()
+            stop()
+            if Q.Skip() then return end
+            local id = run.id
+            C_Timer.After(0.1, function() if run.id == id and f.active then sellBatch() end end)
+        end)
+        f:On("MERCHANT_CLOSED", stop)
+        f:On("UI_ERROR_MESSAGE", function(_, _, msg)
+            if ERR_DOESNT_BUY and msg == ERR_DOESNT_BUY then stop() end
         end)
     end,
 }
