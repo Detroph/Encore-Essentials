@@ -1,6 +1,6 @@
 # Encore Essentials
 
-## 0.2.5.3 (unreleased)
+## 0.2.5.3
 
 - Encore-QoL: Button drawer: the addon buttons really sit on top of the drawer now. LibDBIcon locks its buttons' drawing layer, which silently undid the earlier fix; the drawer unlocks it, moves the buttons above its background and locks it again (and puts them back as they were when the drawer is turned off).
 
