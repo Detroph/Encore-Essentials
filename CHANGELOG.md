@@ -1,6 +1,6 @@
 # Encore Essentials
 
-## 0.2.5.7 (unreleased)
+## 0.2.5.7
 
 - Encore-QoL: Who rolled what puts a small number under the Need and Greed buttons of each loot roll: how many players picked it so far. Hover the button for who picked what.
 - Encore-QoL: Who rolled what shows only while the mouse is on a roll's Need or Greed button, right beside that roll (new option "Only while hovering Need or Greed", on). Turn it off to get a window for every roll as before.
