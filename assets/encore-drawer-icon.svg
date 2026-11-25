@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <!-- Encore-QoL button drawer icon: a shaded leather drawstring bag on a red disc with a gold rim. Bold shape, light texture, reads at 32 px. -->
+  <!-- Encore-QoL button drawer icon: a gold Marcellus SC "E" on a red disc with a gold rim. Needs Marcellus SC (EncoreEssentials_QoL/Media/MarcellusSC.ttf) to render. -->
   <defs>
     <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#fff0c4"/><stop offset=".3" stop-color="#f4b866"/><stop offset=".55" stop-color="#c47a2c"/>
@@ -8,52 +8,10 @@
     <radialGradient id="field" cx=".45" cy=".35" r=".7">
       <stop offset="0" stop-color="#d3170f"/><stop offset=".6" stop-color="#8f0805"/><stop offset="1" stop-color="#3c0100"/>
     </radialGradient>
-    <radialGradient id="leather" cx=".35" cy=".35" r=".85">
-      <stop offset="0" stop-color="#d89a55"/><stop offset=".45" stop-color="#a5602a"/><stop offset=".85" stop-color="#5e2c0c"/><stop offset="1" stop-color="#3a1805"/>
-    </radialGradient>
-    <linearGradient id="neck" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#c47e3e"/><stop offset=".45" stop-color="#e0a865"/><stop offset="1" stop-color="#6b330f"/>
-    </linearGradient>
-    <radialGradient id="gem" cx=".35" cy=".3" r=".8">
-      <stop offset="0" stop-color="#e6ffff"/><stop offset=".4" stop-color="#22d6d6"/><stop offset="1" stop-color="#035c5d"/>
-    </radialGradient>
-    <pattern id="grain" width="14" height="14" patternUnits="userSpaceOnUse">
-      <circle cx="3" cy="4" r="1.6" fill="#2a1004" fill-opacity=".22"/><circle cx="10" cy="10" r="1.3" fill="#2a1004" fill-opacity=".18"/>
-      <circle cx="9" cy="2" r="1" fill="#fff2d0" fill-opacity=".12"/>
-    </pattern>
-    <filter id="drop" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity=".55"/></filter>
-    <clipPath id="bodyClip"><path d="M214 196C150 232 120 290 128 340C136 388 186 410 256 410C326 410 376 388 384 340C392 290 362 232 298 196Z"/></clipPath>
+    <filter id="drop" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000" flood-opacity=".6"/></filter>
   </defs>
-  <!-- rim and field -->
   <circle cx="256" cy="256" r="240" fill="url(#gold)" stroke="#1d0802" stroke-width="10"/>
   <circle cx="256" cy="256" r="222" fill="none" stroke="#fff0c4" stroke-opacity=".35" stroke-width="4"/>
   <circle cx="256" cy="256" r="210" fill="url(#field)" stroke="#1d0802" stroke-width="9"/>
-  <ellipse cx="256" cy="420" rx="120" ry="16" fill="#000" fill-opacity=".4"/>
-  <g transform="translate(256 270) scale(1.1) translate(-256 -270)">
-    <g filter="url(#drop)" stroke="#1d0802" stroke-linejoin="round" stroke-linecap="round">
-      <!-- ruffled neck -->
-      <path d="M180 140C192 126 210 138 222 128C234 120 246 134 256 126C266 134 278 120 290 128C302 138 320 126 332 140L298 198H214Z" fill="url(#neck)" stroke-width="12"/>
-      <!-- body -->
-      <path d="M214 196C150 232 120 290 128 340C136 388 186 410 256 410C326 410 376 388 384 340C392 290 362 232 298 196Z" fill="url(#leather)" stroke-width="12"/>
-    </g>
-    <!-- grain, folds and light on the body -->
-    <g clip-path="url(#bodyClip)">
-      <rect x="100" y="180" width="320" height="250" fill="url(#grain)"/>
-      <path d="M232 206C214 250 206 300 214 352M286 206C300 244 306 284 300 330" fill="none" stroke="#2a1004" stroke-opacity=".35" stroke-width="7" stroke-linecap="round"/>
-      <path d="M170 260C154 290 150 322 160 352" fill="none" stroke="#ffe2b0" stroke-opacity=".45" stroke-width="10" stroke-linecap="round"/>
-      <path d="M150 380C200 404 312 404 362 380L370 420H142Z" fill="#000" fill-opacity=".25"/>
-    </g>
-    <!-- neck folds -->
-    <path d="M226 150L234 194M256 140V194M286 150L278 194" stroke="#5e2c0c" stroke-opacity=".55" stroke-width="5" stroke-linecap="round"/>
-    <!-- gold drawstring with hanging ends -->
-    <path d="M204 198Q256 214 308 198" fill="none" stroke="#1d0802" stroke-width="18" stroke-linecap="round"/>
-    <path d="M204 198Q256 214 308 198" fill="none" stroke="url(#gold)" stroke-width="10" stroke-linecap="round"/>
-    <path d="M296 206C306 226 300 244 290 256" fill="none" stroke="#1d0802" stroke-width="12" stroke-linecap="round"/>
-    <path d="M296 206C306 226 300 244 290 256" fill="none" stroke="url(#gold)" stroke-width="6" stroke-linecap="round"/>
-    <circle cx="289" cy="262" r="9" fill="url(#gold)" stroke="#1d0802" stroke-width="5"/>
-    <!-- clasp: gold ring and teal gem with a highlight -->
-    <circle cx="256" cy="318" r="44" fill="url(#gold)" stroke="#1d0802" stroke-width="10"/>
-    <circle cx="256" cy="318" r="30" fill="url(#gem)" stroke="#1d0802" stroke-width="6"/>
-    <ellipse cx="246" cy="306" rx="10" ry="7" fill="#fff" fill-opacity=".75"/>
-  </g>
+  <text x="256" y="372" text-anchor="middle" font-family="Marcellus SC" font-size="340" fill="url(#gold)" stroke="#1d0802" stroke-width="14" paint-order="stroke" filter="url(#drop)">E</text>
 </svg>
