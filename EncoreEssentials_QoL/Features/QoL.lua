@@ -88,7 +88,7 @@ Q:Feature{
                     if type(info) == "table" and info.quality == 0 and not info.hasNoValue and info.itemID and not keep[info.itemID] then
                         local price = select(11, Q.GetItemInfo(info.itemID)) or 0
                         if price > 0 then
-                            queue[#queue + 1] = { bag, slot }
+                            queue[#queue + 1] = { bag, slot, info.itemID }
                             total = total + price * (info.stackCount or 1)
                         end
                     end
@@ -101,7 +101,12 @@ Q:Feature{
                 i = i + 1
                 local item = queue[i]
                 if not item or not MerchantFrame:IsShown() then ticker:Cancel() return end
-                Q.UseContainerItem(item[1], item[2])
+                -- Look again right before selling: bags can be sorted or items moved between ticks, and only
+                -- the same grey item may ever be sold from that slot.
+                local now = Q.GetContainerItemInfo(item[1], item[2])
+                if type(now) == "table" and now.itemID == item[3] and now.quality == 0 and not now.isLocked then
+                    Q.UseContainerItem(item[1], item[2])
+                end
             end, #queue)
             Q:Print("Sold %d junk item%s for %s.", #queue, #queue == 1 and "" or "s", Q.Coins(total))
         end)
