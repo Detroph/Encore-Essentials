@@ -366,14 +366,14 @@ local function draw(r)
     if not w.moved then layout() end
 end
 
--- Hover mode: hook the Need and Greed (and Transmog) buttons of each game loot roll frame once.
+-- Hover mode: hook the Need and Greed buttons of each game loot roll frame once.
 local hookedFrames = {}
 -- Each roll button with the choice it stands for.
 local function rollButtons(fr)
     local name = fr.GetName and fr:GetName()
     local list = {}
     local candidates = {
-        { fr.NeedButton, "need" }, { fr.GreedButton, "greed" }, { fr.TransmogButton, "transmog" },
+        { fr.NeedButton, "need" }, { fr.GreedButton, "greed" },
         { name and _G[name .. "RollButton"], "need" }, { name and _G[name .. "NeedButton"], "need" },
         { name and _G[name .. "GreedButton"], "greed" },
     }
@@ -384,11 +384,11 @@ local function rollButtons(fr)
     return list
 end
 
--- A small number under each Need, Greed and Transmog button: how many picked it so far.
+-- A small number under each Need and Greed button: how many picked it so far.
 function updateCounts(r)
     local fr = lootFrameFor(r.id)
     if not fr then return end
-    local n = { need = 0, greed = 0, transmog = 0 }
+    local n = { need = 0, greed = 0 }
     for _, p in pairs(r.players or {}) do
         if n[p.choice] then n[p.choice] = n[p.choice] + 1 end
     end
