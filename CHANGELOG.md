@@ -1,5 +1,16 @@
 # Encore Essentials
 
+## 0.2.5
+
+Full release of everything in the 0.2.5.1 to 0.2.5.7 betas below. In short, for Encore-QoL:
+
+- Who rolled what reads the game's loot history and the newer loot chat. It shows only while you hover a roll's Need or Greed button, with pick counts under those buttons, and closes 5 seconds after the roll ends.
+- Sell junk is ported from Dejunk (MIT) and only ever sells grey items, with Safe sell (12 items per visit, all buy-back-able) on.
+- Button drawer: LibDBIcon addon buttons only, on top of the drawer, opens on mouseover, movable and resizable, with the muted Encore star as its icon.
+- Login UI scaling with Auto, Custom and pixel-perfect presets.
+- Move more frames can move the group loot roll window.
+- Warsong Gulch round timer matches the mock-up; borders keep every edge at small UI scales.
+
 ## 0.2.5.7
 
 - Encore-QoL: Who rolled what puts a small number under the Need and Greed buttons of each loot roll: how many players picked it so far. Hover the button for who picked what.
