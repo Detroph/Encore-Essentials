@@ -92,18 +92,33 @@ Q:Feature{
 -- LibDBIcon locks its buttons at MEDIUM strata, level 8 (SetFixedFrameStrata/Level), so plain SetFrameStrata
 -- calls are ignored. Unlock, move, lock again.
 local function setLayer(b, strata, level)
-    local fs = b.IsFrameStrataFixed and b:IsFrameStrataFixed()
-    local fl = b.IsFrameLevelFixed and b:IsFrameLevelFixed()
-    if fs then b:SetFixedFrameStrata(false) end
-    if fl then b:SetFixedFrameLevel(false) end
+    -- Always unlock when the client can: some clients have SetFixedFrameStrata but no IsFrameStrataFixed, and
+    -- asking first left the lock on, so the new strata was silently ignored. LibDBIcon wants them locked again.
+    if b.SetFixedFrameStrata then b:SetFixedFrameStrata(false) end
+    if b.SetFixedFrameLevel then b:SetFixedFrameLevel(false) end
     if strata then b:SetFrameStrata(strata) end
     if level then b:SetFrameLevel(level) end
-    if fs then b:SetFixedFrameStrata(true) end
-    if fl then b:SetFixedFrameLevel(true) end
+    if b.SetFixedFrameStrata then b:SetFixedFrameStrata(true) end
+    if b.SetFixedFrameLevel then b:SetFixedFrameLevel(true) end
 end
 
--- Only LibDBIcon buttons, the standard minimap button almost every addon uses. Map pins (Questie, HandyNotes,
--- innkeepers, mailboxes) and hand-made buttons stay on the minimap.
+-- Collected buttons always show at full strength. LibDBIcon's mouseover fade (and other addons that fade
+-- minimap buttons) set their alpha or run a fade animation; inside the drawer both are undone.
+local function keepOpaque(f, b)
+    if b.fadeOut and b.fadeOut.Stop then b.fadeOut:Stop() end
+    if b.SetIgnoreParentAlpha then b:SetIgnoreParentAlpha(true) end
+    if b.SetAlpha then b:SetAlpha(1) end
+    if b.encoreAlphaHooked or not b.SetAlpha then return end
+    b.encoreAlphaHooked = true
+    hooksecurefunc(b, "SetAlpha", function(self, a)
+        if f.buttons and f.buttons[self] and f.active and (a or 1) < 1 and not self.encoreAlphaFix then
+            self.encoreAlphaFix = true
+            self:SetAlpha(1)
+            self.encoreAlphaFix = nil
+        end
+    end)
+end
+
 local function isAddonButton(child)
     local name = child.GetName and child:GetName() or ""
     return name:find("^LibDBIcon10_") ~= nil and not child.encoreDrawer
@@ -149,7 +164,7 @@ Q:Feature{
             local drawer = CreateFrame("Frame", nil, UIParent)
             drawer.encoreDrawer = true
             drawer:SetScript("OnShow", function()
-                for b in pairs(f.buttons or {}) do if b.SetAlpha then b:SetAlpha(1) end end
+                for b in pairs(f.buttons or {}) do keepOpaque(f, b) end
             end)
             drawer:SetPoint("TOPRIGHT", t, "BOTTOMLEFT", 0, 0)
             drawer:SetFrameStrata("DIALOG")
@@ -202,6 +217,7 @@ Q:Feature{
             if not isAddonButton(b) then
                 f.buttons[b] = nil
                 b:SetParent(Minimap)
+                if b.SetIgnoreParentAlpha then b:SetIgnoreParentAlpha(false) end
                 setLayer(b, "MEDIUM", 8)
                 added = true
             end
@@ -210,7 +226,7 @@ Q:Feature{
             if isAddonButton(child) and not f.buttons[child] then
                 f.buttons[child] = true
                 child:SetParent(f.drawer)
-                setLayer(child, "FULLSCREEN")
+                setLayer(child, "FULLSCREEN_DIALOG")
                 added = true
             end
         end
@@ -222,9 +238,9 @@ Q:Feature{
         -- Buttons keep the minimap's low frame level when moved; lift them above the drawer's background.
         local level = f.drawer:GetFrameLevel() + 5
         for i, b in ipairs(list) do
-            -- One strata above the drawer, so the buttons always draw over its background.
-            setLayer(b, "FULLSCREEN", math.max(level, b:GetFrameLevel()))
-            if b.SetAlpha then b:SetAlpha(1) end
+            -- Two stratas above the drawer (DIALOG), so the buttons always draw over its background and border.
+            setLayer(b, "FULLSCREEN_DIALOG", math.max(level, b:GetFrameLevel()))
+            keepOpaque(f, b)
             b:ClearAllPoints()
             b:SetPoint("TOPLEFT", f.drawer, "TOPLEFT", 4 + ((i - 1) % cols) * 34, -4 - math.floor((i - 1) / cols) * 34)
         end
@@ -247,7 +263,11 @@ Q:Feature{
     Disable = function(f)
         if f.toggle then f.toggle:Hide() end
         if f.drawer then f.drawer:Hide() end
-        for b in pairs(f.buttons or {}) do b:SetParent(Minimap) setLayer(b, "MEDIUM", 8) end
+        for b in pairs(f.buttons or {}) do
+            b:SetParent(Minimap)
+            if b.SetIgnoreParentAlpha then b:SetIgnoreParentAlpha(false) end
+            setLayer(b, "MEDIUM", 8)
+        end
         f.buttons = {}
     end,
 }
