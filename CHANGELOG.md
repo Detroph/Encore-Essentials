@@ -1,6 +1,6 @@
 # Encore Essentials
 
-## 0.2.5.6 (unreleased)
+## 0.2.5.6
 
 - Encore-QoL: Sell junk could sell a non-grey item (an uncommon bow was sold). It is now ported from Dejunk (MIT), a long-standing sell-junk addon, cut down to grey items only: it starts a moment after the vendor opens, sells one item at a time at your network latency, checks right before every sale that the slot still holds the same grey item (also by the item's own info) and that it isn't locked or refundable, scans the bags again in batches, and stops when the vendor closes or doesn't buy. New option Safe sell (on): at most 12 items per visit, so all of them can be bought back from the Buyback tab. The chat line counts what was really sold.
 
