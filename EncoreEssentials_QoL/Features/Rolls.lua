@@ -365,7 +365,7 @@ end
 local function finish(r)
     if r.over then return end
     r.over = true
-    local keep = feature:Get("keep") or 20
+    local keep = feature:Get("keep") or 5
     r.doneAt = GetTime()
     C_Timer.After(keep, function()
         if rolls[r.id] == r then release(r) end
@@ -429,7 +429,7 @@ local function syncDrop(encounterID, lootListID)
     if r.winner or r.allPassed then
         if not r.over then
             r.over = true
-            local keep = feature:Get("keep") or 20
+            local keep = feature:Get("keep") or 5
             C_Timer.After(keep, function() if rolls[r.id] == r then release(r) end end)
         end
     end
@@ -455,10 +455,10 @@ end
 feature = Q:Feature{
     id = "whoRolled", tab = "qol", section = "Loot and bags", name = "Who rolled what",
     desc = "A small window next to each group loot roll: who picked Need, Greed or Pass, what each one rolled, who won, and who is still choosing.",
-    defaults = { keep = 20, waiting = true },
+    defaults = { keep = 5, waiting = true },
     options = {
         { kind = "check", key = "waiting", name = "Show who is still choosing" },
-        { kind = "slider", key = "keep", name = "Stays after the roll ends", min = 5, max = 120, step = 5, fmt = function(v) return v .. " s" end },
+        { kind = "slider", key = "keep", name = "Stays after the roll ends", min = 1, max = 60, step = 1, fmt = function(v) return v .. " s" end },
         { kind = "note", text = "Drag a window to move it; the cross closes it. Hover the item for its tooltip." },
     },
     detect = { { addon = "RollTracker" }, { addon = "RollTrackerClassic" }, { addon = "LootRollTracker" } },
