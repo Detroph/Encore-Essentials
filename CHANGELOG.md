@@ -1,6 +1,6 @@
 # Encore Essentials
 
-## 0.2.5.4 (unreleased)
+## 0.2.5.4
 
 - Encore-QoL: the button drawer's icon is now the Encore star with a teal gem, in softer muted tones, on the Encore frame (gold rim, teal ring, red field). Same file name, so a /reload is not enough: restart the game after updating.
 
