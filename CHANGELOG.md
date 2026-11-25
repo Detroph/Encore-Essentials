@@ -1,6 +1,6 @@
 # Encore Essentials
 
-## 0.2.5.5 (unreleased)
+## 0.2.5.5
 
 - Encore-QoL: Button drawer: the addon buttons are now the top layer, above the drawer's background and border, so they no longer look dark. The layer lock LibDBIcon puts on its buttons is now always lifted before moving them (on WoW Forever the check for it could miss, which kept them under the background). Buttons also stay fully visible in the drawer when an addon fades minimap buttons.
 
