@@ -246,6 +246,7 @@ local feature
 -- All windows that weren't dragged sit in one column beside the game's loot roll frames, oldest at the bottom,
 -- each right on top of the one before, so they never land on the minimap or overlap each other.
 function layout()
+    if feature and feature:Get("hover") then return end -- hover mode: the window sits beside the hovered roll frame
     local container = _G.GroupLootContainer
     local prev
     for _, r in ipairs(order) do
@@ -346,8 +347,62 @@ local function draw(r)
     end
     for i = n + 1, #w.rows do w.rows[i]:Hide() end
     w:SetHeight(-y + 6)
+    if feature:Get("hover") then
+        -- Only while the mouse is on this roll's Need or Greed button, beside its loot frame.
+        local fr = r.hovered
+        if fr and fr:IsShown() then
+            w:ClearAllPoints()
+            w:SetPoint("BOTTOMRIGHT", fr, "BOTTOMLEFT", -6, 0)
+            w:SetClampedToScreen(true)
+            w:Show()
+        else
+            w:Hide()
+        end
+        return
+    end
     w:Show()
     if not w.moved then layout() end
+end
+
+-- Hover mode: hook the Need and Greed (and Transmog) buttons of each game loot roll frame once.
+local hookedFrames = {}
+local function rollButtons(fr)
+    local name = fr.GetName and fr:GetName()
+    local list = {}
+    local candidates = { fr.NeedButton, fr.GreedButton, fr.TransmogButton,
+        name and _G[name .. "RollButton"], name and _G[name .. "NeedButton"], name and _G[name .. "GreedButton"] }
+    for i = 1, 6 do -- not ipairs: any of them can be missing
+        local b = candidates[i]
+        if type(b) == "table" and b.HookScript then list[b] = true end
+    end
+    return list
+end
+
+local function hookLootFrame(fr)
+    if not fr or hookedFrames[fr] then return end
+    hookedFrames[fr] = true
+    for b in pairs(rollButtons(fr)) do
+        b:HookScript("OnEnter", function()
+            if not (feature and feature.active and feature:Get("hover")) then return end
+            local r = fr.rollID and rolls[fr.rollID]
+            if not r or r.dismissed then return end
+            r.hovered = fr
+            local ok, err = pcall(draw, r)
+            if not ok then geterrorhandler()(err) end
+        end)
+        b:HookScript("OnLeave", function()
+            local r = fr.rollID and rolls[fr.rollID]
+            if r then r.hovered = nil if r.window and feature:Get("hover") then r.window:Hide() end end
+        end)
+    end
+end
+
+local function hookAllLootFrames()
+    local container = _G.GroupLootContainer
+    if type(container) == "table" and type(container.rollFrames) == "table" then
+        for _, fr in pairs(container.rollFrames) do hookLootFrame(fr) end
+    end
+    for i = 1, tonumber(NUM_GROUP_LOOT_FRAMES) or 4 do hookLootFrame(_G["GroupLootFrame" .. i]) end
 end
 
 local function release(r)
@@ -455,8 +510,9 @@ end
 feature = Q:Feature{
     id = "whoRolled", tab = "qol", section = "Loot and bags", name = "Who rolled what",
     desc = "A small window next to each group loot roll: who picked Need, Greed or Pass, what each one rolled, who won, and who is still choosing.",
-    defaults = { keep = 5, waiting = true },
+    defaults = { keep = 5, waiting = true, hover = true },
     options = {
+        { kind = "check", key = "hover", name = "Only while hovering Need or Greed", tip = "Shows the window only while the mouse is on a roll's Need or Greed button, next to that roll. Off: a window opens for every roll and stays until a few seconds after it ends." },
         { kind = "check", key = "waiting", name = "Show who is still choosing" },
         { kind = "slider", key = "keep", name = "Stays after the roll ends", min = 1, max = 60, step = 1, fmt = function(v) return v .. " s" end },
         { kind = "note", text = "Drag a window to move it; the cross closes it. Hover the item for its tooltip." },
@@ -471,7 +527,10 @@ feature = Q:Feature{
             rolls[rollID] = r
             order[#order + 1] = r
             -- The game places its frame a moment later.
-            C_Timer.After(0.05, function() if rolls[rollID] == r then redraw(r) syncLatest() end end)
+            C_Timer.After(0.05, function()
+                hookAllLootFrames()
+                if rolls[rollID] == r then redraw(r) syncLatest() end
+            end)
         end)
         f:On("LOOT_HISTORY_UPDATE_DROP", function(_, encounterID, lootListID) syncDrop(encounterID, lootListID) end)
         f:On("LOOT_HISTORY_UPDATE_ENCOUNTER", function(_, encounterID) syncEncounter(encounterID) end)
