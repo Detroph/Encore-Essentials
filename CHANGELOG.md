@@ -2,7 +2,7 @@
 
 ## 0.2.5.6 (unreleased)
 
-- Encore-QoL: Sell junk checks each bag slot again right before it sells, and only sells when it still holds the same grey item. Before, sorting bags or moving items while the vendor window opened could put a different item in a slot it had planned to sell.
+- Encore-QoL: Sell junk could sell a non-grey item (an uncommon bow was sold). It planned which bag slots to sell when the vendor opened and sold them one by one without looking again, so an item moved into one of those slots (bag sorting, a second vendor window event starting a second run) could be sold. Now each slot is checked again right before it sells, an item is only sold when both the bag and the item's own info say it is grey, a second run never starts over the first, and the chat line counts what was really sold.
 
 ## 0.2.5.5
 
