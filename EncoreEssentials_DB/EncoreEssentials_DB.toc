@@ -16,6 +16,8 @@ Data\Wings.lua
 Data\Quests-questie.lua
 Data\Quests-fillin.lua
 DB.lua
+LootData.lua
+Tooltip.lua
 QuestData.lua
 Templates.xml
 Window.lua

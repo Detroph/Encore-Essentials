@@ -151,6 +151,22 @@ local DB_PAGE = {
     { kind = "checkbox", key = "DBRandomOpen", name = L.OPT_DB_RANDOM, tooltip = L.OPT_DB_RANDOM_TIP, default = false,
         get = function() return dbSettings().randomOpen == true end,
         set = function(v) dbSettings().randomOpen = v or nil; dbChanged("randomOpen") end },
+    { kind = "checkbox", key = "DBPrices", name = L.OPT_DB_PRICES, tooltip = L.OPT_DB_PRICES_TIP, default = true,
+        get = function() return dbSettings().ahPrices ~= false end,
+        set = function(v)
+            if v then dbSettings().ahPrices = nil else dbSettings().ahPrices = false end
+            dbChanged("ahPrices")
+        end },
+    { kind = "header", text = L.OPT_DB_TOOLTIPS },
+    { kind = "checkbox", key = "DBTooltipSources", name = L.OPT_DB_SOURCES, tooltip = L.OPT_DB_SOURCES_TIP, default = true,
+        get = function() return dbSettings().tooltipSources ~= false end,
+        set = function(v) if v then dbSettings().tooltipSources = nil else dbSettings().tooltipSources = false end end },
+    { kind = "checkbox", key = "DBLoadAtLogin", name = L.OPT_DB_LOGIN, tooltip = L.OPT_DB_LOGIN_TIP, default = false,
+        get = function() return dbSettings().loadAtLogin == true end,
+        set = function(v)
+            dbSettings().loadAtLogin = v or nil
+            if v then Encore:LoadModule("DB", "EncoreEssentials_DB") end
+        end },
     { kind = "header", text = L.OPT_DB_DUNGEONS },
     { kind = "checkbox", key = "DBSplitBRS", name = L.OPT_DB_BRS, tooltip = L.OPT_DB_BRS_TIP, default = false,
         get = function() return dbSettings().splitBRS == true end,

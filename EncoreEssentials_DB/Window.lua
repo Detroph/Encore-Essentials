@@ -333,6 +333,13 @@ local function cellFromInfo(id, info, extra)
     if extra then
         for k, v in pairs(extra) do c[k] = v end
     end
+    -- AH column: Encore-Stonks' 7-day average, when it has prices for the item
+    local ah = ns.LootData and ns.LootData.Price(id)
+    if ah then
+        local sv = {}
+        for k, v in pairs(c.sortv or {}) do sv[k] = v end
+        sv.ah, c.sortv, c.ah = ah, sv, ns.LootData.CoinShort(ah)
+    end
     return c
 end
 
@@ -1179,12 +1186,13 @@ local COLUMNS = {
     { key = "type", w = 82, head = "Type" },
     { key = "standing", w = 76, head = "Needs" },
     { key = "cost", w = 92, head = "Price", right = true },
+    { key = "ah", w = 92, head = "AH", right = true },
     { key = "chance", w = 46, head = "Chance", right = true },
     { key = "from", w = 140, head = "From" },
 }
 -- Columns dropped in this order when the items side by side are too narrow for them (the item tooltip still
 -- shows them). Chance and price always stay.
-local DROP_FIRST = { "req", "ilvl", "from", "type", "standing", "slot", "skill" }
+local DROP_FIRST = { "req", "ilvl", "from", "ah", "type", "standing", "slot", "skill" }
 
 local function listWidth()
     local w = lootList and lootList:GetWidth()
@@ -2422,6 +2430,9 @@ function DB:ApplyOption(key)
         end
         state.boss, state.randomOpen, whereIndex = 1, {}, nil
         renderAll()
+    elseif key == "ahPrices" then
+        if ns.LootData then ns.LootData.ResetPrices() end
+        renderLoot(true)
     elseif key == "randomOpen" then
         state.randomOpen = {}
         renderLoot(true)

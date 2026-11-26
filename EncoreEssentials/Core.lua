@@ -207,6 +207,10 @@ frame:SetScript("OnEvent", function(self, event, arg1)
             Encore:Print(L.LOADED, "Encore Essentials " .. Encore.version, "/encore")
         end
         C_Timer.After(4, function() Encore:CheckWhatsNew() end)
+        local dbw = Encore.db.settings.dbWindow
+        if type(dbw) == "table" and dbw.loadAtLogin and C_AddOns.DoesAddOnExist("EncoreEssentials_DB") then
+            C_Timer.After(2, function() C_AddOns.LoadAddOn("EncoreEssentials_DB") end)
+        end
     end
 end)
 frame:RegisterEvent("ADDON_LOADED")
