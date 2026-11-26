@@ -14,6 +14,7 @@ Core.lua
 UI\Kit.lua
 WhatsNew.lua
 Services.lua
+Wishlist.lua
 Hub.lua
 Minimap.lua
 QuestRewards.lua
