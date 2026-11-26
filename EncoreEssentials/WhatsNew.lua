@@ -60,10 +60,10 @@ local function build()
     local UI = Encore.UI
     window = UI.Window({ name = "EncoreEssentialsWhatsNew", width = 420, height = 200 })
     window.lines = {}
-    window.ok = UI.Button(window, L.WHATSNEW_OK, function() window:Hide() end, 100)
-    window.ok:SetPoint("BOTTOMRIGHT", -14, 12)
-    window.hint = UI.Text(window, "GameFontDisableSmall", L.WHATSNEW_AGAIN)
-    window.hint:SetPoint("BOTTOMLEFT", 14, 17)
+    window.ok = UI.Button(window.well, L.WHATSNEW_OK, function() window:Hide() end, 100)
+    window.ok:SetPoint("BOTTOMRIGHT", window, "BOTTOMRIGHT", -14, 14)
+    window.hint = UI.Text(window.well, "GameFontDisableSmall", L.WHATSNEW_AGAIN)
+    window.hint:SetPoint("BOTTOMLEFT", window, "BOTTOMLEFT", 16, 19)
 end
 
 local function line(i)

@@ -120,8 +120,8 @@ local function fade(tex, bottom, top)
     UI.Fade(tex, "VERTICAL", bottom[1], bottom[2], bottom[3], 1, top[1], top[2], top[3], 1)
 end
 
--- The Encore button: copper edge, red fade when it is the main action (or a toggle that is on), dark when it is
--- not. style "dark" starts it dark. b:SetOn(on) switches between the two (mode buttons, tabs).
+-- The Encore button: copper edge on a dark fade, as Encore-DB and Encore-Stonks have them. Red is for what is
+-- picked: b:SetOn(true) lights it (the chosen mode or tab), style "on" starts it lit.
 function UI.Button(parent, text, onClick, width, style)
     local b = CreateFrame("Button", nil, parent)
     b:SetSize(width or 120, 22)
@@ -150,7 +150,7 @@ function UI.Button(parent, text, onClick, width, style)
     end
     b:SetScript("OnEnable", function(self) self.bgOn:SetAlpha(1); self.bgOff:SetAlpha(1) end)
     b:SetScript("OnDisable", function(self) self.bgOn:SetAlpha(0.4); self.bgOff:SetAlpha(0.6) end)
-    b:SetOn(style ~= "dark")
+    b:SetOn(style == "on")
     b:SetText(text or "")
     b:SetScript("OnClick", function(self, button) if onClick then onClick(self, button) end end)
     return b
@@ -200,12 +200,12 @@ UI.CREST = UI.MEDIA .. "encore-crest"
 -- given), the frame tinted copper, the gem in the bottom corner.
 -- frame.title is the title text, so frame.title:SetText() works on every Encore window.
 function UI.Skin(f, icon, dark)
-    -- The frame's own background, as Encore-DB has it; dark = true lays a near-black one over it (the profession
+    -- The frame's own background, as Encore-DB has it; dark = true lays a dark brown one over it (the profession
     -- window's darkness, for panels beside it).
     if dark then
         local bg = f:CreateTexture(nil, "BACKGROUND", nil, 2)
         bg:SetPoint("TOPLEFT", 4, -22); bg:SetPoint("BOTTOMRIGHT", -4, 4)
-        bg:SetColorTexture(0.02, 0.016, 0.012, 0.92)
+        bg:SetColorTexture(0.20, 0.16, 0.12, 0.95)
         f.encoreBg = bg
     end
     local portrait = f.GetPortrait and f:GetPortrait() or f.portrait
@@ -253,9 +253,13 @@ function UI.Window(o)
     f.header:SetPoint("TOPRIGHT", -14, -28)
     f.header:SetHeight(26)
 
-    f.content = CreateFrame("Frame", nil, f)
-    f.content:SetPoint("TOPLEFT", 14, -60)
-    f.content:SetPoint("BOTTOMRIGHT", -14, 14)
+    -- The content sits in a dark pane, as in Encore-DB
+    f.well = UI.Well(f)
+    f.well:SetPoint("TOPLEFT", f, "TOPLEFT", 8, -56)
+    f.well:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -8, 8)
+    f.content = CreateFrame("Frame", nil, f.well)
+    f.content:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -60)
+    f.content:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -14, 14)
 
     if o.name then tinsert(UISpecialFrames, o.name) end
     return f
