@@ -4,6 +4,7 @@
 
 - Prices show as gold, silver and copper with the game's coin icons everywhere: Encore-Professions, Encore-Alts, Encore-DB's AH and Profit columns and wishlist alerts showed raw copper ("4499700c") because WoW Forever has no GetCoinTextureString.
 - Encore-Professions: the levelling guide sits further right so it no longer covers the profession tabs on the side of the profession window, and is a little wider so costs fit.
+- Encore-Professions: where to farm, fish or skin never suggests the other faction's zones, and your own side's zones (where nobody can attack you) come first at the same level. Where to fish lists your side's starting zones as one "Starting zones" entry and your capital cities as one "Cities" entry; hover them for the zones.
 
 ## 0.2.6.1
 
