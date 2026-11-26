@@ -19,6 +19,7 @@ Features\ActionBars.lua
 Features\Interface.lua
 Features\Visual.lua
 Features\Combat.lua
+Features\Errands.lua
 Professions\Fishing.lua
 Professions\Trainer.lua
 UI\Window.lua
