@@ -51,6 +51,15 @@ function Q:InitDB()
     self.profDB = initTable("EncoreQoLProfDB")
     if type(self.db.window) ~= "table" then self.db.window = {} end
     if type(self.db.seen) ~= "table" then self.db.seen = {} end
+    -- The title font moved to EncoreEssentials/Media (0.2.6): point saved font choices at the new file.
+    local old, new = "Interface\\AddOns\\EncoreEssentials_QoL" .. "\\Media\\MarcellusSC.ttf", Q.MEDIA .. "MarcellusSC.ttf"
+    for _, root in ipairs({ self.db, self.profDB }) do
+        for _, t in pairs(type(root.features) == "table" and root.features or {}) do
+            if type(t) == "table" then
+                for k, v in pairs(t) do if v == old then t[k] = new end end
+            end
+        end
+    end
 end
 
 ---------------------------------------------------------------------------

@@ -9,6 +9,9 @@
 - Encore: a short "What's new" window opens once on the first login after an update. /encore whatsnew shows it again.
 - Encore-QoL: self-test. In beta versions it runs a few seconds after login and opens a window listing any Lua error, blocked action, addon that didn't load, mixed Encore versions, broken feature or setting; errors later in the session open it again. /eqol selftest runs it in any version. It only reads, never changes a setting.
 - Encore-DB: opens on the dungeon you are in, and remembers the last dungeon and boss you looked at. Search waits until you stop typing. The empty World Events tab is gone until WoW Forever runs events.
+- All Encore windows share one look: borders in Encore-DB and Encore-Stonks keep every edge visible at small UI scales, like Encore-QoL's. The Encore title font now lives in EncoreEssentials (saved font choices move with it).
+- Tooltips on the minimap button and Encore-DB recipe icons follow the mouse; the "click to sort" tooltip on column headers is gone.
+- The "Encore Essentials loaded" chat line is off for new installs. /encore help lists every module's commands.
 - The download no longer contains a 2.3 MB test file by mistake (it was 42% of the zip).
 
 ## 0.2.5

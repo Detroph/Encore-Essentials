@@ -5,79 +5,17 @@ local Q = ns.QoL
 local W = {}
 Q.W = W
 
-W.COPPER = { 0.92, 0.58, 0.22 }
-W.GOLD = { 1, 0.82, 0 }
-W.INK = { 0.95, 0.90, 0.81 }
-W.DIM = { 0.64, 0.57, 0.47 }
-W.RED = { 0.78, 0.15, 0.11 }
+-- Colours, edges, panels, text and tooltips come from the shared Encore look (EncoreEssentials/UI/Kit.lua).
+local UI = _G.EncoreEssentials.UI
+W.COPPER, W.GOLD, W.INK, W.DIM, W.RED, W.TEAL = UI.COPPER, UI.GOLD, UI.INK, UI.DIM, UI.RED, UI.TEAL
 W.HORDE = { 1, 0.62, 0.56 }
 W.ALLIANCE = { 0.56, 0.78, 1 }
-W.TEAL = { 0.07, 0.78, 0.78 }
-
-W.FONT_TITLE = "Interface\\AddOns\\EncoreEssentials_QoL\\Media\\MarcellusSC.ttf"
-
-function W.Color(fs, c, a) fs:SetTextColor(c[1], c[2], c[3], a or 1) end
-
-function W.Border(f, c, a, layer)
-    local t = {}
-    for i = 1, 4 do
-        t[i] = f:CreateTexture(nil, layer or "BORDER")
-        t[i]:SetColorTexture(c[1], c[2], c[3], a or 1)
-    end
-    t[1]:SetPoint("TOPLEFT"); t[1]:SetPoint("TOPRIGHT")
-    t[2]:SetPoint("BOTTOMLEFT"); t[2]:SetPoint("BOTTOMRIGHT")
-    t[3]:SetPoint("TOPLEFT"); t[3]:SetPoint("BOTTOMLEFT")
-    t[4]:SetPoint("TOPRIGHT"); t[4]:SetPoint("BOTTOMRIGHT")
-    -- At small UI scales (0.53 for 1440p) a 1-unit line is under one screen pixel and some edges vanish.
-    -- Keep each edge at least one real pixel, worked out again whenever the frame shows.
-    local function thickness()
-        local size = 1
-        local scale = f.GetEffectiveScale and f:GetEffectiveScale()
-        if PixelUtil and PixelUtil.GetNearestPixelSize and scale and scale > 0 then
-            size = PixelUtil.GetNearestPixelSize(1, scale, 1)
-        end
-        t[1]:SetHeight(size); t[2]:SetHeight(size); t[3]:SetWidth(size); t[4]:SetWidth(size)
-    end
-    for i = 1, 4 do
-        if t[i].SetSnapToPixelGrid then t[i]:SetSnapToPixelGrid(false); t[i]:SetTexelSnappingBias(0) end
-    end
-    thickness()
-    if f.HookScript then f:HookScript("OnShow", thickness) end
-    function f:SetBorderColor(c2, a2) for _, x in ipairs(t) do x:SetColorTexture(c2[1], c2[2], c2[3], a2 or 1) end end
-    return t
-end
-
-function W.Panel(f, alpha)
-    local bg = f:CreateTexture(nil, "BACKGROUND")
-    bg:SetAllPoints()
-    bg:SetColorTexture(0.08, 0.06, 0.04, alpha or 0.9)
-    W.Border(f, W.COPPER, 0.8)
-    return bg
-end
-
-function W.Text(parent, template, text, c)
-    local fs = parent:CreateFontString(nil, "OVERLAY", template or "GameFontHighlight")
-    fs:SetText(text or "")
-    fs:SetJustifyH("LEFT")
-    if c then W.Color(fs, c) end
-    return fs
-end
-
-function W.Tooltip(frame, title, body)
-    frame:HookScript("OnEnter", function(self)
-        -- Not "type(title) == 'function' and title(self) or title": a nil result would fall back to the function.
-        local t = title
-        if type(t) == "function" then t = t(self) end
-        if type(t) ~= "string" and type(t) ~= "number" then return end
-        GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-        GameTooltip:SetText(t, 1, 0.82, 0)
-        local b = body
-        if type(b) == "function" then b = b(self) end
-        if type(b) == "string" then GameTooltip:AddLine(b, 0.95, 0.9, 0.81, true) end
-        GameTooltip:Show()
-    end)
-    frame:HookScript("OnLeave", function() GameTooltip:Hide() end)
-end
+W.FONT_TITLE = UI.FONT_TITLE
+W.Color = UI.Color
+W.Border = UI.Border
+W.Text = UI.Text
+W.Tooltip = UI.Tooltip
+function W.Panel(f, alpha) return UI.Panel(f, alpha or 0.9) end
 
 -- Checkbox with a label. cb.onChange(value) is called on click.
 function W.Check(parent, label)

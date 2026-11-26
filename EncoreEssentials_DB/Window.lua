@@ -1326,16 +1326,8 @@ end
 local function setColor(fs, c, a) fs:SetTextColor(c[1], c[2], c[3], a or 1) end
 
 local function addBorder(f, r, g, b, a, layer)
-    local t = {}
-    for i = 1, 4 do
-        t[i] = f:CreateTexture(nil, layer or "BORDER")
-        t[i]:SetColorTexture(r, g, b, a or 1)
-    end
-    t[1]:SetPoint("TOPLEFT"); t[1]:SetPoint("TOPRIGHT"); t[1]:SetHeight(1)
-    t[2]:SetPoint("BOTTOMLEFT"); t[2]:SetPoint("BOTTOMRIGHT"); t[2]:SetHeight(1)
-    t[3]:SetPoint("TOPLEFT"); t[3]:SetPoint("BOTTOMLEFT"); t[3]:SetWidth(1)
-    t[4]:SetPoint("TOPRIGHT"); t[4]:SetPoint("BOTTOMRIGHT"); t[4]:SetWidth(1)
-    return t
+    -- The shared Encore edge: each side stays at least one real screen pixel at small UI scales.
+    return Encore.UI.Edges(f, r, g, b, a, layer)
 end
 
 -- Textures given a gradient keep it, so each gets its gradient once and is only shown, hidden or faded after.
@@ -1765,12 +1757,6 @@ local function initColsRow(row, d)
                         end
                         renderAll()
                     end)
-                    b:SetScript("OnEnter", function(self)
-                        GameTooltip:SetOwner(self, "ANCHOR_TOP")
-                        GameTooltip:SetText("Click to sort by this column; click again to reverse.", 1, 1, 1, 1, true)
-                        GameTooltip:Show()
-                    end)
-                    b:SetScript("OnLeave", function() GameTooltip:Hide() end)
                     h.btn[key] = b
                 end
                 b.key, b.isDefault = key, L.sortKey == key and state.sort.key == nil
@@ -1887,7 +1873,7 @@ local function newCell(row)
     c.lead.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
     c.lead:SetScript("OnEnter", function(self)
         if not self.item then return end
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
         GameTooltip:SetItemByID(self.item)
         GameTooltip:AddLine("Shift-click to link it in chat.", DIM[1], DIM[2], DIM[3])
         GameTooltip:Show()

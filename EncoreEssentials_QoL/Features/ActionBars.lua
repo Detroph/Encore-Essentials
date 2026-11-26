@@ -194,7 +194,7 @@ end
 ---------------------------------------------------------------------------
 local FONTS = {
     { "default", "Game default" },
-    { "Interface\\AddOns\\EncoreEssentials_QoL\\Media\\MarcellusSC.ttf", "Marcellus SC (Encore)" },
+    { "Interface\\AddOns\\EncoreEssentials\\Media\\MarcellusSC.ttf", "Marcellus SC (Encore)" },
     { "Fonts\\FRIZQT__.TTF", "Friz Quadrata" },
     { "Fonts\\ARIALN.TTF", "Arial Narrow" },
     { "Fonts\\MORPHEUS.TTF", "Morpheus" },
