@@ -4,7 +4,7 @@
 ## Author: Encore
 ## X-License: GPL-3.0
 ## Version: @project-version@
-## IconTexture: Interface\Icons\Ability_DualWield
+## IconTexture: Interface\AddOns\EncoreEssentials\Media\encore-pvp-icon
 ## Dependencies: EncoreEssentials, EncoreEssentials_QoL
 ## OptionalDeps: Capping
 ## SavedVariables: EncorePvPDB

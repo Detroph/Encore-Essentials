@@ -58,7 +58,7 @@ Encore.MODULE_LIST = {
     {
         name = "Encore-PvP",
         folder = "EncoreEssentials_PvP",
-        icon = "Interface\\Icons\\Ability_DualWield",
+        icon = MEDIA .. "encore-pvp-icon",
         desc = L.MODULE_PVP_DESC,
         missing = L.PVP_MISSING,
         open = function()
@@ -78,7 +78,7 @@ Encore.MODULE_LIST = {
     {
         name = "Encore-Alts",
         folder = "EncoreEssentials_Alts",
-        icon = "Interface\\Icons\\INV_Misc_GroupNeedMore",
+        icon = MEDIA .. "encore-alts-icon",
         desc = L.MODULE_ALTS_DESC,
         missing = L.ALTS_MISSING,
         open = function()

@@ -2,6 +2,8 @@
 
 ## Next (not released yet)
 
+- Encore: setup window. It lists the Encore modules as tiles with a few lines on what each one does, and clicking a tile turns that module off or back on (for all characters, or only the one you play). Done closes it when nothing changed; Reload UI applies the change with one reload. It opens on the first login after installing Encore, and once on the first login after 0.2.6 for players who already have it, in place of What's new (the release notes show inside it). /encore setup and Options > AddOns > Encore Essentials > Choose modules open it again.
+- Encore-PvP, Encore-Alts and Encore-Professions get their own Encore icons (shield, character cards, anvil) in the Encore window and the game's addon list.
 - Encore-QoL: settings that change a game option for a moment (the fishing sound boost, auto loot while fishing) now remember the original value in saved variables and put it back at logout and on the next login. Before, a crash or /reload while fishing could leave music and ambience at 0.
 - Encore-QoL: every game option Encore-QoL changes keeps its original value across sessions, so turning a feature off later still restores your own setting.
 - Encore-QoL: battleground timers (Alterac Valley, Arathi Basin) now work on clients in other languages. The herald's lines are read by faction and by the order of events instead of English words; Arathi Basin's bases have German, French and Spanish names built in, and every client learns its own map labels. New command /eqol bgpoi lists the map labels and how they are matched.

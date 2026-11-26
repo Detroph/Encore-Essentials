@@ -168,6 +168,7 @@ local function showHelp()
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_RESET)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_FORGET_QUESTS)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_WHATSNEW)
+    DEFAULT_CHAT_FRAME:AddMessage(L.HELP_SETUP)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_WISHLIST)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_SHARE)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_MODULES)
@@ -186,6 +187,7 @@ local COMMANDS = {
         Encore:Print(L.FORGET_QUESTS_DONE)
     end,
     whatsnew = function() Encore:ShowWhatsNew() end,
+    setup = function() Encore:ShowSetup() end,
     wishlist = function() Encore:ShowWishlist() end,
     export = function() Encore:ShowExport() end,
     import = function() Encore:ShowImport() end,

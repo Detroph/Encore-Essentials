@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<!-- Encore-PvP icon: the Encore frame around a shield with the Encore star over two crossed swords -->
+<defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff0c4"/><stop offset=".22" stop-color="#f4b866"/><stop offset=".5" stop-color="#c47a2c"/>
+      <stop offset=".72" stop-color="#f2ad5c"/><stop offset="1" stop-color="#7a4313"/>
+    </linearGradient>
+    <linearGradient id="goldText" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff3cf"/><stop offset=".45" stop-color="#f6bd6c"/><stop offset=".55" stop-color="#d98a36"/><stop offset="1" stop-color="#9a571c"/>
+    </linearGradient>
+    <radialGradient id="field" cx=".5" cy=".38" r=".7">
+      <stop offset="0" stop-color="#d3170f"/><stop offset=".5" stop-color="#8f0805"/><stop offset="1" stop-color="#3c0100"/>
+    </radialGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a8fbf8"/><stop offset=".45" stop-color="#16cbcb"/><stop offset="1" stop-color="#046f70"/>
+    </linearGradient>
+    <radialGradient id="gem" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#e6ffff"/><stop offset=".4" stop-color="#22d6d6"/><stop offset="1" stop-color="#035c5d"/>
+    </radialGradient>
+    <filter id="drop" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity=".6"/></filter>
+        <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7a3410"/><stop offset=".55" stop-color="#4a1c07"/><stop offset="1" stop-color="#260b02"/>
+    </linearGradient>
+    <linearGradient id="lidWood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9a4716"/><stop offset="1" stop-color="#4d1d07"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#a8fbf8" stop-opacity=".95"/><stop offset=".45" stop-color="#16cbcb" stop-opacity=".55"/><stop offset="1" stop-color="#16cbcb" stop-opacity="0"/>
+    </radialGradient>
+    <symbol id="star" viewBox="-40 -40 80 80">
+      <path d="M0-38L11-11 38 0 11 11 0 38-11 11-38 0-11-11Z" fill="url(#gold)" stroke="#2a1404" stroke-width="3"/>
+      <path d="M0-15L7 0 0 15-7 0Z" fill="url(#gem)" stroke="#2a1404" stroke-width="1.5"/>
+    </symbol>
+    <symbol id="spark" viewBox="-20 -20 40 40">
+      <path d="M0-19L4-4 19 0 4 4 0 19-4 4-19 0-4-4Z" fill="#d8ffff" stroke="#046f70" stroke-width="1.5"/>
+    </symbol>
+    <clipPath id="fieldClip"><circle cx="256" cy="256" r="183"/></clipPath>
+  <linearGradient id="steel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5d6670"/><stop offset=".45" stop-color="#e8eef2"/><stop offset=".55" stop-color="#b9c3ca"/><stop offset="1" stop-color="#4a525b"/></linearGradient>
+<linearGradient id="steelV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef3f6"/><stop offset=".5" stop-color="#9aa5ae"/><stop offset="1" stop-color="#3f464e"/></linearGradient>
+<linearGradient id="goldDark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9964a"/><stop offset=".5" stop-color="#9a5a20"/><stop offset="1" stop-color="#4e2608"/></linearGradient>
+<linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7e6bf"/><stop offset="1" stop-color="#c99a5c"/></linearGradient>
+<linearGradient id="leather" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a1506"/><stop offset=".5" stop-color="#7a3410"/><stop offset="1" stop-color="#2a0e03"/></linearGradient>
+</defs>
+<g filter="url(#drop)">
+<use href="#star" x="216" y="6" width="80" height="80"/><use href="#star" x="216" y="426" width="80" height="80"/>
+<use href="#star" x="6" y="216" width="80" height="80"/><use href="#star" x="426" y="216" width="80" height="80"/>
+<circle cx="256" cy="256" r="214" fill="url(#gold)" stroke="#2a1404" stroke-width="5"/><circle cx="256" cy="256" r="196" fill="#1b0a03"/>
+<circle cx="256" cy="256" r="190" fill="none" stroke="url(#teal)" stroke-width="5"/><circle cx="256" cy="256" r="183" fill="url(#field)"/></g>
+<g clip-path="url(#fieldClip)"><path d="M256 110L274 238 400 256 274 274 256 402 238 274 112 256 238 238Z" fill="#000" fill-opacity=".18"/>
+<ellipse cx="256" cy="210" rx="150" ry="100" fill="url(#glow)" fill-opacity=".75"/><ellipse cx="256" cy="384" rx="140" ry="14" fill="#000" fill-opacity=".45"/></g>
+<g stroke="#1d0802" stroke-linejoin="round" stroke-width="6" filter="url(#drop)"><g transform="translate(256 250) scale(0.95) translate(-256 -256)"><g transform="rotate(-42 256 256)"><path d="M256 96L278 132V300H234V132Z" fill="url(#steel)"/><path d="M256 136V292" stroke="#5d6670" stroke-width="4" fill="none"/>
+<path d="M188 296H324L314 322H198Z" fill="url(#gold)"/><path d="M243 322H269V376H243Z" fill="url(#leather)"/><circle cx="256" cy="392" r="17" fill="url(#gem)" stroke-width="5"/></g><g transform="rotate(42 256 256)"><path d="M256 96L278 132V300H234V132Z" fill="url(#steel)"/><path d="M256 136V292" stroke="#5d6670" stroke-width="4" fill="none"/>
+<path d="M188 296H324L314 322H198Z" fill="url(#gold)"/><path d="M243 322H269V376H243Z" fill="url(#leather)"/><circle cx="256" cy="392" r="17" fill="url(#gem)" stroke-width="5"/></g></g><path d="M256 146C302 146 342 156 364 170C364 282 322 344 256 378C190 344 148 282 148 170C170 156 210 146 256 146Z" fill="url(#gold)"/>
+<path d="M256 170C292 170 322 178 340 188C338 274 306 326 256 354C206 326 174 274 172 188C190 178 220 170 256 170Z" fill="#6e0805" stroke-width="4"/>
+<path d="M256 178V346M180 230H332" stroke="#f4b866" stroke-opacity=".35" stroke-width="5" fill="none"/><use href="#star" x="196" y="196" width="120" height="120" stroke="none"/></g>
+<use href="#spark" x="110" y="130" width="36" height="36"/><use href="#spark" x="366" y="120" width="30" height="30"/>
+</svg>
