@@ -13,6 +13,7 @@ Locales\enUS.lua
 Core.lua
 UI\Kit.lua
 WhatsNew.lua
+Setup.lua
 Services.lua
 Wishlist.lua
 Share.lua

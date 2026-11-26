@@ -99,6 +99,10 @@ local MAIN = {
         HideUIPanel(SettingsPanel)
         Encore:ToggleHub()
     end },
+    { kind = "button", text = L.OPT_SETUP, tooltip = L.OPT_SETUP_TIP, onClick = function()
+        HideUIPanel(SettingsPanel)
+        Encore:ShowSetup()
+    end },
     { kind = "header", text = L.OPT_SHARE },
     { kind = "button", text = L.OPT_EXPORT, onClick = function()
         HideUIPanel(SettingsPanel)

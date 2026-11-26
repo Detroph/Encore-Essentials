@@ -4,7 +4,7 @@
 ## Author: Encore
 ## X-License: GPL-3.0
 ## Version: @project-version@
-## IconTexture: Interface\Icons\INV_Misc_GroupNeedMore
+## IconTexture: Interface\AddOns\EncoreEssentials\Media\encore-alts-icon
 ## Dependencies: EncoreEssentials
 ## SavedVariables: EncoreAltsDB
 

@@ -4,7 +4,7 @@
 ## Author: Encore
 ## X-License: GPL-3.0
 ## Version: @project-version@
-## IconTexture: Interface\Icons\INV_Misc_Note_01
+## IconTexture: Interface\AddOns\EncoreEssentials\Media\encore-professions-icon
 ## Dependencies: EncoreEssentials
 ## OptionalDeps: Auctionator, GatherLite, TomTom, EncoreEssentials_Stonks, EncoreEssentials_QoL
 ## SavedVariables: EncoreProfessionsDB

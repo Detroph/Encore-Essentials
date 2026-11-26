@@ -15,6 +15,7 @@ local NOTES = {
         "Encore-QoL: open all mail, restock at vendors, ready check buffs.",
         "Encore-Stonks: a Stonks tab in the auction house lists items under vendor price or under the market average.",
         "Share your settings with /encore export and /encore import. Key bindings for every window.",
+        "/encore setup: choose which Encore modules load.",
         "Beta versions test themselves at login and show any error in a window (/eqol selftest).",
     } },
 }
@@ -115,17 +116,31 @@ function Encore:ShowWhatsNew(entries)
 end
 
 -- First login after an update: show what changed since the version seen last, once.
+-- The setup window (Setup.lua) takes this window's place twice: on a new install, and once on the first full
+-- release from SETUP_FROM for players who already had Encore. It then shows these notes itself.
 function Encore:CheckWhatsNew()
     local db = self.db
     local current = self.version
     if current == "dev" then return end
     local seen = db.seenVersion
     if not seen then
-        if (db.stats.logins or 0) <= 1 then db.seenVersion = current return end -- new install, nothing to tell
+        if (db.stats.logins or 0) <= 1 then -- new install: no notes, but the setup window
+            db.seenVersion = current
+            if self.ShowSetup and not db.setupShown then
+                db.setupShown = current
+                self:ShowSetup()
+            end
+            return
+        end
         seen = FIRST_VERSION
     end
     if compare(current, seen) <= 0 then return end
     db.seenVersion = current
     local entries = entriesBetween(seen, current)
+    if self.ShowSetup and not db.setupShown and isFull(current) and compare(current, self.SETUP_FROM or current) >= 0 then
+        db.setupShown = current
+        self:ShowSetup(entries, true)
+        return
+    end
     if #entries > 0 then self:ShowWhatsNew(entries) end
 end
