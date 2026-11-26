@@ -10,6 +10,7 @@ ns.L = setmetatable({
     HELP_MINIMAP = "  /encore minimap - show or hide the minimap button",
     HELP_INFO ="  /encore info - show addon, game build and saved-data details",
     HELP_RESET = "  /encore reset - restore default settings (learned quest rewards are kept)",
+    HELP_MODULES = "Module commands: /eqol (selftest, check, bgpoi), /stonks, /stonksync (status, request, who, history).",
     HELP_WHATSNEW = "  /encore whatsnew - show what changed in this version",
     WHATSNEW_TITLE = "What's new in Encore %s",
     WHATSNEW_OK = "Got it",

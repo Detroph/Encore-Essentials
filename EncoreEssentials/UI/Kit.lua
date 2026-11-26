@@ -14,7 +14,7 @@ UI.GREEN = { 0.45, 0.85, 0.40 }
 UI.TEAL = { 0.07, 0.78, 0.78 }
 UI.BG = { 0.08, 0.06, 0.04 }
 
-UI.FONT_TITLE = "Interface\\AddOns\\EncoreEssentials_QoL\\Media\\MarcellusSC.ttf"
+UI.FONT_TITLE = "Interface\\AddOns\\EncoreEssentials\\Media\\MarcellusSC.ttf"
 
 function UI.Color(fs, c, a) fs:SetTextColor(c[1], c[2], c[3], a or 1) end
 
@@ -51,6 +51,9 @@ function UI.Border(f, c, a, layer)
     return t
 end
 
+-- The same edge from separate colour values (Encore-DB and Encore-Stonks call it this way).
+function UI.Edges(f, r, g, b, a, layer) return UI.Border(f, { r, g, b }, a, layer) end
+
 function UI.Panel(f, alpha)
     local bg = f:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints()
@@ -65,6 +68,22 @@ function UI.Text(parent, template, text, c)
     fs:SetJustifyH("LEFT")
     if c then UI.Color(fs, c) end
     return fs
+end
+
+-- Tooltip that follows the mouse. title and body can be strings or functions of the frame.
+function UI.Tooltip(frame, title, body)
+    frame:HookScript("OnEnter", function(self)
+        local t = title
+        if type(t) == "function" then t = t(self) end
+        if type(t) ~= "string" and type(t) ~= "number" then return end
+        GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+        GameTooltip:SetText(t, UI.GOLD[1], UI.GOLD[2], UI.GOLD[3])
+        local b = body
+        if type(b) == "function" then b = b(self) end
+        if type(b) == "string" then GameTooltip:AddLine(b, UI.INK[1], UI.INK[2], UI.INK[3], true) end
+        GameTooltip:Show()
+    end)
+    frame:HookScript("OnLeave", function() GameTooltip:Hide() end)
 end
 
 function UI.Button(parent, text, onClick, width)

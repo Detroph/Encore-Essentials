@@ -26,7 +26,7 @@ end
 local DEFAULTS = {
     schema = Encore.SCHEMA,
     settings = {
-        showLoginMessage = true,
+        showLoginMessage = false,
         minimap = {
             hide = false,
             detached = false, -- false: on the minimap below the day/night indicator; true: free on screen
@@ -157,6 +157,7 @@ local function showHelp()
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_RESET)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_FORGET_QUESTS)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_WHATSNEW)
+    DEFAULT_CHAT_FRAME:AddMessage(L.HELP_MODULES)
 end
 
 local COMMANDS = {
