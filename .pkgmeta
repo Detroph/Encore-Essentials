@@ -1,5 +1,5 @@
 # CurseForge packaging (BigWigs packager / CurseForge automatic packaging).
-# The repository holds four addon folders; each becomes a top-level folder in the zip.
+# Each addon folder listed under move-folders becomes a top-level folder in the zip.
 package-as: EncoreEssentials
 
 move-folders:
@@ -8,10 +8,11 @@ move-folders:
   EncoreEssentials/EncoreEssentials_Stonks: EncoreEssentials_Stonks
   EncoreEssentials/EncoreEssentials_QoL: EncoreEssentials_QoL
   EncoreEssentials/EncoreEssentials_PvP: EncoreEssentials_PvP
-  EncoreEssentials/EncoreEssentials_Alts: EncoreEssentials_Alts
   EncoreEssentials/EncoreEssentials_Professions: EncoreEssentials_Professions
 
 ignore:
+  # Encore-Alts stays in the repository but is not released (Det, 2026-11-26).
+  - EncoreEssentials_Alts
   - tools
   - docs
   - assets
