@@ -214,11 +214,9 @@ function P.ShowMap(map)
     if WorldMapFrame and WorldMapFrame.SetMapID then WorldMapFrame:SetMapID(map) end
 end
 
+-- Gold, silver and copper with the coin icons (copper left out once there is gold).
 function P.Coins(copper)
-    copper = math.floor((copper or 0) + 0.5)
-    if copper >= 10000 then copper = math.floor(copper / 100 + 0.5) * 100 end
-    if GetCoinTextureString then return GetCoinTextureString(copper) end
-    return copper .. "c"
+    return _G.EncoreEssentials.UI.Coins(copper, true)
 end
 
 function P.Ago(t)
