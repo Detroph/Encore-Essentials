@@ -16,6 +16,7 @@
 - Encore-DB: new AH column in item lists with Encore-Stonks' 7-day average price, sortable like every column (Options > AddOns > Encore-DB to turn it off).
 - Encore: the main window shows what each module is doing (Encore-Stonks recording or missing Auctionator, how many Encore-QoL features are on or have errors, whether Encore-DB is loaded). When a guild member has a newer full release, you get one chat line and the main window says so.
 - Wishlist: Alt-click any item in Encore-DB to wish for it (a gold star marks it; new Wishlist tab lists them by where they drop, click one to go there). Encore tells you when a wished item comes up for a roll or is in loot (raid warning and sound), is linked in chat, or Encore-Stonks sees it at the auction house, and its tooltip says it is on your list. Options > AddOns > Encore Essentials > Wishlist alerts.
+- Encore-DB: profession lists get a Profit column: the product's AH price (times how many one craft makes) minus its reagents at AH prices, from Encore-Stonks, when every price is known. Sortable.
 - The download no longer contains a 2.3 MB test file by mistake (it was 42% of the zip).
 
 ## 0.2.5

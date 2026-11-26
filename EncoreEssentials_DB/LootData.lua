@@ -89,3 +89,21 @@ function D.CoinShort(copper)
     if GetCoinTextureString then return GetCoinTextureString(copper) end
     return copper .. "c"
 end
+
+-- Reagents { item, n, item, n, ... } at AH prices: total copper and how many reagents have no price.
+function D.CraftCost(reagents)
+    if type(reagents) ~= "table" or not D.PricesOn() then return nil, 0 end
+    local total, missing = 0, 0
+    for i = 1, #reagents, 2 do
+        local p = D.Price(reagents[i])
+        if p then total = total + p * (reagents[i + 1] or 1) else missing = missing + 1 end
+    end
+    return total, missing
+end
+
+-- Profit in green, loss in red with a minus sign, as coins.
+function D.ProfitText(copper)
+    local text = D.CoinShort(math.abs(copper))
+    if copper < 0 then return "|cffff5a4c-|r" .. text end
+    return "|cff73d966+|r" .. text
+end
