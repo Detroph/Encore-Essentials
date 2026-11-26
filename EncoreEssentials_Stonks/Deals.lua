@@ -108,6 +108,7 @@ function Deals.StartScan()
     local f = fullScanFrame()
     if f and f.InitiateScan then
         f:InitiateScan()
+        if f.inProgress then scan.scanning, scan.scanProgress = true, math.max(scan.scanProgress or 0, 0.1) end
     else
         print("|cffd9a066Encore-Stonks|r Auctionator's full scan isn't ready: turn Auctionator on, then close and open the auction house.")
     end
@@ -149,7 +150,8 @@ end
 -- Works through the scan a few milliseconds per frame: listings grouped by item and price, then the averages of
 -- each item, then only the possible deals are kept.
 local worker
-local function process(data)
+-- data is Auctionator's list of listings, or nil with count and get(i) reading the game's replicate list directly.
+local function process(data, count, get)
     if worker then worker:Cancel(); worker = nil end
     scan.busy, scan.progress = true, 0
     scan.rows = {}
@@ -157,7 +159,7 @@ local function process(data)
 
     local first, full = myNames()
     local groups, list, keys, seenKey, missing = {}, {}, {}, {}, {}
-    local n, i, k = #data, 1, 1
+    local n, i, k = count or #data, 1, 1
     local stats = {}
     local today = Stonks.DayNumber(time())
 
@@ -220,7 +222,7 @@ local function process(data)
     worker = C_Timer.NewTicker(0, safe(function()
         local t0 = debugprofilestop()
         while i <= n do
-            addListing(data[i])
+            addListing(get and get(i) or data[i])
             i = i + 1
             if debugprofilestop() - t0 > BUDGET_MS then
                 scan.progress = 0.5 * i / max(1, n)
@@ -249,6 +251,38 @@ local function process(data)
 end
 
 ---------------------------------------------------------------------------
+-- The full scan's listings, read straight from the game when the auction house sends them (the same list
+-- Auctionator reads), so Deals fills even if Auctionator's own events don't reach Stonks.
+---------------------------------------------------------------------------
+local function replicateEntry(i)
+    local info = { C_AuctionHouse.GetReplicateItemInfo(i - 1) }
+    return { replicateInfo = info, itemLink = C_AuctionHouse.GetReplicateItemLink and C_AuctionHouse.GetReplicateItemLink(i - 1) }
+end
+
+local function readReplicate()
+    local CAH = C_AuctionHouse
+    if not (CAH and CAH.GetNumReplicateItems and CAH.GetReplicateItemInfo) then return false end
+    local n = CAH.GetNumReplicateItems() or 0
+    if n <= 0 then return false end
+    scan.scanning, scan.ownAt = false, time()
+    process(nil, n, replicateEntry)
+    return true
+end
+
+local replicateFrame = CreateFrame("Frame")
+pcall(replicateFrame.RegisterEvent, replicateFrame, "REPLICATE_ITEM_LIST_UPDATE")
+pcall(replicateFrame.RegisterEvent, replicateFrame, "AUCTION_HOUSE_CLOSED")
+replicateFrame:SetScript("OnEvent", safe(function(_, event)
+    if event == "AUCTION_HOUSE_CLOSED" then
+        if scan.scanning then scan.scanning = false end
+        return
+    end
+    -- The event can come more than once for one scan; read it once.
+    if scan.ownAt and time() - scan.ownAt < 60 then return end
+    readReplicate()
+end))
+
+---------------------------------------------------------------------------
 -- Auctionator's full scan events
 ---------------------------------------------------------------------------
 local listening
@@ -273,7 +307,8 @@ local function listen()
             scan.scanning = false
         elseif name == ev.ScanComplete then
             scan.scanning = false
-            if type(arg) == "table" then process(arg) end
+            -- Already read from the game when the listings arrived; otherwise use Auctionator's list.
+            if not (scan.ownAt and time() - scan.ownAt < 300) and type(arg) == "table" then process(arg) end
         end
         if Deals.Refresh then Deals.Refresh() end
     end)
@@ -506,6 +541,14 @@ local function updateOverlay()
         sub = ("Last full scan %s, |cffeb9339%s|r. Deals only show from a full scan in the last %d minutes, because older listings are often bought already."):format(hm(scan.at), ago(time() - scan.at), FRESH_SECONDS / 60)
     else
         sub = ("No full scan since you logged in. Deals only show from a full scan in the last %d minutes."):format(FRESH_SECONDS / 60)
+    end
+    -- Auctionator's own Full Scan button runs its summary mode unless its replicate option is on; that mode only
+    -- keeps the lowest price per item, so Deals needs the replicate scan this button starts.
+    local A = auctionator()
+    local cfg = A and A.Config
+    local okR, replicate = pcall(function() return cfg.Get(cfg.Options.REPLICATE_SCAN) end)
+    if showButton and okR and replicate == false then
+        sub = sub .. "\nAuctionator's own Full Scan button runs its summary mode, which has no single listings: use the button below."
     end
     overlay.big:SetText(big)
     overlay.sub:SetText(sub)
