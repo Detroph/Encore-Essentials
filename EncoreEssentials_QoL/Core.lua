@@ -405,6 +405,8 @@ SlashCmdList.ENCOREQOL = function(input)
         Q:RollDebug()
     elseif cmd == "preview" and Q.TogglePreview then
         Q:TogglePreview()
+    elseif cmd == "selftest" and Q.SelfTest then
+        Q.SelfTest.Show(Q.SelfTest.Run())
     elseif cmd == "bgpoi" and Q.BG and Q.BG.DumpPOIs then
         Q.BG:DumpPOIs()
     else

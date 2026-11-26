@@ -785,6 +785,24 @@ function Q:ToggleWindow()
     frame:SetShown(not frame:IsShown())
 end
 
+-- Self-test (SelfTest.lua): builds the window and every feature's settings block without showing them.
+-- Returns { [feature id or "window"] = error } and how many blocks were built.
+function Q:SelfTestWindow()
+    local errors, built = {}, 0
+    if not frame then
+        local ok, err = pcall(create)
+        if not ok then errors.window = err return errors, 0 end
+    end
+    for _, f in ipairs(Q.order) do
+        local ok, err = pcall(function()
+            local b = blockFor(f)
+            if b.Refresh then b:Refresh() end
+        end)
+        if ok then built = built + 1 else errors[f.id] = err end
+    end
+    return errors, built
+end
+
 -- Options > AddOns > Encore Essentials > Encore-QoL: a short page that opens the window.
 local Encore = _G.EncoreEssentials
 if Encore and Encore.AddOptionsPage then

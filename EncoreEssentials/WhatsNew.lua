@@ -11,6 +11,7 @@ local NOTES = {
         "Encore-QoL: UI scaling can also set the game's own UI scale, and resize the minimap and experience bar.",
         "Encore-QoL: game options changed for a moment, like the fishing sound boost, are always put back.",
         "Encore-QoL: battleground timers now work on German, French and Spanish clients.",
+        "Beta versions test themselves at login and show any error in a window (/eqol selftest).",
         "/encore reset keeps the quest rewards Encore has noted.",
         "The download is less than half its old size.",
     } },
