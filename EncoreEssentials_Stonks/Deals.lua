@@ -59,6 +59,7 @@ local function S()
     if d.minDays == nil then d.minDays = true end
     if d.greys == nil then d.greys = true end
     if d.gear == nil then d.gear = true end
+    d.minProfit = max(0, floor(tonumber(d.minProfit) or 0)) -- copper, vendor list only
     if type(d.sortvendor) ~= "table" or not d.sortvendor.id then d.sortvendor = { id = "total", desc = true } end
     if type(d.sortmarket) ~= "table" or not d.sortmarket.id then d.sortmarket = { id = "under", desc = true } end
     return d
@@ -220,6 +221,9 @@ local function process(data, count, get)
         scan.rows, scan.listings = rows, n
         scan.at = scan.scanTime or time()
         scan.scanTime = nil
+        -- Kept in the saved settings so a /reload within the 15 minutes shows the same deals (only the deals,
+        -- never the whole scan; cleared once they are too old).
+        S().last = { at = scan.at, listings = n, rows = rows }
         scan.busy, scan.progress = false, 1
         if Deals.Refresh then Deals.Refresh() end
     end
@@ -278,6 +282,14 @@ end
 -- Auctionator's last full scan is under 15 minutes old, Deals uses it instead of asking for a new one.
 function Deals.Restore()
     if scan.at or scan.busy or scan.scanning then return end
+    local saved = S().last
+    if type(saved) == "table" then
+        if type(saved.at) == "number" and time() - saved.at < FRESH_SECONDS and type(saved.rows) == "table" then
+            scan.rows, scan.at, scan.listings = saved.rows, saved.at, saved.listings or 0
+            return
+        end
+        S().last = nil
+    end
     local A = auctionator()
     local last = A and A.SavedState and A.SavedState.TimeOfLastReplicateScan
     if not last or time() - last >= FRESH_SECONDS then return end
@@ -359,6 +371,7 @@ function Deals.Matches(row, mode, search)
         if not (row.vendor and row.vendor > 0 and row.unit < row.vendor) then return false end
         if not s.greys and row.quality == 0 then return false end
         if not s.gear and GEAR[row.classID] then return false end
+        if s.minProfit > 0 and (row.vendor - row.unit) * row.qty < s.minProfit then return false end
         return true
     end
     local u = under(row, s.avg)
@@ -816,6 +829,50 @@ local function build()
         greys:SetPoint("LEFT", searchBoxes.vendor, "RIGHT", 14, 0)
         local gear = checkbox(f, "Weapons and armour", function() return S().gear end, function(v) S().gear = v end)
         gear:SetPoint("LEFT", greys, "LEFT", greys.width + 12, 0)
+        -- Minimum total profit for a row, in silver and copper
+        local minLbl = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        minLbl:SetPoint("LEFT", gear, "LEFT", gear.width + 10, 0)
+        minLbl:SetText("Min. profit")
+        U.setColor(minLbl, DIM)
+        local function moneyBox(icon, maxLetters)
+            local e = CreateFrame("EditBox", nil, f, "InputBoxTemplate")
+            e:SetSize(maxLetters == 2 and 22 or 30, 18)
+            e:SetAutoFocus(false)
+            e:SetNumeric(true)
+            e:SetMaxLetters(maxLetters)
+            e:SetJustifyH("RIGHT")
+            local t = f:CreateTexture(nil, "OVERLAY")
+            t:SetSize(12, 12)
+            t:SetTexture(icon)
+            t:SetPoint("LEFT", e, "RIGHT", 2, 0)
+            e.icon = t
+            return e
+        end
+        local silverBox = moneyBox("Interface\\MoneyFrame\\UI-SilverIcon", 4)
+        local copperBox = moneyBox("Interface\\MoneyFrame\\UI-CopperIcon", 2)
+        silverBox:SetPoint("LEFT", minLbl, "RIGHT", 8, 0)
+        copperBox:SetPoint("LEFT", silverBox.icon, "RIGHT", 8, 0)
+        local function show()
+            local v = S().minProfit
+            silverBox:SetText(v >= 100 and tostring(floor(v / 100)) or "")
+            copperBox:SetText(v % 100 > 0 and tostring(v % 100) or "")
+        end
+        local function apply()
+            local v = (tonumber(silverBox:GetText()) or 0) * 100 + min(99, tonumber(copperBox:GetText()) or 0)
+            if v ~= S().minProfit then S().minProfit = v; render() end
+        end
+        for _, e in ipairs({ silverBox, copperBox }) do
+            e:SetScript("OnTextChanged", safe(function(_, user) if user then apply() end end))
+            e:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
+            e:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+            e:HookScript("OnEditFocusLost", safe(function() apply(); show() end))
+            U.tooltip(e, function(tt)
+                tt:SetText("Minimum profit")
+                tt:AddLine("Hides rows whose total profit (buy every listing at that price, sell to a vendor) is below this. Empty for no minimum.", 1, 1, 1, true)
+            end)
+        end
+        show()
+
         buyAllButton = _G.EncoreEssentials.UI.Button(f)
         buyAllButton:SetSize(190, 22)
         buyAllButton:SetPoint("RIGHT", 0, 0)

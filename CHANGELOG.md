@@ -42,6 +42,7 @@
 - Encore-DB: dungeon prep. In a group, players with Encore share which quests are in their quest log (quest IDs only), and a dungeon's quest list tags each quest with who in the group has it.
 - The download no longer contains a 2.3 MB test file by mistake (it was 42% of the zip).
 - Encore-Stonks: new Stonks tab in the auction house, after Auctionator's tabs. Two modes: listings under vendor price (profit each and for the lot, Buy all button), and listings under the market price with a slider from 5% to 90% under the 3, 7 or 14-day Stonks average (averages from the days before today, launch week left out; items with fewer than 3 days of prices hidden unless you untick that box). Uses only a full Auctionator scan under 15 minutes old; otherwise the list is empty and asks for a fresh scan, with a button that starts one. Clicking a row opens a buy prompt on the same tab: a fresh search of the item, then one purchase per click, only listings still under the limit (commodity prices are checked with the server before you confirm; listings that sold meanwhile are skipped). Every column sorts. Option: Deals tab in the auction house (Options > AddOns > Encore-Stonks).
+- Encore-Stonks Deals: Full scan always starts Auctionator's full scan (or Auctionator says when the next is allowed); the listings are read straight from the game when the scan arrives; deals stay after a /reload while the scan is under 15 minutes old; the Under vendor price list has a minimum profit filter (silver and copper, total profit of the row).
 
 ## 0.2.5
 
