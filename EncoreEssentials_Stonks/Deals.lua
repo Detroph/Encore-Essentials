@@ -199,6 +199,10 @@ local function process(data, count, get)
                 local _, _, _, _, _, _, _, _, _, _, sell, classID = GetItemInfo(g.itemID)
                 g.vendor, g.classID = sell, g.classID or classID
             end
+            -- The game sends -1 for an item it hadn't loaded when the scan arrived; ask again now.
+            if not (type(g.quality) == "number" and g.quality >= 0) then
+                g.quality = C_Item and C_Item.GetItemQualityByID and C_Item.GetItemQualityByID(g.itemID) or nil
+            end
             local st = stats[g.key]
             if st then g.avg, g.days = st.avg, st.days end
             local vendorDeal = g.vendor and g.vendor > 0 and g.unit < g.vendor
@@ -492,9 +496,9 @@ local function fillRow(btn, row)
     btn.name:SetText(row.name or "")
     local r, g, b = 1, 1, 1
     local q = row.quality
-    if q and C_Item and C_Item.GetItemQualityColor then
-        local qr, qg, qb = C_Item.GetItemQualityColor(q)
-        if qr then r, g, b = qr, qg, qb end
+    if type(q) == "number" and q >= 0 and C_Item and C_Item.GetItemQualityColor then
+        local ok, qr, qg, qb = pcall(C_Item.GetItemQualityColor, q)
+        if ok and qr then r, g, b = qr, qg, qb end
     end
     btn.name:SetTextColor(r, g, b)
     btn.name:SetPoint("RIGHT", btn, "RIGHT", cols[2].x - cols[2].width - 8, 0)
