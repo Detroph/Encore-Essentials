@@ -5,11 +5,11 @@ local _, ns = ...
 local P = ns.P
 local Encore = _G.EncoreEssentials
 
-local WIDTH, PAD = 400, 12
+local WIDTH, PAD = 400, 8
 local SCALE = 1.12 -- the guide is drawn a little larger than the profession window: bigger text, wider
 local GAP = 66 -- space between the profession window and the guide, for its side tabs
-local INNER = WIDTH - 2 * PAD
-local TOP = -60 -- the views start under the portrait
+local EDGE = 8 -- the dark pane's distance from the frame, as Encore-QoL and Encore-DB have it
+local INNER = WIDTH - 2 * EDGE - 2 * PAD
 local ICON = "Interface\\AddOns\\EncoreEssentials\\Media\\encore-professions-icon"
 local COLOUR = { o = { 1, 0.5, 0.25 }, y = { 1, 1, 0 }, g = { 0.25, 0.75, 0.25 }, x = { 0.5, 0.5, 0.5 } }
 local COLOUR_NAME = { o = "Orange", y = "Yellow", g = "Green", x = "Grey" }
@@ -123,7 +123,7 @@ end
 
 local function buildCraft(p)
     local v = CreateFrame("Frame", nil, p)
-    v:SetPoint("TOPLEFT", PAD, TOP)
+    v:SetPoint("TOPLEFT", PAD, -PAD)
     v:SetPoint("BOTTOMRIGHT", -PAD, PAD)
     view.craft = v
 
@@ -266,7 +266,7 @@ end
 
 local function buildGather(p)
     local v = CreateFrame("Frame", nil, p)
-    v:SetPoint("TOPLEFT", PAD, TOP)
+    v:SetPoint("TOPLEFT", PAD, -PAD)
     v:SetPoint("BOTTOMRIGHT", -PAD, PAD)
     view.gather = v
     v.bar = skillBar(v)
@@ -360,7 +360,11 @@ local function build()
     panel:SetPoint("TOPLEFT", ProfessionsFrame, "TOPRIGHT", GAP / SCALE, 0)
     panel:SetPoint("BOTTOMLEFT", ProfessionsFrame, "BOTTOMRIGHT", GAP / SCALE, 0)
     panel:EnableMouse(true)
-    UI().Skin(panel, ICON, true) -- darker, to sit with the profession window
+    -- The shared Encore frame, with the guide in one dark pane, as Encore-QoL and Encore-DB have it.
+    UI().Skin(panel, ICON)
+    panel.well = UI().Well(panel)
+    panel.well:SetPoint("TOPLEFT", EDGE, -56)
+    panel.well:SetPoint("BOTTOMRIGHT", -EDGE, EDGE)
     -- Closing the guide turns it off, as the Encore button by the skill bar does.
     if panel.CloseButton then panel.CloseButton:SetScript("OnClick", function() P:SetOn(false) end) end
     panel.modes = {}
@@ -370,7 +374,7 @@ local function build()
             P:DB().mode = m
             P:Recalculate()
         end)
-        if prev then b:SetPoint("RIGHT", prev, "LEFT", -4, 0) else b:SetPoint("TOPRIGHT", -PAD, -32) end
+        if prev then b:SetPoint("RIGHT", prev, "LEFT", -4, 0) else b:SetPoint("TOPRIGHT", -12, -32) end
         tip(b, function(_, tt)
             tt:SetText(MODE_NAME[m], 1, 0.82, 0)
             tt:AddLine(m == "cheap" and "The route with the lowest cost: reagents, recipes and training."
@@ -380,9 +384,9 @@ local function build()
         panel.modes[m] = b
         prev = b
     end
-    buildCraft(panel)
-    buildGather(panel)
-    buildEmpty(panel)
+    buildCraft(panel.well)
+    buildGather(panel.well)
+    buildEmpty(panel.well)
 end
 
 ---------------------------------------------------------------------------
