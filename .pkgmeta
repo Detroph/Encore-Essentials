@@ -16,6 +16,8 @@ ignore:
   - CLAUDE.md
   - CLAUDE.local.md
   - "*.zip"
+  - "*.whl"
+  - .github
 
 manual-changelog:
   filename: CHANGELOG.md
