@@ -2862,6 +2862,13 @@ function DB:ShowCurrentInstance()
     return true
 end
 
+-- Opens the window on a tab ("wishlist" from the key binding and /encore wishlist).
+function DB:ShowTab(key)
+    if not TAB_BY_KEY[key] then return end
+    if not (frame and frame:IsShown()) then DB:ToggleWindow() end
+    if frame and frame:IsShown() and state.tab ~= key then selectTab(key) end
+end
+
 function DB:ToggleWindow()
     if not frame then
         local saved = settings()

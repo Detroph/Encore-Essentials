@@ -14,6 +14,16 @@ Encore.tocInterface = 16001
 Encore.SCHEMA = 1
 
 local CHAT_PREFIX = "|cffeb9339Encore|r: "
+
+-- Key binding names (Bindings.xml)
+_G.BINDING_HEADER_ENCORE = L.BIND_HEADER
+_G.BINDING_NAME_ENCORE_TOGGLE_HUB = L.BIND_HUB
+_G.BINDING_NAME_ENCORE_TOGGLE_DB = L.BIND_DB
+_G.BINDING_NAME_ENCORE_TOGGLE_STONKS = L.BIND_STONKS
+_G.BINDING_NAME_ENCORE_TOGGLE_QOL = L.BIND_QOL
+_G.BINDING_NAME_ENCORE_TOGGLE_PVP = L.BIND_PVP
+_G.BINDING_NAME_ENCORE_PVP_HISTORY = L.BIND_PVP_HISTORY
+_G.BINDING_NAME_ENCORE_WISHLIST = L.BIND_WISHLIST
 function Encore:Print(fmt, ...)
     DEFAULT_CHAT_FRAME:AddMessage(CHAT_PREFIX .. (select("#", ...) > 0 and fmt:format(...) or fmt))
 end
@@ -157,6 +167,8 @@ local function showHelp()
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_RESET)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_FORGET_QUESTS)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_WHATSNEW)
+    DEFAULT_CHAT_FRAME:AddMessage(L.HELP_WISHLIST)
+    DEFAULT_CHAT_FRAME:AddMessage(L.HELP_SHARE)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_MODULES)
 end
 
@@ -173,6 +185,9 @@ local COMMANDS = {
         Encore:Print(L.FORGET_QUESTS_DONE)
     end,
     whatsnew = function() Encore:ShowWhatsNew() end,
+    wishlist = function() Encore:ShowWishlist() end,
+    export = function() Encore:ShowExport() end,
+    import = function() Encore:ShowImport() end,
     db = function() Encore:ToggleDB() end,
     stonks = function() Encore:ToggleStonks() end,
     qol = function() Encore:ToggleQoL() end,

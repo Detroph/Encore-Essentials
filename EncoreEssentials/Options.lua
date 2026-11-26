@@ -99,6 +99,15 @@ local MAIN = {
         HideUIPanel(SettingsPanel)
         Encore:ToggleHub()
     end },
+    { kind = "header", text = L.OPT_SHARE },
+    { kind = "button", text = L.OPT_EXPORT, onClick = function()
+        HideUIPanel(SettingsPanel)
+        Encore:ShowExport()
+    end },
+    { kind = "button", text = L.OPT_IMPORT, onClick = function()
+        HideUIPanel(SettingsPanel)
+        Encore:ShowImport()
+    end },
     { kind = "header", text = L.OPT_MINIMAP },
     { kind = "checkbox", key = "MinimapShown", name = L.OPT_MINIMAP_SHOWN, tooltip = L.OPT_MINIMAP_SHOWN_TIP, default = true,
         get = function() return not minimap().hide end,
