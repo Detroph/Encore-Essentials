@@ -156,6 +156,7 @@ local function showHelp()
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_INFO)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_RESET)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_FORGET_QUESTS)
+    DEFAULT_CHAT_FRAME:AddMessage(L.HELP_WHATSNEW)
 end
 
 local COMMANDS = {
@@ -170,6 +171,7 @@ local COMMANDS = {
         Encore:ForgetQuestRewards()
         Encore:Print(L.FORGET_QUESTS_DONE)
     end,
+    whatsnew = function() Encore:ShowWhatsNew() end,
     db = function() Encore:ToggleDB() end,
     stonks = function() Encore:ToggleStonks() end,
     qol = function() Encore:ToggleQoL() end,
@@ -203,6 +205,7 @@ frame:SetScript("OnEvent", function(self, event, arg1)
         if Encore.db.settings.showLoginMessage then
             Encore:Print(L.LOADED, "Encore Essentials " .. Encore.version, "/encore")
         end
+        C_Timer.After(4, function() Encore:CheckWhatsNew() end)
     end
 end)
 frame:RegisterEvent("ADDON_LOADED")

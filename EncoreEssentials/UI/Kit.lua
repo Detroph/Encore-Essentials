@@ -1,0 +1,143 @@
+-- Encore Essentials: the shared look for every Encore window (dark panel, copper edge, gold title).
+-- Modules reach it as EncoreEssentials.UI. Built from plain frames so it works on every client.
+local _, ns = ...
+local Encore = ns.Encore
+local UI = {}
+Encore.UI = UI
+
+UI.COPPER = { 0.92, 0.58, 0.22 }
+UI.GOLD = { 1, 0.82, 0 }
+UI.INK = { 0.95, 0.90, 0.81 }
+UI.DIM = { 0.64, 0.57, 0.47 }
+UI.RED = { 0.78, 0.15, 0.11 }
+UI.GREEN = { 0.45, 0.85, 0.40 }
+UI.TEAL = { 0.07, 0.78, 0.78 }
+UI.BG = { 0.08, 0.06, 0.04 }
+
+UI.FONT_TITLE = "Interface\\AddOns\\EncoreEssentials_QoL\\Media\\MarcellusSC.ttf"
+
+function UI.Color(fs, c, a) fs:SetTextColor(c[1], c[2], c[3], a or 1) end
+
+-- Title text in the Encore title font, or the game's large font when that file isn't there.
+function UI.TitleFont(fs, size)
+    local ok = fs:SetFont(UI.FONT_TITLE, size or 16, "")
+    if not ok then fs:SetFontObject(GameFontNormalLarge) end
+    UI.Color(fs, UI.GOLD)
+end
+
+-- A 1-unit edge on all four sides, kept at least one real screen pixel at small UI scales.
+function UI.Border(f, c, a, layer)
+    local t = {}
+    for i = 1, 4 do
+        t[i] = f:CreateTexture(nil, layer or "BORDER")
+        t[i]:SetColorTexture(c[1], c[2], c[3], a or 1)
+        if t[i].SetSnapToPixelGrid then t[i]:SetSnapToPixelGrid(false); t[i]:SetTexelSnappingBias(0) end
+    end
+    t[1]:SetPoint("TOPLEFT"); t[1]:SetPoint("TOPRIGHT")
+    t[2]:SetPoint("BOTTOMLEFT"); t[2]:SetPoint("BOTTOMRIGHT")
+    t[3]:SetPoint("TOPLEFT"); t[3]:SetPoint("BOTTOMLEFT")
+    t[4]:SetPoint("TOPRIGHT"); t[4]:SetPoint("BOTTOMRIGHT")
+    local function thickness()
+        local size = 1
+        local scale = f.GetEffectiveScale and f:GetEffectiveScale()
+        if PixelUtil and PixelUtil.GetNearestPixelSize and scale and scale > 0 then
+            size = PixelUtil.GetNearestPixelSize(1, scale, 1)
+        end
+        t[1]:SetHeight(size); t[2]:SetHeight(size); t[3]:SetWidth(size); t[4]:SetWidth(size)
+    end
+    thickness()
+    if f.HookScript then f:HookScript("OnShow", thickness) end
+    function f:SetBorderColor(c2, a2) for _, x in ipairs(t) do x:SetColorTexture(c2[1], c2[2], c2[3], a2 or 1) end end
+    return t
+end
+
+function UI.Panel(f, alpha)
+    local bg = f:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(UI.BG[1], UI.BG[2], UI.BG[3], alpha or 0.94)
+    UI.Border(f, UI.COPPER, 0.8)
+    return bg
+end
+
+function UI.Text(parent, template, text, c)
+    local fs = parent:CreateFontString(nil, "OVERLAY", template or "GameFontHighlight")
+    fs:SetText(text or "")
+    fs:SetJustifyH("LEFT")
+    if c then UI.Color(fs, c) end
+    return fs
+end
+
+function UI.Button(parent, text, onClick, width)
+    local b = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+    b:SetSize(width or 120, 22)
+    b:SetText(text)
+    b:SetScript("OnClick", function(self) if onClick then onClick(self) end end)
+    return b
+end
+
+-- UI.Window{ name = "GlobalName", title = "Title", width = 400, height = 300 }
+-- A movable panel with a gold title, a close button and Escape to close. Put things in window.content.
+function UI.Window(o)
+    local f = CreateFrame("Frame", o.name, UIParent)
+    f:SetSize(o.width or 400, o.height or 300)
+    f:SetPoint("CENTER", 0, o.y or 80)
+    f:SetFrameStrata("DIALOG")
+    f:SetToplevel(true)
+    f:SetClampedToScreen(true)
+    f:EnableMouse(true)
+    f:SetMovable(true)
+    f:RegisterForDrag("LeftButton")
+    f:SetScript("OnDragStart", f.StartMoving)
+    f:SetScript("OnDragStop", f.StopMovingOrSizing)
+    UI.Panel(f)
+
+    f.title = f:CreateFontString(nil, "OVERLAY")
+    UI.TitleFont(f.title, 17)
+    f.title:SetPoint("TOPLEFT", 14, -12)
+    f.title:SetPoint("RIGHT", -34, 0)
+    f.title:SetJustifyH("LEFT")
+    f.title:SetText(o.title or "")
+
+    local close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
+    close:SetPoint("TOPRIGHT", 2, 2)
+    close:SetScript("OnClick", function() f:Hide() end)
+    f.closeButton = close
+
+    local rule = f:CreateTexture(nil, "ARTWORK")
+    rule:SetColorTexture(UI.COPPER[1], UI.COPPER[2], UI.COPPER[3], 0.35)
+    rule:SetHeight(1)
+    rule:SetPoint("TOPLEFT", 12, -36)
+    rule:SetPoint("TOPRIGHT", -12, -36)
+
+    f.content = CreateFrame("Frame", nil, f)
+    f.content:SetPoint("TOPLEFT", 14, -44)
+    f.content:SetPoint("BOTTOMRIGHT", -14, 12)
+
+    if o.name then tinsert(UISpecialFrames, o.name) end
+    f:Hide()
+    return f
+end
+
+-- Read-only text in a scroll box that can be selected and copied (Ctrl+A, Ctrl+C).
+function UI.ScrollText(parent)
+    local scroll = CreateFrame("ScrollFrame", nil, parent, "UIPanelScrollFrameTemplate")
+    local box = CreateFrame("EditBox", nil, scroll)
+    box:SetMultiLine(true)
+    box:SetAutoFocus(false)
+    box:SetFontObject(GameFontHighlightSmall)
+    box:SetWidth(200)
+    box:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+    box:SetScript("OnTextChanged", function(self, byUser)
+        if byUser then self:SetText(self.shown or "") end
+    end)
+    scroll:SetScrollChild(box)
+    scroll:SetScript("OnSizeChanged", function(self, w) box:SetWidth(math.max(50, w - 4)) end)
+    function scroll:SetText(text)
+        box.shown = text
+        box:SetText(text)
+        box:SetCursorPosition(0)
+        self:SetVerticalScroll(0)
+    end
+    scroll.box = box
+    return scroll
+end

@@ -11,6 +11,8 @@
 
 Locales\enUS.lua
 Core.lua
+UI\Kit.lua
+WhatsNew.lua
 Hub.lua
 Minimap.lua
 QuestRewards.lua
