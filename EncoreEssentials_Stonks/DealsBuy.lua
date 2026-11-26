@@ -129,7 +129,7 @@ local function initRow(btn)
     U.tooltip(btn, function(tt, self)
         local item = self.data and self.data.item
         if not item then return end
-        if item.link then tt:SetHyperlink(item.link) else tt:SetText(item.name or "?") end
+        if item.link then tt:SetHyperlink(item.link) elseif item.itemID then tt:SetItemByID(item.itemID) else tt:SetText(item.name or "?") end
         tt:AddLine(" ")
         tt:AddDoubleLine(item.strict and "Buys below" or "Buys at or below", coin(item.limit) .. " each", 1, 0.82, 0, 1, 1, 1)
     end)

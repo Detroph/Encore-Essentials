@@ -22,7 +22,7 @@ local FRESH_SECONDS = 15 * 60
 local SCAN_COOLDOWN = 15 * 60
 local PCT_MIN, PCT_MAX, PCT_STEP = 5, 90, 5
 local MIN_DAYS = 3
-local BUDGET_MS = 4
+local BUDGET_MS = 12 -- per frame while working out a scan (Det: 12 ms is fine)
 local ROW_H = 22
 local TAB_ID = "EncoreStonksDeals"
 Deals.FRESH_SECONDS, Deals.MIN_DAYS = FRESH_SECONDS, MIN_DAYS
@@ -174,6 +174,10 @@ local function process(data, count, get)
         local _, _, _, _, _, _, _, _, _, _, sell, classID = GetItemInfo(itemID)
         if sell == nil then missing[itemID] = true end
         local link = e.itemLink
+        -- Only weapons and armour need the link (random-suffix keys); the rest skip that call per listing.
+        if not link and e.index and GEAR[classID] and C_AuctionHouse.GetReplicateItemLink then
+            link = C_AuctionHouse.GetReplicateItemLink(e.index)
+        end
         local key = keyFor(itemID, link, classID)
         local unit = buyout / count
         local gk = key .. "@" .. floor(unit * 100 + 0.5)
@@ -265,7 +269,7 @@ end
 ---------------------------------------------------------------------------
 local function replicateEntry(i)
     local info = { C_AuctionHouse.GetReplicateItemInfo(i - 1) }
-    return { replicateInfo = info, itemLink = C_AuctionHouse.GetReplicateItemLink and C_AuctionHouse.GetReplicateItemLink(i - 1) }
+    return { replicateInfo = info, index = i - 1 }
 end
 
 local function readReplicate()
@@ -450,7 +454,7 @@ end
 local function rowTooltip(tt, self)
     local row = self.row
     if not row then return end
-    if row.link then tt:SetHyperlink(row.link) else tt:SetText(row.name or "?") end
+    if row.link then tt:SetHyperlink(row.link) elseif row.itemID then tt:SetItemByID(row.itemID) else tt:SetText(row.name or "?") end
     local mode = S().mode
     tt:AddLine(" ")
     tt:AddDoubleLine(("%d listed (%d auction%s)"):format(row.qty, row.auctions, row.auctions == 1 and "" or "s"), coin(row.unit) .. " each", 1, 1, 1, 1, 1, 1)
@@ -501,8 +505,9 @@ local function initRow(btn)
     btn:SetScript("OnClick", safe(function(self)
         local row = self.row
         if not row then return end
-        if IsModifiedClick("CHATLINK") and row.link then
-            if ChatEdit_InsertLink then ChatEdit_InsertLink(row.link) end
+        local link = row.link or (row.itemID and select(2, GetItemInfo(row.itemID)))
+        if IsModifiedClick("CHATLINK") and link then
+            if ChatEdit_InsertLink then ChatEdit_InsertLink(link) end
             return
         end
         if Stonks.ShowItem and (Stonks:Settings().dockAH ~= false or (Stonks.PanelShown and Stonks:PanelShown())) then
