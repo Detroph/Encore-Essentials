@@ -619,14 +619,18 @@ local function showGather(o)
         local pk = res.picks[i]
         if pk then
             c.mapID = pk.map
-            c.zone:SetText(P.ZoneName(pk.map))
+            c.zone:SetText(pk.name or P.ZoneName(pk.map))
             local info, z = pk.info, ns.Zones[pk.map]
             if o.name == "Skinning" then
                 c.sub:SetText(("Beasts level %d-%d · about %d spawns"):format(info.lo, info.hi, info.spawns))
             elseif o.name == "Fishing" then
                 local names = {}
                 for k, id in ipairs(info.fish) do if k <= 2 then names[#names + 1] = itemName(id) end end
-                c.sub:SetText(("Zone level %d-%d · %s"):format(info.lo, info.hi, table.concat(names, ", ")))
+                if info.city then
+                    c.sub:SetText(("City water · %s"):format(table.concat(names, ", ")))
+                else
+                    c.sub:SetText(("Zone level %d-%d · %s"):format(info.lo, info.hi, table.concat(names, ", ")))
+                end
             else
                 c.sub:SetText(("About %d nodes · %s%s"):format(info.nodes, table.concat(info.names, ", "),
                     z and (" · level " .. z.lo .. "-" .. z.hi) or ""))
@@ -635,7 +639,12 @@ local function showGather(o)
             c.nodes:SetShown(showNodes)
             c.nodes:SetEnabled(showNodes and P.HasGatherLite())
             c.tipFn = function(tt)
-                tt:SetText(P.ZoneName(pk.map), 1, 0.82, 0)
+                tt:SetText(pk.name or P.ZoneName(pk.map), 1, 0.82, 0)
+                if pk.maps then
+                    local zones = {}
+                    for _, m in ipairs(pk.maps) do zones[#zones + 1] = P.ZoneName(m) end
+                    tt:AddLine(table.concat(zones, ", "), 0.95, 0.9, 0.81, true)
+                end
                 tt:AddLine(c.sub:GetText(), 1, 1, 1, true)
                 if o.name == "Fishing" then
                     for _, id in ipairs(info.fish) do tt:AddLine(itemName(id), 0.64, 0.57, 0.47) end

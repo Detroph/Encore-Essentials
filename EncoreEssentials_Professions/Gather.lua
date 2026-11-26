@@ -29,6 +29,25 @@ local function skinSkill(level)
 end
 P.SkinSkill = skinSkill
 
+-- Zones by side (Classic territories, uiMap IDs). Zones not listed are contested and open to both sides.
+-- Enemy territory is never suggested; your own side's zones get a small bonus because nobody attacks you there.
+local SIDE = {
+    [1411] = "H", [1412] = "H", [1413] = "H", [1420] = "H", [1421] = "H", [1454] = "H", [1456] = "H", [1458] = "H",
+    [1426] = "A", [1429] = "A", [1432] = "A", [1436] = "A", [1438] = "A", [1439] = "A", [1453] = "A", [1455] = "A", [1457] = "A",
+}
+local STARTING = { H = { 1411, 1412, 1420 }, A = { 1429, 1426, 1438 } } -- Durotar, Mulgore, Tirisfal / Elwynn, Dun Morogh, Teldrassil
+local CITIES = { H = { 1454, 1456, 1458 }, A = { 1453, 1455, 1457 } } -- Orgrimmar, Thunder Bluff, Undercity / Stormwind, Ironforge, Darnassus
+local OWN_BONUS = 1.25
+
+local function sideOf(map) return SIDE[map] end
+P.ZoneSide = sideOf
+
+-- false for the other side's territory; true for your own and contested zones.
+local function allowed(map, side)
+    local z = SIDE[map]
+    return not (side and z and z ~= side)
+end
+
 local function top3(scores, extra)
     local list = {}
     for map, score in pairs(scores) do
@@ -43,16 +62,19 @@ end
 local function nodePicks(prof, s)
     local nodes = ns.Nodes[prof] or {}
     local useful, scores, extra, nextNode = {}, {}, {}, nil
+    local side = P.MySide()
     for _, n in ipairs(nodes) do
         local c = gatherChance(n.levels, s)
         if c > 0 then
             useful[#useful + 1] = { node = n, chance = c, colour = colourOf(n.levels, s) }
             for i = 1, #n.zones, 2 do
                 local map, count = n.zones[i], n.zones[i + 1]
-                scores[map] = (scores[map] or 0) + count * c
-                extra[map] = extra[map] or { nodes = 0, names = {} }
-                extra[map].nodes = extra[map].nodes + count
-                extra[map].names[#extra[map].names + 1] = n.name
+                if allowed(map, side) then
+                    scores[map] = (scores[map] or 0) + count * c * (SIDE[map] == side and OWN_BONUS or 1)
+                    extra[map] = extra[map] or { nodes = 0, names = {} }
+                    extra[map].nodes = extra[map].nodes + count
+                    extra[map].names[#extra[map].names + 1] = n.name
+                end
             end
         elseif #n.levels >= 4 and n.levels[1] > s and (not nextNode or n.levels[1] < nextNode.levels[1]) then
             nextNode = n
@@ -65,8 +87,9 @@ end
 local function skinPicks(s)
     local scores, extra = {}, {}
     local maxReq = s
+    local side = P.MySide()
     for map, z in pairs(ns.Zones or {}) do
-        local b = z.beasts
+        local b = allowed(map, side) and z.beasts
         if b then
             for i = 1, #b, 2 do
                 local level, spawns = b[i], b[i + 1]
@@ -74,7 +97,7 @@ local function skinPicks(s)
                 if req <= maxReq then
                     local c = gatherChance({ req, req + 25, req + 50, req + 100 }, s)
                     if c > 0 then
-                        scores[map] = (scores[map] or 0) + spawns * c
+                        scores[map] = (scores[map] or 0) + spawns * c * (SIDE[map] == side and OWN_BONUS or 1)
                         local e = extra[map] or { lo = level, hi = level, spawns = 0 }
                         e.lo, e.hi, e.spawns = math.min(e.lo, level), math.max(e.hi, level), e.spawns + spawns
                         extra[map] = e
@@ -87,20 +110,71 @@ local function skinPicks(s)
     return { picks = top3(scores, extra), maxLevel = maxLevel }
 end
 
--- Fishing: zones whose wild mobs are about a fifth of your skill in level, where fish are caught.
+-- Fishing: zones whose wild mobs are about a fifth of your skill in level, where fish are caught. Your side's
+-- starting zones count as one place ("Starting zones"), and so do your side's capital cities ("Cities", fished
+-- like a starting zone). The other side's zones are left out; your own side's get a bonus at the same level.
+local CITY_LO, CITY_HI = 1, 10
+
+local function mergeInto(groups, key, map, z, lo, hi)
+    local g = groups[key]
+    if not g then
+        g = { lo = lo, hi = hi, fish = {}, seen = {}, maps = {} }
+        groups[key] = g
+    end
+    g.lo, g.hi = math.min(g.lo, lo), math.max(g.hi, hi)
+    g.maps[#g.maps + 1] = map
+    for _, id in ipairs(z.fish) do
+        if not g.seen[id] then g.seen[id] = true; g.fish[#g.fish + 1] = id end
+    end
+end
+
 local function fishPicks(s)
-    local scores, extra = {}, {}
+    local side = P.MySide()
     local want = s / 5
+    local inGroup = {}
+    for key, list in pairs({ start = STARTING[side] or {}, city = CITIES[side] or {} }) do
+        for _, map in ipairs(list) do inGroup[map] = key end
+    end
+    local function score(lo, hi, nFish, own)
+        local mid = (lo + hi) / 2
+        if mid > math.max(want, 8) + 5 then return nil end
+        return 100 - math.abs(mid - want) + nFish / 10 + (own and 10 or 0)
+    end
+    local scores, extra, groups = {}, {}, {}
     for map, z in pairs(ns.Zones or {}) do
-        if z.fish and z.lo then
-            local mid = (z.lo + z.hi) / 2
-            if mid <= math.max(want, 8) + 5 then
-                scores[map] = 100 - math.abs(mid - want) + #z.fish / 10
-                extra[map] = { lo = z.lo, hi = z.hi, fish = z.fish }
+        if z.fish and allowed(map, side) then
+            local key = inGroup[map]
+            if key == "city" then
+                mergeInto(groups, "city", map, z, CITY_LO, CITY_HI)
+            elseif key == "start" and z.lo then
+                mergeInto(groups, "start", map, z, z.lo, z.hi)
+            elseif z.lo then
+                local sc = score(z.lo, z.hi, #z.fish, SIDE[map] == side)
+                if sc then
+                    scores[map] = sc
+                    extra[map] = { lo = z.lo, hi = z.hi, fish = z.fish }
+                end
             end
         end
     end
-    return { picks = top3(scores, extra) }
+    for key, g in pairs(groups) do
+        local sc = score(g.lo, g.hi, #g.fish, true)
+        if sc then
+            local has, maps = {}, {}
+            for _, m in ipairs(g.maps) do has[m] = true end
+            for _, m in ipairs((key == "start" and STARTING or CITIES)[side]) do
+                if has[m] then maps[#maps + 1] = m end -- in the fixed order: Durotar or Elwynn first
+            end
+            scores[key] = sc - (key == "city" and 0.5 or 0) -- a starting zone first when both fit
+            extra[key] = { lo = g.lo, hi = g.hi, fish = g.fish, maps = maps, city = key == "city",
+                name = key == "start" and "Starting zones" or "Cities", first = maps[1] }
+        end
+    end
+    local picks = top3(scores, extra)
+    for _, pk in ipairs(picks) do
+        if type(pk.map) == "string" then pk.name, pk.maps, pk.map = pk.info.name, pk.info.maps, pk.info.first end
+    end
+    return { picks = picks }
 end
 
 function P.FarmPicks(prof, s)
