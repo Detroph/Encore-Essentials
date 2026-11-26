@@ -2,7 +2,7 @@
 
 **A loot, quest and recipe database plus hourly auction price graphs with guild sharing, built for World of Warcraft: Forever.**
 
-Encore Essentials is the addon suite of **Encore**, a Horde guild on the EU PvP realms. Five addons ship together:
+Encore Essentials is the addon suite of **Encore**, a Horde guild on the EU PvP realms. Six addons ship together:
 
 | Folder | In-game name | What it does |
 |---|---|---|
@@ -11,6 +11,7 @@ Encore Essentials is the addon suite of **Encore**, a Horde guild on the EU PvP 
 | `EncoreEssentials_Stonks/` | Encore-Stonks | Auction price history by date, weekday and hour from Auctionator scans, shared with your guild. |
 | `EncoreEssentials_QoL/` | Encore-QoL | Quality of life, interface, visual and combat options, and one-button fishing. Every feature starts off. |
 | `EncoreEssentials_PvP/` | Encore-PvP | Battleground timers for Alterac Valley and Arathi Basin, a resurrection timer, enemy bars and battleground history. Needs Encore-QoL; its settings are on the PvP page of the Encore-QoL window (`/epvp`). |
+| `EncoreEssentials_Alts/` | Encore-Alts | Your characters at a glance: gold, rested experience, professions and their cooldowns, raid lockouts, and how many of an item your other characters have in item tooltips (`/ealts`). |
 
 Open everything from the Encore crest on the minimap, the game's addon list button, or `/encore`.
 

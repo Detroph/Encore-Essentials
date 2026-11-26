@@ -8,6 +8,7 @@ move-folders:
   EncoreEssentials/EncoreEssentials_Stonks: EncoreEssentials_Stonks
   EncoreEssentials/EncoreEssentials_QoL: EncoreEssentials_QoL
   EncoreEssentials/EncoreEssentials_PvP: EncoreEssentials_PvP
+  EncoreEssentials/EncoreEssentials_Alts: EncoreEssentials_Alts
 
 ignore:
   - tools

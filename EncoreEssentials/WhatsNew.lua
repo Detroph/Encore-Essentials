@@ -8,16 +8,12 @@ local L = ns.L
 -- A full release (three numbers) sums up its betas: players updating to it see only that entry.
 local NOTES = {
     { version = "0.2.6.1", lines = {
-        "Encore-DB opens on the dungeon you are in and remembers your last pick.",
-        "Encore-DB: tooltips show where items drop, and lists have an AH price column from Encore-Stonks.",
+        "New modules: Encore-PvP (battleground timers and history) and Encore-Alts (your characters at a glance).",
         "Wishlist: Alt-click an item in Encore-DB; Encore tells you when it drops, is rolled for or is at the AH.",
-        "Encore-QoL: UI scaling can also set the game's own UI scale, and resize the minimap and experience bar.",
-        "Encore-QoL: game options changed for a moment, like the fishing sound boost, are always put back.",
-        "New module Encore-PvP: battleground timers and frames moved out of Encore-QoL, plus battleground history (/epvp).",
-        "Battleground timers now work on German, French and Spanish clients.",
+        "Encore-DB: tooltips show where items drop, lists have AH price and crafting profit columns.",
+        "Encore-QoL: open all mail, restock at vendors, ready check buffs.",
+        "Share your settings with /encore export and /encore import. Key bindings for every window.",
         "Beta versions test themselves at login and show any error in a window (/eqol selftest).",
-        "/encore reset keeps the quest rewards Encore has noted.",
-        "The download is less than half its old size.",
     } },
 }
 Encore.WHATS_NEW = NOTES

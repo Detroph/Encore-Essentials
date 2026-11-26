@@ -21,6 +21,7 @@
 - Encore-QoL: new Errands section. Open all mail (a button on the mailbox; skips cash on delivery, stops when bags are full, Shift-click for money only). Restock at vendors (item IDs and amounts you always carry, with a gold limit per visit). Ready check: my buffs (tells only you about a missing food buff, flask or battle elixir, or weapon enhancement).
 - Encore: key bindings (Options > Keybindings > AddOns > Encore Essentials) for the main window, Encore-DB, Encore-Stonks, Encore-QoL, Encore-PvP, battleground history and the wishlist. /encore wishlist opens the wishlist.
 - Encore: settings sharing. /encore export (or the button in Options) gives one text with your settings for every module; a guildmate pastes it in /encore import. Window places, price history, wishlists and learned data stay yours. The text is read, never run, so it is safe to paste.
+- New module Encore-Alts (/ealts): a window with every character you log in on: level, gold (and the total), rested experience (growing while you are logged out), professions, profession cooldowns (transmute, Mooncloth, Salt Shaker), raid lockouts and when you last played them, every column sortable; hover a row for details, right-click to forget a character. Item tooltips show how many your other characters have in their bags and bank.
 - The download no longer contains a 2.3 MB test file by mistake (it was 42% of the zip).
 
 ## 0.2.5
