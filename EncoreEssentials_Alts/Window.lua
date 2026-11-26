@@ -33,7 +33,7 @@ local function untilText(t)
     return math.floor(s / 86400) .. " d " .. math.floor(s % 86400 / 3600) .. " h"
 end
 
-local function coins(c) return GetCoinTextureString and GetCoinTextureString(math.floor((c or 0) / 100) * 100) or tostring(c) end
+local function coins(c) return Encore.UI.Coins(c, true) end
 
 local function activeLocks(c)
     local n = 0

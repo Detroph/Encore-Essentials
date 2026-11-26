@@ -85,9 +85,7 @@ if stonks and type(stonks.OnData) == "function" then hooksecurefunc(stonks, "OnD
 
 -- Short coin text for a price column: whole silver above one gold, with the coin icons.
 function D.CoinShort(copper)
-    if copper >= 10000 then copper = math.floor(copper / 100 + 0.5) * 100 end
-    if GetCoinTextureString then return GetCoinTextureString(copper) end
-    return copper .. "c"
+    return _G.EncoreEssentials.UI.Coins(copper, true)
 end
 
 -- Reagents { item, n, item, n, ... } at AH prices: total copper and how many reagents have no price.

@@ -1,5 +1,10 @@
 # Encore Essentials
 
+## Next (not released yet)
+
+- Prices show as gold, silver and copper with the game's coin icons everywhere: Encore-Professions, Encore-Alts, Encore-DB's AH and Profit columns and wishlist alerts showed raw copper ("4499700c") because WoW Forever has no GetCoinTextureString.
+- Encore-Professions: the levelling guide sits further right so it no longer covers the profession tabs on the side of the profession window, and is a little wider so costs fit.
+
 ## 0.2.6.1
 
 - Encore-QoL: Login UI scaling goes from 0.1 to 2 and can also save the scale into the game's own UI scale setting (put back when you turn it off). New: Minimap cluster size and Experience bar size (Interface > UI scaling).

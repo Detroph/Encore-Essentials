@@ -282,10 +282,7 @@ local function passesInfo(info)
     return true
 end
 
-local function coin(copper)
-    if GetCoinTextureString then return GetCoinTextureString(copper) end
-    return copper .. "c"
-end
+local function coin(copper) return _G.EncoreEssentials.UI.Coins(copper) end
 
 local function standingLabel(n)
     return _G["FACTION_STANDING_LABEL" .. n] or (Loot.standing and Loot.standing[n]) or tostring(n)

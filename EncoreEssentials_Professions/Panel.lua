@@ -5,7 +5,8 @@ local _, ns = ...
 local P = ns.P
 local Encore = _G.EncoreEssentials
 
-local WIDTH, PAD = 340, 12
+local WIDTH, PAD = 372, 12
+local GAP = 66 -- space between the profession window and the guide, for its side tabs
 local INNER = WIDTH - 2 * PAD
 local ICON = "Interface\\AddOns\\EncoreEssentials\\Media\\encore-icon"
 local COLOUR = { o = { 1, 0.5, 0.25 }, y = { 1, 1, 0 }, g = { 0.25, 0.75, 0.25 }, x = { 0.5, 0.5, 0.5 } }
@@ -235,9 +236,9 @@ local function buildCraft(p)
     -- Every step, sortable
     v.table = UI().Table(v, {
         { key = "skill", head = "Skill", w = 52 },
-        { key = "name", head = "Recipe", w = 128 },
+        { key = "name", head = "Recipe", w = 126 },
         { key = "crafts", head = "Crafts", w = 38, right = true },
-        { key = "cost", head = "Cost", w = 62, right = true },
+        { key = "cost", head = "Cost", w = 88, right = true },
     }, {
         sort = { key = "skill", desc = false },
         tooltip = function(st, tt) return P.StepTooltip(tt, st) end,
@@ -357,8 +358,9 @@ end
 local function build()
     panel = CreateFrame("Frame", "EncoreProfessionsPanel", ProfessionsFrame)
     panel:SetWidth(WIDTH)
-    panel:SetPoint("TOPLEFT", ProfessionsFrame, "TOPRIGHT", 40, 0)
-    panel:SetPoint("BOTTOMLEFT", ProfessionsFrame, "BOTTOMRIGHT", 40, 0)
+    -- Far enough right to clear the profession tabs down the window's right edge.
+    panel:SetPoint("TOPLEFT", ProfessionsFrame, "TOPRIGHT", GAP, 0)
+    panel:SetPoint("BOTTOMLEFT", ProfessionsFrame, "BOTTOMRIGHT", GAP, 0)
     panel:EnableMouse(true)
     UI().Panel(panel)
     local icon = panel:CreateTexture(nil, "ARTWORK")

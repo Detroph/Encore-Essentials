@@ -90,7 +90,7 @@ f:SetScript("OnEvent", function(_, event, a1, a2)
                 hooksecurefunc(stonks, "Record", function(_, key, price)
                     local id = tonumber(key)
                     if Encore:IsWished(id) and price then
-                        local coins = GetCoinTextureString and GetCoinTextureString(price) or tostring(price)
+                        local coins = Encore.UI.Coins(price)
                         alert("ah", id, L.WISH_AH:format(itemName(id), coins))
                     end
                 end)

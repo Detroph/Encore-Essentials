@@ -18,6 +18,24 @@ UI.FONT_TITLE = "Interface\\AddOns\\EncoreEssentials\\Media\\MarcellusSC.ttf"
 
 function UI.Color(fs, c, a) fs:SetTextColor(c[1], c[2], c[3], a or 1) end
 
+-- Money as the game shows it: "12[g] 34[s] 5[c]" with the gold, silver and copper coin icons, zero parts left out.
+-- Built here because WoW Forever has no GetCoinTextureString. short: no copper once there is gold.
+local GOLD_ICON = "|TInterface\\MoneyFrame\\UI-GoldIcon:0:0:2:0|t"
+local SILVER_ICON = "|TInterface\\MoneyFrame\\UI-SilverIcon:0:0:2:0|t"
+local COPPER_ICON = "|TInterface\\MoneyFrame\\UI-CopperIcon:0:0:2:0|t"
+function UI.Coins(copper, short)
+    copper = math.floor((tonumber(copper) or 0) + 0.5)
+    local neg = copper < 0
+    if neg then copper = -copper end
+    local g, s, c = math.floor(copper / 10000), math.floor(copper / 100) % 100, copper % 100
+    local out = {}
+    if g > 0 then out[#out + 1] = (BreakUpLargeNumbers and BreakUpLargeNumbers(g) or tostring(g)) .. GOLD_ICON end
+    if s > 0 then out[#out + 1] = s .. SILVER_ICON end
+    if c > 0 and not (short and g > 0) then out[#out + 1] = c .. COPPER_ICON end
+    if #out == 0 then out[1] = "0" .. COPPER_ICON end
+    return (neg and "-" or "") .. table.concat(out, " ")
+end
+
 -- Title text in the Encore title font, or the game's large font when that file isn't there.
 function UI.TitleFont(fs, size)
     local ok = fs:SetFont(UI.FONT_TITLE, size or 16, "")
