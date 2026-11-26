@@ -12,7 +12,6 @@ Encore Essentials is the addon suite of **Encore**, a Horde guild on the EU PvP 
 | `EncoreEssentials_QoL/` | Encore-QoL | Quality of life, interface, visual and combat options, and one-button fishing. Every feature starts off. |
 | `EncoreEssentials_PvP/` | Encore-PvP | Battleground timers for Alterac Valley and Arathi Basin, a resurrection timer, enemy bars and battleground history. Needs Encore-QoL; its settings are on the PvP page of the Encore-QoL window (`/epvp`). |
 | `EncoreEssentials_Professions/` | Encore-Professions | A levelling guide beside the profession window: the cheapest or fastest route of trainer and vendor recipes with where to learn them, an Auctionator shopping list, and where to farm for Mining, Herbalism, Skinning and Fishing (`/eprof`). |
-| `EncoreEssentials_Alts/` | Encore-Alts | Your characters at a glance: gold, rested experience, professions and their cooldowns, raid lockouts, and how many of an item your other characters have in item tooltips (`/ealts`). |
 
 Open everything from the Encore crest on the minimap, the game's addon list button, or `/encore`.
 

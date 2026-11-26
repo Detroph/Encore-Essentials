@@ -6,6 +6,5 @@
 	<Binding name="ENCORE_TOGGLE_QOL" category="ADDONS">EncoreEssentials:ToggleQoL()</Binding>
 	<Binding name="ENCORE_TOGGLE_PVP" category="ADDONS">local p = EncoreEssentials:LoadModule("PvP", "EncoreEssentials_PvP") if p then p:Toggle() end</Binding>
 	<Binding name="ENCORE_PVP_HISTORY" category="ADDONS">local p = EncoreEssentials:LoadModule("PvP", "EncoreEssentials_PvP") if p then p:ShowHistory() end</Binding>
-	<Binding name="ENCORE_TOGGLE_ALTS" category="ADDONS">local a = EncoreEssentials:LoadModule("Alts", "EncoreEssentials_Alts") if a then a:Toggle() end</Binding>
 	<Binding name="ENCORE_WISHLIST" category="ADDONS">EncoreEssentials:ShowWishlist()</Binding>
 </Bindings>
