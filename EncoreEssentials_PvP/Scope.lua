@@ -4,7 +4,7 @@
 -- battleground the feature reads that battleground's values. A value not set for a battleground falls back to the
 -- general one, so a battleground nobody has set up looks like the general setup.
 local _, ns = ...
-local Q = ns.QoL
+local Q = _G.EncoreQoL -- Encore-PvP plugs its features into Encore-QoL (same window, same saved settings)
 local BG = Q.BG
 
 Q.PVP_SCOPES = { { "WSG", "Warsong Gulch" }, { "AB", "Arathi Basin" }, { "AV", "Alterac Valley" } }

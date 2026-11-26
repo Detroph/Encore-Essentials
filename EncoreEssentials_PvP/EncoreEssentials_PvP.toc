@@ -1,0 +1,18 @@
+## Interface: 16001
+## Title: |cffeb9339Encore|r-PvP
+## Notes: Battleground timers, Alterac Valley and Arathi Basin frames, enemy bars, resurrection timers and battleground history for Encore Essentials. Its settings are on the PvP page of the Encore-QoL window (/epvp).
+## Author: Encore
+## X-License: GPL-3.0
+## Version: @project-version@
+## IconTexture: Interface\Icons\Ability_DualWield
+## Dependencies: EncoreEssentials, EncoreEssentials_QoL
+## OptionalDeps: Capping
+## SavedVariables: EncorePvPDB
+
+Data.lua
+Frames.lua
+Scope.lua
+ResTimer.lua
+Enemies.lua
+Helpers.lua
+PvP.lua

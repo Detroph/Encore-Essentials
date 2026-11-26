@@ -1,0 +1,17 @@
+Encore-PvP - credits and licences
+=================================
+
+Encore-PvP is part of Encore Essentials, Copyright (C) 2026 the Encore Essentials
+authors, licensed under GPL-3.0 (see LICENSE in the repository). Its features plug
+into Encore-QoL: their settings are on the PvP page of the Encore-QoL window.
+
+Ideas, not code
+  The battleground data plan was worked out by reading how Capping (BigWigsMods,
+  no licence) gets its data; no Capping code is used. Encore reads and answers
+  Capping's addon messages so both addons share timers in a battleground.
+  HighGround (kemicofa, MIT) inspired the resurrection timer and the enemy bars
+  (secure target and focus rows); no code is copied.
+
+Font
+  The title font is EncoreEssentials/Media/MarcellusSC.ttf (SIL Open Font License 1.1,
+  EncoreEssentials/Media/OFL.txt).

@@ -2,7 +2,7 @@
 -- crest, gold Marcellus SC, icons over text. Four styles for Alterac Valley and four for Arathi Basin; each
 -- player picks one. Right-click a frame for Lock and a Scale slider; unlocked frames can be dragged.
 local _, ns = ...
-local Q = ns.QoL
+local Q = _G.EncoreQoL -- Encore-PvP plugs its features into Encore-QoL (same window, same saved settings)
 local W = Q.W
 local BG = Q.BG
 
