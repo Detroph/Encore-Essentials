@@ -9,6 +9,7 @@ local L = ns.L
 local NOTES = {
     { version = "0.2.6.1", lines = {
         "New modules: Encore-PvP (battleground timers and history) and Encore-Alts (your characters at a glance).",
+        "New module Encore-Professions: a levelling guide beside the profession window (the Encore button by the skill bar).",
         "Wishlist: Alt-click an item in Encore-DB; Encore tells you when it drops, is rolled for or is at the AH.",
         "Encore-DB: AH price and crafting profit columns; tooltips can show where items drop (option).",
         "Encore-QoL: open all mail, restock at vendors, ready check buffs.",

@@ -93,6 +93,25 @@ Encore.MODULE_LIST = {
             return L.STATUS_ALTS:format(n, math.floor(gold / 10000)), "good"
         end,
     },
+    {
+        name = "Encore-Professions",
+        folder = "EncoreEssentials_Professions",
+        icon = MEDIA .. "encore-professions-icon",
+        desc = L.MODULE_PROFESSIONS_DESC,
+        missing = L.PROFESSIONS_MISSING,
+        open = function()
+            local p = Encore:LoadModule("Professions", "EncoreEssentials_Professions", L.PROFESSIONS_MISSING)
+            if not p then return end
+            if not p:IsOn() then p:SetOn(true) end
+            Encore:Print(L.PROFESSIONS_HOW)
+        end,
+        status = function()
+            local p = Encore.modules.Professions
+            if not (p and p.IsOn) then return nil end
+            if p:IsOn() then return L.STATUS_PROFESSIONS_ON, "good" end
+            return L.STATUS_PROFESSIONS_OFF, "dim"
+        end,
+    },
 }
 
 -- Modules are laid out as tiles, left to right, starting a new row after COLUMNS tiles.

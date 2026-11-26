@@ -2,7 +2,7 @@
 
 **A loot, quest and recipe database plus hourly auction price graphs with guild sharing, built for World of Warcraft: Forever.**
 
-Encore Essentials is the addon suite of **Encore**, a Horde guild on the EU PvP realms. Six addons ship together:
+Encore Essentials is the addon suite of **Encore**, a Horde guild on the EU PvP realms. Seven addons ship together:
 
 | Folder | In-game name | What it does |
 |---|---|---|
@@ -11,6 +11,7 @@ Encore Essentials is the addon suite of **Encore**, a Horde guild on the EU PvP 
 | `EncoreEssentials_Stonks/` | Encore-Stonks | Auction price history by date, weekday and hour from Auctionator scans, shared with your guild. |
 | `EncoreEssentials_QoL/` | Encore-QoL | Quality of life, interface, visual and combat options, and one-button fishing. Every feature starts off. |
 | `EncoreEssentials_PvP/` | Encore-PvP | Battleground timers for Alterac Valley and Arathi Basin, a resurrection timer, enemy bars and battleground history. Needs Encore-QoL; its settings are on the PvP page of the Encore-QoL window (`/epvp`). |
+| `EncoreEssentials_Professions/` | Encore-Professions | A levelling guide beside the profession window: the cheapest or fastest route of trainer and vendor recipes with where to learn them, an Auctionator shopping list, and where to farm for Mining, Herbalism, Skinning and Fishing (`/eprof`). |
 | `EncoreEssentials_Alts/` | Encore-Alts | Your characters at a glance: gold, rested experience, professions and their cooldowns, raid lockouts, and how many of an item your other characters have in item tooltips (`/ealts`). |
 
 Open everything from the Encore crest on the minimap, the game's addon list button, or `/encore`.
@@ -49,6 +50,15 @@ Open everything from the Encore crest on the minimap, the game's addon list butt
 - **Visual & audio:** graphics sliders past the menu caps (ground clutter, view distance, particles, weather), cursor ring, mute sounds, max camera distance.
 - **PvP:** Alterac Valley and Arathi Basin frames in four styles each, with win prediction, capture timers, generals' health and officers, and a tooltip on every icon and bar. Right-click to lock or scale, Preview outside a battleground, timers shared with your group and with Capping users. A resurrection timer for every battleground with a "Die now" warning, and enemy bars sorted by kill priority (left-click target, right-click focus, also in combat), each customizable per battleground.
 - **One-button fishing:** one key casts and reels in, louder splash, auto loot, pole and lure, a fishing bar and a sortable catch log.
+
+### Encore-Professions
+- **A guide beside the profession window.** The round Encore button by the skill bar turns it on or off (remembered). While it is on, the guide opens with your professions: *Select a profession*, then that profession's route.
+- **Only recipes you can buy.** Like What's Training?, the route uses trainer recipes and vendor patterns bought for gold. No drops, quests, reputation or Merchant's Favor; where nothing is left it says *No trainer or vendor recipe*.
+- **Cheapest or Fewest crafts,** for every skill point: reagents at the last Auctionator scan (the Encore-Stonks 7-day average when a scan is far off), vendor reagents at the vendor's price, plus what learning the recipe costs. Skill-up chances from the recipe colours, with the Working Overtime Legacy talent (read from your tree, or set by hand).
+- **Planned once.** The route stays as it is until you press *Recalculate*; it warns when it is over 3 days old or reagent prices moved more than 15%.
+- **Where to learn:** the nearest trainer for each rank and recipe, the vendor of each pattern, the Expert books and the Artisan quests for First Aid, Cooking and Fishing, with a waypoint (TomTom when installed).
+- **Auctionator shopping list** "Encore: <profession>" with what you still need for the next 3 steps, kept up to date.
+- **Where to farm:** Mining and Herbalism get the best, 2nd and 3rd zone for the nodes that still give skill-ups (Show nodes turns on GatherLite's markers), Skinning the zones with the beasts you can skin and their levels, Fishing zones by level with what is caught there and a button to Encore-QoL's fishing settings.
 
 ### Minimap button
 The Encore crest sits under the day and night indicator at the same size at any resolution or UI scale, and minimap button collectors (EnhanceQoL's button sink, MinimapButtonBag) leave it alone.
@@ -147,7 +157,8 @@ EncoreEssentials_DB/     Encore-DB module (load on demand)
 EncoreEssentials_Stonks/ Encore-Stonks module (auction price graphs, records Auctionator scans)
 docs/                    guild sharing design notes and the Encore-DB window mock-up
 assets/                  Encore crest and icons (SVG sources and PNG exports)
-tools/                   data-extraction scripts for the Encore-DB database
+EncoreEssentials_Professions/ Encore-Professions module (levelling guide beside the profession window)
+tools/                   data-extraction scripts for the Encore-DB database (tools/professions/ for Encore-Professions)
 ```
 
 ## Data sources for Encore-DB
@@ -171,7 +182,7 @@ tools/                   data-extraction scripts for the Encore-DB database
 - **Dungeon quests:** [QuestieDB](https://github.com/Questie/QuestieDB) by the Questie team (GPL-3.0), its WoW Forever database. That is Questie's Classic quest data, originally built from CMaNGOS/VMaNGOS data, converted to Forever's maps and corrected with Forever layers: QuestieTrace recordings made in Forever and hand-written Forever fixes.
 - WoW Forever is its own game. No Vanilla server or emulator databases (CMaNGOS, VMaNGOS, AzerothCore, TrinityCore) are used, and that includes the CMaNGOS-derived parts of ForeverDB's files. The one exception is QuestieDB: its Forever data starts from Questie's Classic data, which is built from CMaNGOS, with Forever corrections on top, and Encore-DB takes quests and boss levels from it.
 
-See [`tools/README.md`](tools/README.md) for how the data is extracted.
+See [`tools/README.md`](tools/README.md) for how the data is extracted. Encore-Professions' data and credits are in [`EncoreEssentials_Professions/NOTICE.txt`](EncoreEssentials_Professions/NOTICE.txt).
 
 ## License
 
