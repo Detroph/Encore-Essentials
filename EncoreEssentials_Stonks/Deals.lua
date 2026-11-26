@@ -642,15 +642,18 @@ local function buildSlider(parent)
     edge:SetPoint("BOTTOMRIGHT", track, "BOTTOMRIGHT", 1, -1)
     U.addBorder(edge, U.COPPER[1], U.COPPER[2], U.COPPER[3], 0.6)
     local fill = sl:CreateTexture(nil, "ARTWORK")
-    fill:SetPoint("LEFT", track, "LEFT")
     fill:SetHeight(4)
     fill:SetColorTexture(U.TEAL[1], U.TEAL[2], U.TEAL[3], 0.9)
     sl:SetThumbTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
     local thumb = sl:GetThumbTexture()
     if thumb then thumb:SetSize(28, 28) end
+    -- The fill runs from the track's start to the thumb's centre, so it always meets the thumb (the thumb travels
+    -- inside the track, not across its full width).
+    fill:SetPoint("LEFT", track, "LEFT")
+    if thumb then fill:SetPoint("RIGHT", thumb, "CENTER") end
     local function update(v)
-        local w = sl:GetWidth() or 140
-        fill:SetWidth(max(1, (v - PCT_MIN) / (PCT_MAX - PCT_MIN) * w))
+        if thumb then return end
+        fill:SetWidth(max(1, (v - PCT_MIN) / (PCT_MAX - PCT_MIN) * (sl:GetWidth() or 140)))
     end
     sl:SetScript("OnValueChanged", safe(function(self, v, byUser)
         v = floor(v / PCT_STEP + 0.5) * PCT_STEP

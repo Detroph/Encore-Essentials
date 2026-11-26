@@ -67,12 +67,15 @@ function W.Slider(parent, label, o)
     track:SetPoint("LEFT"); track:SetPoint("RIGHT"); track:SetHeight(6)
     track:SetColorTexture(0, 0, 0, 1)
     local fill = s:CreateTexture(nil, "BORDER")
-    fill:SetPoint("LEFT"); fill:SetHeight(4)
+    fill:SetHeight(4)
     fill:SetColorTexture(W.GOLD[1], W.GOLD[2], W.GOLD[3], 0.85)
     local thumb = s:CreateTexture(nil, "OVERLAY")
     thumb:SetSize(10, 16)
     thumb:SetColorTexture(1, 0.88, 0.54, 1)
     s:SetThumbTexture(thumb)
+    -- The fill ends at the thumb's centre, so the two always meet (the thumb travels inside the track).
+    fill:SetPoint("LEFT")
+    fill:SetPoint("RIGHT", thumb, "CENTER")
     if o.marker then
         local tick = s:CreateTexture(nil, "ARTWORK")
         tick:SetSize(2, 12)
@@ -82,9 +85,9 @@ function W.Slider(parent, label, o)
     local function place()
         local w = s:GetWidth()
         if not w or w <= 0 then return end
-        local v = s:GetValue()
-        fill:SetWidth(math.max(1, w * (v - o.min) / math.max(1e-6, o.max - o.min)))
-        if f.tick then f.tick:SetPoint("CENTER", s, "LEFT", w * (o.marker - o.min) / math.max(1e-6, o.max - o.min), 0) end
+        -- Where the thumb's centre sits at the marker value: it travels the track less its own width.
+        local tw = thumb:GetWidth() or 10
+        if f.tick then f.tick:SetPoint("CENTER", s, "LEFT", tw / 2 + (w - tw) * (o.marker - o.min) / math.max(1e-6, o.max - o.min), 0) end
     end
     s:SetScript("OnSizeChanged", place)
     s:SetScript("OnValueChanged", function(self, v, user)
