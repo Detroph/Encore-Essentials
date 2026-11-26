@@ -11,7 +11,7 @@ local Q = ns.QoL
 local T = { errors = {}, order = {} }
 Q.SelfTest = T
 
-local ADDONS = { "EncoreEssentials", "EncoreEssentials_QoL", "EncoreEssentials_PvP", "EncoreEssentials_Alts", "EncoreEssentials_Stonks", "EncoreEssentials_DB" }
+local ADDONS = { "EncoreEssentials", "EncoreEssentials_QoL", "EncoreEssentials_PvP", "EncoreEssentials_Alts", "EncoreEssentials_Professions", "EncoreEssentials_Stonks", "EncoreEssentials_DB" }
 local OPTION_KINDS = { check = true, slider = true, choice = true, color = true, edit = true, button = true,
     note = true, group = true }
 local NEEDS_KEY = { check = true, slider = true, choice = true, color = true, edit = true }

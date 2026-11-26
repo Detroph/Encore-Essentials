@@ -110,3 +110,19 @@ Quests come from QuestieDB with Wowhead Forever filling blanks, through a swappa
 ## Checks
 
 `python3 tools/check.py` (needs `luac5.1` or `pip install lupa`) compiles every Lua file as Lua 5.1, checks the .toc and .xml file lists and texture paths, and lists what the release zip would hold. GitHub runs it on every pull request, and the release workflow runs it before tagging.
+
+## Encore-Professions data
+
+`tools/professions/build.py` writes `EncoreEssentials_Professions/Data/Recipes.lua` and `Data/World.lua`. It reads every input as text and never runs it:
+
+```
+git clone --depth 1 https://github.com/Questie/QuestieDB tools/cache/questiedb   # once, like the loot step
+python3 tools/professions/build.py --wt <AddOns>/WhatsTraining --questie tools/cache/questiedb \
+    --gatherlite <AddOns>/GatherLite --skillup <AddOns>/SkillUpForever
+python3 tools/professions/test_planner.py        # plans every profession outside the game (needs: pip install lupa)
+```
+
+- Recipes, colours, reagents, trainer fees and pattern vendors: Encore-DB's `Data/Recipes.lua` (ForeverDB). Only trainer recipes and vendor patterns sold for gold without a stock limit are kept. Reputation, Merchant's Favor, recipes not in the client, transmutes and Mooncloth (cooldowns) are left out.
+- Ranks (Journeyman, Expert, Artisan with their book or quest) and a few learn skills ForeverDB lacks: What's Training?'s `Crafting/Recipes/Camelot` (MIT).
+- Trainers (by title, with the trainer flag), the rank books' vendors and the rank quests' NPCs, zone maps, and each zone's mob levels and skinnable beasts (by name): QuestieDB's Forever data.
+- Herb and ore skill levels, node places and fish caught per zone: GatherLite (MIT). Vendor reagent prices: SkillUp Forever's `Data/Vendor.lua` (client buy prices).

@@ -1,0 +1,91 @@
+Encore-Professions - credits and licences
+=========================================
+
+Encore-Professions is part of Encore Essentials, Copyright (C) 2026 the Encore Essentials
+authors, licensed under GPL-3.0 (see LICENSE in the repository).
+
+Ideas and code from other addons
+  What's Training? (Fusionpit, https://github.com/fusionpit/WhatsTraining, MIT): the
+  way recipes are chosen (only trainer recipes and vendor recipes bought for gold, no
+  drops, quests, reputation or Merchant's Favor) and the rank data in Data/Recipes.lua
+  (Journeyman, Expert and Artisan: skill, level, fee, and the book or quest that teaches
+  each), plus the learn skill of a few recipes ForeverDB has none for.
+  SkillUp Forever (cjber, https://github.com/cjber/skillup-forever, GPL-3.0-or-later):
+  the route planner idea (planned once, planned again on request), how the Working
+  Overtime Legacy talent is read (Core.lua) and its +4% per point estimate, how the
+  Auctionator shopping list is written (Shopping.lua), and the vendor reagent prices in
+  Data/Recipes.lua (ns.VendorPrices: the client's buy prices; the item list comes from
+  LibPeriodicTable-3.1, LGPL-2.1). Its trainer, quest and drop data come from CMaNGOS and
+  are not used.
+  GatherLite (Wuild, https://github.com/Wuild/GatherLite, MIT): herb and ore skill
+  levels, node places per zone and fish caught per zone in Data/World.lua. Show nodes
+  calls GatherLite's own SetNodeTracking when GatherLite is installed.
+
+Data
+  Recipes, skill colours, reagents, trainer fees and recipe vendors with their places
+  come from Encore-DB: Data from ForeverDB.net (https://foreverdb.net), GPL-3.0 with
+  ForeverDB.net's attribution term (see EncoreEssentials_DB/NOTICE.txt), checked against
+  Wowhead Forever (https://www.wowhead.com/forever).
+  Profession trainers and their places, the NPCs and quests behind the rank books and
+  quests, zone maps, beasts and mob levels per zone: QuestieDB
+  (https://github.com/Questie/QuestieDB, GPL-3.0), its WoW Forever data.
+  tools/professions/build.py builds both data files; nothing is copied by hand.
+
+What's Training? licence
+
+    MIT License
+
+    Copyright (c) 2019
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
+GatherLite licence
+
+    MIT License
+
+    Copyright (c) 2019 Wuild
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
+    Bundled navigation notice
+    -------------------------
+    The MIT permission above applies to GatherLite's original code. The combined
+    distribution now includes GPL-3.0-or-later navigation code and terrain data from
+    Shortest Path Forever, by Cillian Berragan and contributors. Distribute the
+    combined addon under GPL-3.0-or-later, retaining the MIT notices above. The
+    imported components are not relicensed under MIT. Their full GPL license and
+    source provenance are included in plugins/routes/navigation/vendor/LICENSE and
+    plugins/routes/navigation/vendor/THIRD_PARTY.md; integration details and source
+    modifications are documented in plugins/routes/navigation/README.md.
