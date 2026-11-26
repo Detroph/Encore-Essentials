@@ -37,6 +37,7 @@ Open everything from the Encore crest on the minimap, the game's addon list butt
 - **Docks beside the auction house** and follows your selection in the Browse, Bids and Auctions tabs, the sell slot and Auctionator's Shopping and Selling tabs.
 - **Auction-house-style browser** with categories and your Auctionator shopping lists.
 - **Item tooltips** with the 3, 7 and 14-day averages.
+- **Deals tab in the auction house:** listings under vendor price, or a chosen percentage under the market average, from an Auctionator full scan under 15 minutes old. Click one to buy it right there, one purchase per click, never above the limit.
 - **Guild price sharing:** one claimed scan per hour, a login summary of what changed while you were away (AFK players send first), and *Share item* / *Share scan* chat links that guildmates import only after clicking and confirming. At most 400 bytes a second, nothing in combat or instances, only item, price, quantity and hour leave your client. See [`docs/stonks-guild-sharing.md`](docs/stonks-guild-sharing.md).
 
 ### Encore-QoL

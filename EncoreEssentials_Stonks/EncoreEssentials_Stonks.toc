@@ -19,6 +19,8 @@ Panel.lua
 Browser.lua
 Hooks.lua
 AuctionatorTip.lua
+Deals.lua
+DealsBuy.lua
 Sync\Codec.lua
 Sync\Comm.lua
 Sync\Log.lua
