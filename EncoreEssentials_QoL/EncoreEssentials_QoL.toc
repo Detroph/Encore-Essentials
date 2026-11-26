@@ -10,6 +10,7 @@
 ## SavedVariables: EncoreQoLDB, EncoreQoLProfDB
 
 Core.lua
+SelfTest.lua
 Detect.lua
 UI\Widgets.lua
 Features\QoL.lua
