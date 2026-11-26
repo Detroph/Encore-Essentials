@@ -38,42 +38,9 @@ function U.gradient(tex, orientation, r1, g1, b1, a1, r2, g2, b2, a2)
     tex:SetGradient(orientation, CreateColor(r1, g1, b1, a1), CreateColor(r2, g2, b2, a2))
 end
 
-function U.gem(parent, point, x, y)
-    local COPPER, TEAL = U.COPPER, U.TEAL
-    local f = CreateFrame("Frame", nil, parent)
-    f:SetSize(18, 18)
-    f:SetPoint("CENTER", parent, point, x, y)
-    f:SetFrameLevel(parent:GetFrameLevel() + 30)
-    local sizes = { { 15, 0, 0, 0 }, { 13, COPPER[1], COPPER[2], COPPER[3] }, { 9, TEAL[1], TEAL[2], TEAL[3] } }
-    for i, s in ipairs(sizes) do
-        local t = f:CreateTexture(nil, "OVERLAY", nil, i)
-        t:SetColorTexture(s[2], s[3], s[4], 1)
-        t:SetSize(s[1], s[1])
-        t:SetPoint("CENTER")
-        t:SetRotation(math.rad(45))
-    end
-    local shine = f:CreateTexture(nil, "OVERLAY", nil, 5)
-    shine:SetColorTexture(0.75, 1, 1, 0.9)
-    shine:SetSize(3, 3)
-    shine:SetPoint("CENTER", -1.5, 1.5)
-    shine:SetRotation(math.rad(45))
-end
-
--- A dark inset pane with a black edge and a faint copper inner edge.
-function U.well(parent)
-    local COPPER = U.COPPER
-    local f = CreateFrame("Frame", nil, parent)
-    local bg = f:CreateTexture(nil, "BACKGROUND")
-    bg:SetAllPoints()
-    bg:SetColorTexture(0.016, 0.012, 0.008, 0.72)
-    U.addBorder(f, 0, 0, 0, 1)
-    local inner = U.addBorder(f, COPPER[1], COPPER[2], COPPER[3], 0.22)
-    inner[1]:SetPoint("TOPLEFT", 1, -1); inner[1]:SetPoint("TOPRIGHT", -1, -1)
-    inner[2]:SetPoint("BOTTOMLEFT", 1, 1); inner[2]:SetPoint("BOTTOMRIGHT", -1, 1)
-    inner[3]:SetPoint("TOPLEFT", 1, -1); inner[3]:SetPoint("BOTTOMLEFT", 1, 1)
-    inner[4]:SetPoint("TOPRIGHT", -1, -1); inner[4]:SetPoint("BOTTOMRIGHT", -1, 1)
-    return f
-end
+-- The corner gem and the dark inset pane come from the shared Encore kit (EncoreEssentials/UI/Kit.lua).
+function U.gem(parent, point, x, y) return _G.EncoreEssentials.UI.Gem(parent, point, x, y) end
+function U.well(parent) return _G.EncoreEssentials.UI.Well(parent) end
 
 function U.tooltip(owner, build)
     owner:SetScript("OnEnter", function(self)
