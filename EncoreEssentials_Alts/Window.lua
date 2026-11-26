@@ -105,11 +105,14 @@ local function build()
     local UI = Encore.UI
     local width = 30
     for _, c in ipairs(COLS) do width = width + c.w + 6 end
-    win = UI.Window({ name = "EncoreAltsWindow", title = "Encore-Alts", width = width, height = 380 })
+    win = UI.Window({ name = "EncoreAltsWindow", title = "Encore-Alts", width = width + 12, height = 380,
+        icon = UI.MEDIA .. "encore-alts-icon" })
     if type(EncoreAltsDB) ~= "table" then EncoreAltsDB = {} end
     EncoreAltsDB.sort = EncoreAltsDB.sort or { key = "name", desc = false }
-    win.total = UI.Text(win.content, "GameFontHighlight", "")
-    win.total:SetPoint("TOPLEFT", 0, 0)
+    win.total = UI.Text(win.header, "GameFontHighlight", "")
+    win.total:SetPoint("LEFT", 0, 0)
+    local well = UI.Well(win.content)
+    well:SetAllPoints()
     win.table = UI.Table(win.content, COLS, {
         sort = EncoreAltsDB.sort,
         tooltip = tooltip,
@@ -119,8 +122,8 @@ local function build()
             end
         end,
     })
-    win.table:SetPoint("TOPLEFT", 0, -26)
-    win.table:SetPoint("BOTTOMRIGHT", 0, 0)
+    win.table:SetPoint("TOPLEFT", 6, -6)
+    win.table:SetPoint("BOTTOMRIGHT", -4, 6)
     win:HookScript("OnShow", function() A:Refresh() end)
 end
 

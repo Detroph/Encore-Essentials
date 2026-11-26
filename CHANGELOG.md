@@ -5,6 +5,8 @@
 - Prices show as gold, silver and copper with the game's coin icons everywhere: Encore-Professions, Encore-Alts, Encore-DB's AH and Profit columns and wishlist alerts showed raw copper ("4499700c") because WoW Forever has no GetCoinTextureString.
 - Encore-Professions: the levelling guide sits further right so it no longer covers the profession tabs on the side of the profession window, and is a little wider so costs fit.
 - Encore-Professions: where to farm, fish or skin never suggests the other faction's zones, and your own side's zones (where nobody can attack you) come first at the same level. Where to fish lists your side's starting zones as one "Starting zones" entry and your capital cities as one "Cities" entry; hover them for the zones.
+- Encore-Professions: each recipe in the profession window's list shows its skill-up chance and what one craft gains or loses ("77% · -7c"), in the recipe's colour. The chance is the guide's own (with Working Overtime); the profit is what the item is worth (auction price, else what a vendor pays) less its reagents. It stays off while SkillUp Forever is loaded, which shows its own. /eprof rows hides or shows it.
+- Encore-Alts and the Encore-Professions guide use the shared Encore window: copper portrait frame with the module's own icon, copper-edged buttons (the chosen mode lit red), dark sections and the corner gem, like Encore-DB and Encore-Stonks. The settings share, What's new and Encore-QoL self-test windows get the same frame. Closing the guide turns it off.
 
 ## 0.2.6.1
 

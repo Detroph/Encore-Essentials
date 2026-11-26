@@ -8,7 +8,8 @@ local Encore = _G.EncoreEssentials
 local WIDTH, PAD = 372, 12
 local GAP = 66 -- space between the profession window and the guide, for its side tabs
 local INNER = WIDTH - 2 * PAD
-local ICON = "Interface\\AddOns\\EncoreEssentials\\Media\\encore-icon"
+local TOP = -60 -- the views start under the portrait
+local ICON = "Interface\\AddOns\\EncoreEssentials\\Media\\encore-professions-icon"
 local COLOUR = { o = { 1, 0.5, 0.25 }, y = { 1, 1, 0 }, g = { 0.25, 0.75, 0.25 }, x = { 0.5, 0.5, 0.5 } }
 local COLOUR_NAME = { o = "Orange", y = "Yellow", g = "Green", x = "Grey" }
 local MODE_NAME = { cheap = "Cheapest", fast = "Fewest crafts" }
@@ -38,8 +39,8 @@ local function tip(frame, fn)
     frame:SetScript("OnLeave", function() GameTooltip:Hide() end)
 end
 
-local function smallButton(parent, text, width, onClick)
-    local b = UI().Button(parent, text, onClick, width)
+local function smallButton(parent, text, width, onClick, style)
+    local b = UI().Button(parent, text, onClick, width, style)
     b:SetHeight(20)
     return b
 end
@@ -102,12 +103,7 @@ end
 -- Building the panel
 ---------------------------------------------------------------------------
 local function card(parent)
-    local f = CreateFrame("Frame", nil, parent)
-    local bg = f:CreateTexture(nil, "BACKGROUND")
-    bg:SetAllPoints()
-    bg:SetColorTexture(1, 1, 1, 0.04)
-    UI().Border(f, UI().COPPER, 0.35)
-    return f
+    return UI().Well(parent)
 end
 
 local function skillBar(parent)
@@ -126,14 +122,14 @@ end
 
 local function buildCraft(p)
     local v = CreateFrame("Frame", nil, p)
-    v:SetPoint("TOPLEFT", PAD, -40)
+    v:SetPoint("TOPLEFT", PAD, TOP)
     v:SetPoint("BOTTOMRIGHT", -PAD, PAD)
     view.craft = v
 
     v.status = UI().Text(v, "GameFontHighlightSmall", "")
     v.status:SetPoint("TOPLEFT", 0, 0)
     v.status:SetWidth(INNER - 92)
-    v.recalc = smallButton(v, "Recalculate", 88, function() P:Recalculate() end)
+    v.recalc = smallButton(v, "Recalculate", 88, function() P:Recalculate() end, "dark")
     v.recalc:SetPoint("TOPRIGHT", 0, 2)
     tip(v.recalc, function(_, tt)
         tt:SetText("Recalculate route", 1, 0.82, 0)
@@ -145,8 +141,8 @@ local function buildCraft(p)
     v.wo:SetPoint("TOPLEFT", -3, -22)
     v.woText = UI().Text(v, "GameFontHighlightSmall", "Working Overtime")
     v.woText:SetPoint("LEFT", v.wo, "RIGHT", 0, 0)
-    v.woMinus = smallButton(v, "-", 22, function() local _, n = P:WorkingOvertime(); P:SetWorkingOvertime(nil, n - 1); P:Recalculate() end)
-    v.woPlus = smallButton(v, "+", 22, function() local _, n = P:WorkingOvertime(); P:SetWorkingOvertime(nil, n + 1); P:Recalculate() end)
+    v.woMinus = smallButton(v, "-", 22, function() local _, n = P:WorkingOvertime(); P:SetWorkingOvertime(nil, n - 1); P:Recalculate() end, "dark")
+    v.woPlus = smallButton(v, "+", 22, function() local _, n = P:WorkingOvertime(); P:SetWorkingOvertime(nil, n + 1); P:Recalculate() end, "dark")
     v.woPoints = UI().Text(v, "GameFontHighlightSmall", "0/5")
     v.woMinus:SetPoint("LEFT", v.woText, "RIGHT", 8, 0)
     v.woPoints:SetPoint("LEFT", v.woMinus, "RIGHT", 4, 0)
@@ -269,7 +265,7 @@ end
 
 local function buildGather(p)
     local v = CreateFrame("Frame", nil, p)
-    v:SetPoint("TOPLEFT", PAD, -40)
+    v:SetPoint("TOPLEFT", PAD, TOP)
     v:SetPoint("BOTTOMRIGHT", -PAD, PAD)
     view.gather = v
     v.bar = skillBar(v)
@@ -291,7 +287,7 @@ local function buildGather(p)
         c.sub:SetPoint("TOPLEFT", c.zone, "BOTTOMLEFT", 0, -2)
         c.sub:SetWidth(INNER - 44 - 8)
         c.sub:SetWordWrap(false)
-        c.map = smallButton(c, "Map", 46, function() P.ShowMap(c.mapID) end)
+        c.map = smallButton(c, "Map", 46, function() P.ShowMap(c.mapID) end, "dark")
         c.map:SetPoint("TOPRIGHT", -6, -4)
         c.nodes = smallButton(c, "Show nodes", 92, function() if c.kind then P.ShowNodes(c.kind) end end)
         c.nodes:SetPoint("RIGHT", c.map, "LEFT", -4, 0)
@@ -356,25 +352,15 @@ local function buildEmpty(p)
 end
 
 local function build()
-    panel = CreateFrame("Frame", "EncoreProfessionsPanel", ProfessionsFrame)
+    panel = CreateFrame("Frame", "EncoreProfessionsPanel", ProfessionsFrame, "PortraitFrameTemplate")
     panel:SetWidth(WIDTH)
     -- Far enough right to clear the profession tabs down the window's right edge.
     panel:SetPoint("TOPLEFT", ProfessionsFrame, "TOPRIGHT", GAP, 0)
     panel:SetPoint("BOTTOMLEFT", ProfessionsFrame, "BOTTOMRIGHT", GAP, 0)
     panel:EnableMouse(true)
-    UI().Panel(panel)
-    local icon = panel:CreateTexture(nil, "ARTWORK")
-    icon:SetSize(20, 20)
-    icon:SetPoint("TOPLEFT", PAD, -10)
-    icon:SetTexture(ICON)
-    panel.title = panel:CreateFontString(nil, "OVERLAY")
-    UI().TitleFont(panel.title, 15)
-    panel.title:SetPoint("LEFT", icon, "RIGHT", 6, 0)
-    local rule = panel:CreateTexture(nil, "ARTWORK")
-    rule:SetColorTexture(UI().COPPER[1], UI().COPPER[2], UI().COPPER[3], 0.35)
-    rule:SetHeight(1)
-    rule:SetPoint("TOPLEFT", PAD, -34)
-    rule:SetPoint("TOPRIGHT", -PAD, -34)
+    UI().Skin(panel, ICON)
+    -- Closing the guide turns it off, as the Encore button by the skill bar does.
+    if panel.CloseButton then panel.CloseButton:SetScript("OnClick", function() P:SetOn(false) end) end
     panel.modes = {}
     local prev
     for _, m in ipairs({ "fast", "cheap" }) do
@@ -382,7 +368,7 @@ local function build()
             P:DB().mode = m
             P:Recalculate()
         end)
-        if prev then b:SetPoint("RIGHT", prev, "LEFT", -2, 0) else b:SetPoint("TOPRIGHT", -PAD, -8) end
+        if prev then b:SetPoint("RIGHT", prev, "LEFT", -4, 0) else b:SetPoint("TOPRIGHT", -PAD, -32) end
         tip(b, function(_, tt)
             tt:SetText(MODE_NAME[m], 1, 0.82, 0)
             tt:AddLine(m == "cheap" and "The route with the lowest cost: reagents, recipes and training."
@@ -745,7 +731,7 @@ function P:Refresh()
         panel.title:SetText("Levelling guide")
         for m, b in pairs(panel.modes) do
             b:Show()
-            b:SetEnabled(self:DB().mode ~= m)
+            b:SetOn(self:DB().mode == m)
         end
         view.craft:Show()
         showCraft(o)
@@ -816,17 +802,20 @@ local function attach()
     ProfessionsFrame:HookScript("OnShow", function() C_Timer.After(0, protectedRefresh) end)
     ProfessionsFrame:HookScript("OnHide", function() panel:Hide() end)
     -- The window changes profession through its own tabs; check a few times a second while it shows.
-    local elapsed = 0
+    local elapsed, rowKey = 0, nil
     panel.watch = CreateFrame("Frame", nil, ProfessionsFrame)
     panel.watch:SetScript("OnUpdate", function(_, dt)
         elapsed = elapsed + dt
         if elapsed < 0.5 then return end
         elapsed = 0
-        if not P:IsOn() then return end
         local o = P:Open()
         local key = o and (o.name .. ":" .. o.base .. ":" .. o.max) or nil
+        -- The chance and profit beside each recipe follow the skill, guide on or off.
+        if key ~= rowKey then rowKey = key; P.RefreshRecipeRows() end
+        if not P:IsOn() then return end
         if key ~= lastKey or not panel:IsShown() then protectedRefresh() end
     end)
+    P.AttachRecipeList()
     if ProfessionsFrame:IsShown() then protectedRefresh() end
 end
 
@@ -845,9 +834,13 @@ events:SetScript("OnEvent", function(_, event, name)
         P:DB()
         attach()
     elseif event == "BAG_UPDATE_DELAYED" or event == "TRADE_SKILL_LIST_UPDATE" then
-        if panel and panel:IsShown() and not bagsPending then
+        if panel and ProfessionsFrame:IsShown() and not bagsPending then
             bagsPending = true
-            C_Timer.After(1, function() bagsPending = false; protectedRefresh() end)
+            C_Timer.After(1, function()
+                bagsPending = false
+                if panel:IsShown() then protectedRefresh() end
+                if event == "TRADE_SKILL_LIST_UPDATE" then P.RefreshRecipeRows() end
+            end)
         end
     end
 end)

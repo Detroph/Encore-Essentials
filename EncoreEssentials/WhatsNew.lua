@@ -111,7 +111,7 @@ function Encore:ShowWhatsNew(entries)
         end
         y = y + 6
     end
-    window:SetHeight(math.min(560, y + 44 + 46))
+    window:SetHeight(math.min(580, y + 60 + 46))
     window:Show()
 end
 

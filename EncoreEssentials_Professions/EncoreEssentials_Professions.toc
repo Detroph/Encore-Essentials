@@ -14,6 +14,7 @@ Data\World.lua
 Core.lua
 Prices.lua
 Planner.lua
+RecipeList.lua
 Shopping.lua
 Gather.lua
 Panel.lua

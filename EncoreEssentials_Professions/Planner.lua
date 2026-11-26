@@ -54,6 +54,19 @@ local function reagentCost(r, madeBy, cache)
     return total, unknown
 end
 
+-- What one craft of r costs in reagents (made-here reagents at their own crafting cost when nobody sells them).
+-- cache: a table kept for one pass, so each price is read once. Returns copper, and true when a price was missing.
+local madeByOf = {}
+function P.ReagentCost(prof, r, cache)
+    local madeBy = madeByOf[prof]
+    if not madeBy then
+        madeBy = {}
+        for _, x in ipairs(ns.Recipes[prof] or {}) do if x[7] and not madeBy[x[7]] then madeBy[x[7]] = x end end
+        madeByOf[prof] = madeBy
+    end
+    return reagentCost(r, madeBy, cache or {})
+end
+
 -- Plan from `start` to the last rank's cap. o = { mode = "cheap"|"fast", bonus, cap (current), known(spell) }.
 function P.Plan(prof, start, o)
     local recipes = ns.Recipes[prof] or {}
