@@ -49,7 +49,7 @@ Q:Feature{
         end)
         f:On("MAIL_CLOSED", function() stop() end)
         if not f.button and InboxFrame then
-            local b = CreateFrame("Button", nil, InboxFrame, "UIPanelButtonTemplate")
+            local b = _G.EncoreEssentials.UI.Button(InboxFrame)
             b:SetSize(90, 22)
             b:SetPoint("BOTTOM", InboxFrame, "BOTTOM", -10, 98)
             b:SetText("Open all")

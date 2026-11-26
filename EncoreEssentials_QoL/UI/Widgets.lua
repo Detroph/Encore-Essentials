@@ -166,7 +166,7 @@ function W.Choice(parent, label, choices, onChange)
 end
 
 function W.Button(parent, text, onClick, width)
-    local b = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+    local b = _G.EncoreEssentials.UI.Button(parent)
     b:SetSize(width or 140, 22)
     b:SetText(text)
     b:SetScript("OnClick", function(self) if onClick then onClick(self) end end)

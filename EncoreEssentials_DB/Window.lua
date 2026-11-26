@@ -2685,7 +2685,7 @@ local function createWindow()
     end)
 
     -- "Highlighted items" lives in the cogwheel options menu only
-    local reset = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    local reset = _G.EncoreEssentials.UI.Button(frame)
     reset:SetSize(64, 22)
     reset:SetPoint("LEFT", slotDropdown, "RIGHT", 12, 0)
     reset:SetText("Reset")

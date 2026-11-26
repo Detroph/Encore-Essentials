@@ -247,11 +247,15 @@ SlashCmdList.ENCOREPROFESSIONS = function(input)
     if cmd == "recalc" or cmd == "recalculate" then
         if P.Recalculate and P:Recalculate() then return end
         P.Print("Open a profession first.")
+    elseif cmd == "rows" then
+        P:DB().rowText = not P:RowTextOn()
+        if P.RefreshRecipeRows then P.RefreshRecipeRows() end
+        P.Print("Chance and profit beside each recipe %s.", P:RowTextOn() and "on" or "off")
     elseif cmd == "on" or cmd == "off" then
         P:SetOn(cmd == "on")
         P.Print("Guide %s.", cmd)
     elseif cmd == "help" then
-        P.Print("/eprof turns the guide on or off. /eprof recalc plans the open profession's route again.")
+        P.Print("/eprof turns the guide on or off. /eprof recalc plans the open profession's route again. /eprof rows shows or hides the chance and profit beside each recipe.")
     else
         P:SetOn(not P:IsOn())
         P.Print("Guide %s. It opens beside the profession window.", P:IsOn() and "on" or "off")

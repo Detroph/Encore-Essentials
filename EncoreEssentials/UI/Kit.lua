@@ -1,4 +1,5 @@
--- Encore Essentials: the shared look for every Encore window (dark panel, copper edge, gold title).
+-- Encore Essentials: the shared look for every Encore window (the copper-tinted portrait frame with the Encore crest
+-- or the module icon, copper-edged buttons, dark wells, gold title).
 -- Modules reach it as EncoreEssentials.UI. Built from plain frames so it works on every client.
 local _, ns = ...
 local Encore = ns.Encore
@@ -104,20 +105,123 @@ function UI.Tooltip(frame, title, body)
     frame:HookScript("OnLeave", function() GameTooltip:Hide() end)
 end
 
-function UI.Button(parent, text, onClick, width)
-    local b = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+-- Vertical colour fade, bottom colour first (each texture gets its gradient once, then is only shown or hidden).
+local function fade(tex, bottom, top)
+    tex:SetColorTexture(1, 1, 1, 1)
+    if tex.SetGradient and CreateColor then
+        tex:SetGradient("VERTICAL", CreateColor(bottom[1], bottom[2], bottom[3], 1), CreateColor(top[1], top[2], top[3], 1))
+    else
+        tex:SetColorTexture(top[1], top[2], top[3], 1)
+    end
+end
+
+-- The Encore button: copper edge, red fade when it is the main action (or a toggle that is on), dark when it is
+-- not. style "dark" starts it dark. b:SetOn(on) switches between the two (mode buttons, tabs).
+function UI.Button(parent, text, onClick, width, style)
+    local b = CreateFrame("Button", nil, parent)
     b:SetSize(width or 120, 22)
-    b:SetText(text)
-    b:SetScript("OnClick", function(self) if onClick then onClick(self) end end)
+    b.bgOn = b:CreateTexture(nil, "BACKGROUND")
+    b.bgOn:SetPoint("TOPLEFT", 1, -1); b.bgOn:SetPoint("BOTTOMRIGHT", -1, 1)
+    fade(b.bgOn, { 0.23, 0.01, 0 }, { 0.76, 0.08, 0.05 })
+    b.bgOff = b:CreateTexture(nil, "BACKGROUND")
+    b.bgOff:SetPoint("TOPLEFT", 1, -1); b.bgOff:SetPoint("BOTTOMRIGHT", -1, 1)
+    fade(b.bgOff, { 0.09, 0.06, 0.04 }, { 0.17, 0.13, 0.09 })
+    UI.Border(b, UI.COPPER, 0.8)
+    local hl = b:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetPoint("TOPLEFT", 1, -1); hl:SetPoint("BOTTOMRIGHT", -1, 1)
+    hl:SetColorTexture(1, 0.9, 0.6, 0.10)
+    local fs = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    fs:SetPoint("LEFT", 4, 0); fs:SetPoint("RIGHT", -4, 0)
+    fs:SetWordWrap(false)
+    b:SetFontString(fs)
+    b:SetNormalFontObject(GameFontHighlightSmall)
+    b:SetHighlightFontObject(GameFontHighlightSmall)
+    b:SetDisabledFontObject(GameFontDisableSmall)
+    b:SetPushedTextOffset(1, -1)
+    function b:SetOn(on)
+        self.on = on and true or false
+        self.bgOn:SetShown(self.on)
+        self.bgOff:SetShown(not self.on)
+    end
+    b:SetScript("OnEnable", function(self) self.bgOn:SetAlpha(1); self.bgOff:SetAlpha(1) end)
+    b:SetScript("OnDisable", function(self) self.bgOn:SetAlpha(0.4); self.bgOff:SetAlpha(0.6) end)
+    b:SetOn(style ~= "dark")
+    b:SetText(text or "")
+    b:SetScript("OnClick", function(self, button) if onClick then onClick(self, button) end end)
     return b
 end
 
--- UI.Window{ name = "GlobalName", title = "Title", width = 400, height = 300 }
--- A movable panel with a gold title, a close button and Escape to close. Put things in window.content.
+-- A dark inset pane with a black edge and a faint copper inner edge (sections inside a window).
+function UI.Well(parent)
+    local f = CreateFrame("Frame", nil, parent)
+    local bg = f:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(0.016, 0.012, 0.008, 0.72)
+    UI.Border(f, { 0, 0, 0 }, 1)
+    local inner = UI.Border(f, UI.COPPER, 0.22)
+    inner[1]:SetPoint("TOPLEFT", 1, -1); inner[1]:SetPoint("TOPRIGHT", -1, -1)
+    inner[2]:SetPoint("BOTTOMLEFT", 1, 1); inner[2]:SetPoint("BOTTOMRIGHT", -1, 1)
+    inner[3]:SetPoint("TOPLEFT", 1, -1); inner[3]:SetPoint("BOTTOMLEFT", 1, 1)
+    inner[4]:SetPoint("TOPRIGHT", -1, -1); inner[4]:SetPoint("BOTTOMRIGHT", -1, 1)
+    return f
+end
+
+-- The teal gem in a copper setting that sits on the corner of every Encore window.
+function UI.Gem(parent, point, x, y)
+    local f = CreateFrame("Frame", nil, parent)
+    f:SetSize(18, 18)
+    f:SetPoint("CENTER", parent, point, x, y)
+    f:SetFrameLevel(parent:GetFrameLevel() + 30)
+    local sizes = { { 15, 0, 0, 0 }, { 13, UI.COPPER[1], UI.COPPER[2], UI.COPPER[3] }, { 9, UI.TEAL[1], UI.TEAL[2], UI.TEAL[3] } }
+    for i, sz in ipairs(sizes) do
+        local t = f:CreateTexture(nil, "OVERLAY", nil, i)
+        t:SetColorTexture(sz[2], sz[3], sz[4], 1)
+        t:SetSize(sz[1], sz[1])
+        t:SetPoint("CENTER")
+        if t.SetRotation then t:SetRotation(math.rad(45)) end
+    end
+    local shine = f:CreateTexture(nil, "OVERLAY", nil, 5)
+    shine:SetColorTexture(0.75, 1, 1, 0.9)
+    shine:SetSize(3, 3)
+    shine:SetPoint("CENTER", -1.5, 1.5)
+    if shine.SetRotation then shine:SetRotation(math.rad(45)) end
+    return f
+end
+
+UI.MEDIA = "Interface\\AddOns\\EncoreEssentials\\Media\\"
+UI.CREST = UI.MEDIA .. "encore-crest"
+
+-- The Encore frame on a PortraitFrameTemplate frame (as Encore-DB, Encore-Stonks and the Encore window have it):
+-- the icon in the portrait (the Encore crest unless given), the frame tinted copper, the gem in the bottom corner.
+-- frame.title is the title text, so frame.title:SetText() works on every Encore window.
+function UI.Skin(f, icon)
+    local portrait = f.GetPortrait and f:GetPortrait() or f.portrait
+    if portrait then
+        portrait:SetTexture(icon or UI.CREST)
+        portrait:SetTexCoord(0, 1, 0, 1)
+    end
+    if f.NineSlice then
+        for _, region in ipairs({ f.NineSlice:GetRegions() }) do
+            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
+        end
+    end
+    f.title = (f.GetTitleText and f:GetTitleText()) or (f.TitleContainer and f.TitleContainer.TitleText) or f.TitleText
+    if not f.title then
+        f.title = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        f.title:SetPoint("TOP", 0, -5)
+    end
+    f.gem = UI.Gem(f, "BOTTOMLEFT", 3, 3)
+end
+
+-- UI.Window{ name = "GlobalName", title = "Title", width = 400, height = 300, icon = texture path }
+-- A movable Encore window with a close button and Escape to close. Put things in window.content; window.header is
+-- the strip beside the portrait, under the title.
 function UI.Window(o)
-    local f = CreateFrame("Frame", o.name, UIParent)
-    f:SetSize(o.width or 400, o.height or 300)
+    local f = CreateFrame("Frame", o.name, UIParent, "PortraitFrameTemplate")
+    f:Hide()
+    f:SetSize(o.width or 400, (o.height or 300) + 16)
     f:SetPoint("CENTER", 0, o.y or 80)
+    if f.SetDontSavePosition then f:SetDontSavePosition(true) end
     f:SetFrameStrata("DIALOG")
     f:SetToplevel(true)
     f:SetClampedToScreen(true)
@@ -126,32 +230,21 @@ function UI.Window(o)
     f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart", f.StartMoving)
     f:SetScript("OnDragStop", f.StopMovingOrSizing)
-    UI.Panel(f)
-
-    f.title = f:CreateFontString(nil, "OVERLAY")
-    UI.TitleFont(f.title, 17)
-    f.title:SetPoint("TOPLEFT", 14, -12)
-    f.title:SetPoint("RIGHT", -34, 0)
-    f.title:SetJustifyH("LEFT")
+    UI.Skin(f, o.icon)
     f.title:SetText(o.title or "")
+    if f.CloseButton then f.CloseButton:SetScript("OnClick", function() f:Hide() end) end
+    f.closeButton = f.CloseButton
 
-    local close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
-    close:SetPoint("TOPRIGHT", 2, 2)
-    close:SetScript("OnClick", function() f:Hide() end)
-    f.closeButton = close
-
-    local rule = f:CreateTexture(nil, "ARTWORK")
-    rule:SetColorTexture(UI.COPPER[1], UI.COPPER[2], UI.COPPER[3], 0.35)
-    rule:SetHeight(1)
-    rule:SetPoint("TOPLEFT", 12, -36)
-    rule:SetPoint("TOPRIGHT", -12, -36)
+    f.header = CreateFrame("Frame", nil, f)
+    f.header:SetPoint("TOPLEFT", 66, -28)
+    f.header:SetPoint("TOPRIGHT", -14, -28)
+    f.header:SetHeight(26)
 
     f.content = CreateFrame("Frame", nil, f)
-    f.content:SetPoint("TOPLEFT", 14, -44)
-    f.content:SetPoint("BOTTOMRIGHT", -14, 12)
+    f.content:SetPoint("TOPLEFT", 14, -60)
+    f.content:SetPoint("BOTTOMRIGHT", -14, 14)
 
     if o.name then tinsert(UISpecialFrames, o.name) end
-    f:Hide()
     return f
 end
 

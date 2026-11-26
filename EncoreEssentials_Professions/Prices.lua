@@ -49,6 +49,18 @@ function P.Price(item)
     if avg then return avg, "auction", { avg7 = avg } end
 end
 
+-- What a crafted item is worth to you: its auction price (as P.Price reads it), or what a vendor pays for it.
+-- copper, source ("auction" or "vendor"), or nil when neither is known.
+local GetItemInfo = (C_Item and C_Item.GetItemInfo) or _G.GetItemInfo
+function P.Worth(item)
+    local last = auctionator(item)
+    local avg = stonks(item)
+    if last and avg and (last > avg * 1.5 or last < avg * 0.5) then return avg, "auction" end
+    if last or avg then return last or avg, "auction" end
+    local sell = GetItemInfo and select(11, GetItemInfo(item))
+    if type(sell) == "number" and sell > 0 then return sell, "vendor" end
+end
+
 function P.Have(item) return GetItemCount and GetItemCount(item, true) or 0 end
 
 ---------------------------------------------------------------------------
