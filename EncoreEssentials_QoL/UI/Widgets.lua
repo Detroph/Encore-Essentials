@@ -115,55 +115,8 @@ function W.Slider(parent, label, o)
     return f
 end
 
--- Choice button: shows the current value; click opens a menu of { value, label } choices.
-function W.Choice(parent, label, choices, onChange)
-    local f = CreateFrame("Frame", nil, parent)
-    f:SetSize(300, 24)
-    f.label = W.Text(f, "GameFontHighlightSmall", label)
-    f.label:SetPoint("LEFT")
-    local b = CreateFrame("Button", nil, f)
-    f.button = b
-    b:SetSize(170, 22)
-    b:SetPoint("RIGHT")
-    W.Panel(b, 0.95)
-    b.text = W.Text(b, "GameFontHighlightSmall", "")
-    b.text:SetPoint("LEFT", 6, 0)
-    b.text:SetPoint("RIGHT", -16, 0)
-    local arrow = W.Text(b, "GameFontNormalSmall", "v", W.GOLD)
-    arrow:SetPoint("RIGHT", -5, 0)
-    b:SetHighlightTexture("Interface\\Buttons\\UI-Listbox-Highlight2", "ADD")
-    function f:SetValue(v)
-        self.current = v
-        for _, c in ipairs(choices) do
-            if c[1] == v then b.text:SetText(c[2]) return end
-        end
-        b.text:SetText(tostring(v))
-    end
-    local function pick(v)
-        f:SetValue(v)
-        if onChange then onChange(v) end
-    end
-    b:SetScript("OnClick", function(self)
-        if MenuUtil and MenuUtil.CreateContextMenu then
-            MenuUtil.CreateContextMenu(self, function(_, root)
-                for _, c in ipairs(choices) do
-                    root:CreateRadio(c[2], function() return f.current == c[1] end, function() pick(c[1]) end)
-                end
-            end)
-        else
-            -- No menu API: step to the next choice.
-            local idx = 1
-            for i, c in ipairs(choices) do if c[1] == f.current then idx = i end end
-            pick(choices[idx % #choices + 1][1])
-        end
-    end)
-    function f:SetLocked(locked)
-        b:SetEnabled(not locked)
-        W.Color(self.label, locked and W.DIM or W.INK)
-        b:SetAlpha(locked and 0.5 or 1)
-    end
-    return f
-end
+-- Choice button: shows the current value; click opens a menu of { value, label } choices (the shared Encore one).
+W.Choice = UI.Choice
 
 function W.Button(parent, text, onClick, width)
     local b = _G.EncoreEssentials.UI.Button(parent)

@@ -70,7 +70,7 @@ local POPUP_W = 340
 local ICONS = "Interface\\Icons\\"
 -- Texture paths, in one table: this file is near Lua's limit of 200 file-level locals.
 local TEX = {
-    crest = "Interface\\AddOns\\EncoreEssentials\\Media\\encore-crest",
+    icon = "Interface\\AddOns\\EncoreEssentials\\Media\\encore-db-icon",
     skull = "Interface\\TargetingFrame\\UI-TargetingFrame-Skull",
     portraitMask = "Interface\\CharacterFrame\\TempPortraitAlphaMask",
     portraitPath = "Interface\\AddOns\\EncoreEssentials_DB\\Media\\Portraits\\",
@@ -1387,27 +1387,6 @@ local function setPip(row, n)
     return show
 end
 
--- A diamond gem, as on the mock-up's frame corners.
-local function gem(parent, point, x, y)
-    local f = CreateFrame("Frame", nil, parent)
-    f:SetSize(18, 18)
-    f:SetPoint("CENTER", parent, point, x, y)
-    f:SetFrameLevel(parent:GetFrameLevel() + 30)
-    local sizes = { { 15, 0, 0, 0 }, { 13, COPPER[1], COPPER[2], COPPER[3] }, { 9, TEAL[1], TEAL[2], TEAL[3] } }
-    for i, s in ipairs(sizes) do
-        local t = f:CreateTexture(nil, "OVERLAY", nil, i)
-        t:SetColorTexture(s[2], s[3], s[4], 1)
-        t:SetSize(s[1], s[1])
-        t:SetPoint("CENTER")
-        t:SetRotation(math.rad(45))
-    end
-    local shine = f:CreateTexture(nil, "OVERLAY", nil, 5)
-    shine:SetColorTexture(0.75, 1, 1, 0.9)
-    shine:SetSize(3, 3)
-    shine:SetPoint("CENTER", -1.5, 1.5)
-    shine:SetRotation(math.rad(45))
-end
-
 local function linkItem(id)
     if not itemExists(id) then return end
     local item = Item:CreateFromItemID(id)
@@ -1518,32 +1497,11 @@ end
 local function initTreeRow(row, d)
     if not row.built then
         row.built = true
-        row.sel = row:CreateTexture(nil, "BACKGROUND")
-        row.sel:SetAllPoints()
-        gradient(row.sel, "HORIZONTAL", 1, 0.82, 0, 0.30, 1, 0.82, 0, 0)
-        row.selBar = row:CreateTexture(nil, "ARTWORK")
-        row.selBar:SetPoint("TOPLEFT"); row.selBar:SetPoint("BOTTOMLEFT"); row.selBar:SetWidth(2)
-        row.selBar:SetColorTexture(GOLD[1], GOLD[2], GOLD[3], 1)
-        local hl = row:CreateTexture(nil, "HIGHLIGHT")
-        hl:SetAllPoints()
-        gradient(hl, "HORIZONTAL", 1, 0.82, 0, 0.16, 1, 0.82, 0, 0)
-        row.pmEdge = row:CreateTexture(nil, "ARTWORK", nil, 1)
-        row.pmEdge:SetSize(14, 14)
-        row.pmEdge:SetPoint("LEFT", 4, 0)
-        row.pmEdge:SetColorTexture(0.79, 0.47, 0.18, 1)
-        row.pmFill = row:CreateTexture(nil, "ARTWORK", nil, 2)
-        row.pmFill:SetSize(12, 12)
-        row.pmFill:SetPoint("CENTER", row.pmEdge)
-        gradient(row.pmFill, "VERTICAL", 0.14, 0.08, 0.04, 1, 0.36, 0.23, 0.11, 1)
-        row.pmText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        row.pmText:SetPoint("CENTER", row.pmEdge, "CENTER", 0, 1)
+        _G.EncoreEssentials.UI.NavRow(row) -- selection, highlight, +/- box and label from the shared kit
         row.icon = row:CreateTexture(nil, "ARTWORK")
         row.icon:SetSize(24, 24)
         row.icon:SetPoint("LEFT", 20, 0)
         row.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-        row.label = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        row.label:SetJustifyH("LEFT")
-        row.label:SetWordWrap(false)
         row.right = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
         row.right:SetJustifyH("RIGHT")
         makePip(row)
@@ -2392,14 +2350,6 @@ local function savePosition()
     if point then settings().point = { point, relPoint, x, y } end
 end
 
-local function radioMenu(dropdown, options, get, set)
-    dropdown:SetupMenu(function(_, root)
-        for _, o in ipairs(options) do
-            root:CreateRadio(o[2], function(v) return get() == v end, function(v) set(v) end, o[1])
-        end
-    end)
-end
-
 local function setHighlight(v)
     state.highlight = v
     settings().highlight = v
@@ -2563,18 +2513,8 @@ local function createWindow()
     end)
     cog:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-    local portrait = frame.GetPortrait and frame:GetPortrait() or frame.portrait
-    if portrait then
-        portrait:SetTexture(TEX.crest)
-        portrait:SetTexCoord(0, 1, 0, 1)
-    end
-    -- Copper frame, as in the mock-up
-    if frame.NineSlice then
-        for _, region in ipairs({ frame.NineSlice:GetRegions() }) do
-            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
-        end
-    end
-    gem(frame, "BOTTOMLEFT", 3, 3)
+    -- The shared Encore frame with the Encore-DB icon (EncoreEssentials/UI/Kit.lua)
+    _G.EncoreEssentials.UI.Skin(frame, TEX.icon)
 
     -- Resize grip in the bottom-right corner
     local grip = CreateFrame("Button", nil, frame)
@@ -2665,24 +2605,25 @@ local function createWindow()
     local qLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     qLabel:SetPoint("TOPLEFT", 16, -72)
     qLabel:SetText("Quality")
-    qualityDropdown = CreateFrame("DropdownButton", nil, frame, "WowStyle1DropdownTemplate")
-    qualityDropdown:SetWidth(150)
-    qualityDropdown:SetPoint("LEFT", qLabel, "RIGHT", 8, 0)
-    radioMenu(qualityDropdown, QUALITY_OPTIONS, function() return state.quality end, function(v)
+    local UI = _G.EncoreEssentials.UI
+    qualityDropdown = UI.Choice(frame, nil, QUALITY_OPTIONS, function(v)
         state.quality = v
         renderLoot()
-    end)
+    end, 150)
+    qualityDropdown:SetWidth(150)
+    qualityDropdown:SetPoint("LEFT", qLabel, "RIGHT", 8, 0)
+    qualityDropdown:SetValue(state.quality)
 
     local sLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     sLabel:SetPoint("LEFT", qualityDropdown, "RIGHT", 14, 0)
     sLabel:SetText("Slot")
-    slotDropdown = CreateFrame("DropdownButton", nil, frame, "WowStyle1DropdownTemplate")
-    slotDropdown:SetWidth(130)
-    slotDropdown:SetPoint("LEFT", sLabel, "RIGHT", 8, 0)
-    radioMenu(slotDropdown, SLOT_OPTIONS, function() return state.slot end, function(v)
+    slotDropdown = UI.Choice(frame, nil, SLOT_OPTIONS, function(v)
         state.slot = v
         renderLoot()
-    end)
+    end, 130)
+    slotDropdown:SetWidth(130)
+    slotDropdown:SetPoint("LEFT", sLabel, "RIGHT", 8, 0)
+    slotDropdown:SetValue(state.slot)
 
     -- "Highlighted items" lives in the cogwheel options menu only
     local reset = _G.EncoreEssentials.UI.Button(frame)
@@ -2691,9 +2632,8 @@ local function createWindow()
     reset:SetText("Reset")
     reset:SetScript("OnClick", function()
         state.quality, state.slot = 0, ""
-        for _, d in ipairs({ qualityDropdown, slotDropdown }) do
-            if d.GenerateMenu then d:GenerateMenu() end
-        end
+        qualityDropdown:SetValue(state.quality)
+        slotDropdown:SetValue(state.slot)
         clearSearch()
         renderAll()
     end)

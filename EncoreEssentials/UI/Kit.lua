@@ -105,14 +105,19 @@ function UI.Tooltip(frame, title, body)
     frame:HookScript("OnLeave", function() GameTooltip:Hide() end)
 end
 
--- Vertical colour fade, bottom colour first (each texture gets its gradient once, then is only shown or hidden).
-local function fade(tex, bottom, top)
+-- A colour fade on a texture: VERTICAL goes bottom to top, HORIZONTAL left to right. Each texture gets its
+-- gradient once, then is only shown, hidden or faded.
+function UI.Fade(tex, orientation, r1, g1, b1, a1, r2, g2, b2, a2)
     tex:SetColorTexture(1, 1, 1, 1)
     if tex.SetGradient and CreateColor then
-        tex:SetGradient("VERTICAL", CreateColor(bottom[1], bottom[2], bottom[3], 1), CreateColor(top[1], top[2], top[3], 1))
+        tex:SetGradient(orientation, CreateColor(r1, g1, b1, a1), CreateColor(r2, g2, b2, a2))
     else
-        tex:SetColorTexture(top[1], top[2], top[3], 1)
+        tex:SetColorTexture(r2, g2, b2, math.max(a1, a2))
     end
+end
+
+local function fade(tex, bottom, top)
+    UI.Fade(tex, "VERTICAL", bottom[1], bottom[2], bottom[3], 1, top[1], top[2], top[3], 1)
 end
 
 -- The Encore button: copper edge, red fade when it is the main action (or a toggle that is on), dark when it is
@@ -191,10 +196,18 @@ end
 UI.MEDIA = "Interface\\AddOns\\EncoreEssentials\\Media\\"
 UI.CREST = UI.MEDIA .. "encore-crest"
 
--- The Encore frame on a PortraitFrameTemplate frame (as Encore-DB, Encore-Stonks and the Encore window have it):
--- the icon in the portrait (the Encore crest unless given), the frame tinted copper, the gem in the bottom corner.
+-- The Encore frame on a PortraitFrameTemplate frame: the module's icon in the portrait (the Encore crest unless
+-- given), the frame tinted copper, the gem in the bottom corner.
 -- frame.title is the title text, so frame.title:SetText() works on every Encore window.
-function UI.Skin(f, icon)
+function UI.Skin(f, icon, dark)
+    -- The frame's own background, as Encore-DB has it; dark = true lays a near-black one over it (the profession
+    -- window's darkness, for panels beside it).
+    if dark then
+        local bg = f:CreateTexture(nil, "BACKGROUND", nil, 2)
+        bg:SetPoint("TOPLEFT", 4, -22); bg:SetPoint("BOTTOMRIGHT", -4, 4)
+        bg:SetColorTexture(0.02, 0.016, 0.012, 0.92)
+        f.encoreBg = bg
+    end
     local portrait = f.GetPortrait and f:GetPortrait() or f.portrait
     if portrait then
         portrait:SetTexture(icon or UI.CREST)
@@ -245,6 +258,116 @@ function UI.Window(o)
     f.content:SetPoint("BOTTOMRIGHT", -14, 14)
 
     if o.name then tinsert(UISpecialFrames, o.name) end
+    return f
+end
+
+-- Side list rows (category trees in Encore-DB, Encore-Stonks and Encore-QoL), Encore-DB's look: gold headings with
+-- the copper +/- box, light entries, a gold fade with a gold bar on the left for the selected entry.
+-- UI.NavRow(button) builds it once; UI.NavSet(button, { text, head, open, selected, indent, dim }) fills it.
+function UI.NavRow(row)
+    if row.nav then return row end
+    row.nav = true
+    row.sel = row:CreateTexture(nil, "BACKGROUND")
+    row.sel:SetAllPoints()
+    UI.Fade(row.sel, "HORIZONTAL", 1, 0.82, 0, 0.30, 1, 0.82, 0, 0)
+    row.selBar = row:CreateTexture(nil, "ARTWORK")
+    row.selBar:SetPoint("TOPLEFT"); row.selBar:SetPoint("BOTTOMLEFT"); row.selBar:SetWidth(2)
+    row.selBar:SetColorTexture(UI.GOLD[1], UI.GOLD[2], UI.GOLD[3], 1)
+    local hl = row:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetAllPoints()
+    UI.Fade(hl, "HORIZONTAL", 1, 0.82, 0, 0.16, 1, 0.82, 0, 0)
+    row.pmEdge = row:CreateTexture(nil, "ARTWORK", nil, 1)
+    row.pmEdge:SetSize(14, 14)
+    row.pmEdge:SetPoint("LEFT", 4, 0)
+    row.pmEdge:SetColorTexture(0.79, 0.47, 0.18, 1)
+    row.pmFill = row:CreateTexture(nil, "ARTWORK", nil, 2)
+    row.pmFill:SetSize(12, 12)
+    row.pmFill:SetPoint("CENTER", row.pmEdge)
+    UI.Fade(row.pmFill, "VERTICAL", 0.14, 0.08, 0.04, 1, 0.36, 0.23, 0.11, 1)
+    row.pmText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    row.pmText:SetPoint("CENTER", row.pmEdge, "CENTER", 0, 1)
+    row.label = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    row.label:SetJustifyH("LEFT")
+    row.label:SetWordWrap(false)
+    row.label:SetPoint("LEFT", 22, 0)
+    row.label:SetPoint("RIGHT", -4, 0)
+    return row
+end
+
+function UI.NavSet(row, o)
+    UI.NavRow(row)
+    local head = o.head and true or false
+    row.pmEdge:SetShown(head); row.pmFill:SetShown(head); row.pmText:SetShown(head)
+    row.pmText:SetText(o.open and "-" or "+")
+    row.sel:SetShown(o.selected == true); row.selBar:SetShown(o.selected == true)
+    row.label:SetFontObject(head and "GameFontNormal" or "GameFontHighlight")
+    if o.dim then
+        UI.Color(row.label, UI.DIM)
+    elseif head then
+        UI.Color(row.label, UI.GOLD)
+    elseif o.selected then
+        row.label:SetTextColor(1, 1, 1)
+    else
+        UI.Color(row.label, o.colour or UI.INK)
+    end
+    row.label:ClearAllPoints()
+    row.label:SetPoint("LEFT", (head and 24 or 22) + (o.indent or 0), 0)
+    row.label:SetPoint("RIGHT", -4, 0)
+    row.label:SetText(o.text or "")
+end
+
+-- A dropdown in the Encore look: a dark box with the current choice and a gold arrow; click for a menu.
+-- choices = { { value, label }, ... }. label (optional) is shown at the left of the frame.
+-- f:SetValue(v) shows a value without calling onChange; f:SetLocked(locked).
+function UI.Choice(parent, label, choices, onChange, width)
+    local f = CreateFrame("Frame", nil, parent)
+    f:SetSize(300, 24)
+    f.label = UI.Text(f, "GameFontHighlightSmall", label or "")
+    f.label:SetPoint("LEFT")
+    local b = CreateFrame("Button", nil, f)
+    f.button = b
+    b:SetSize(width or 170, 22)
+    b:SetPoint("RIGHT")
+    UI.Panel(b, 0.95)
+    b.text = UI.Text(b, "GameFontHighlightSmall", "")
+    b.text:SetPoint("LEFT", 6, 0)
+    b.text:SetPoint("RIGHT", -16, 0)
+    b.text:SetWordWrap(false)
+    local arrow = UI.Text(b, "GameFontNormalSmall", "v", UI.GOLD)
+    arrow:SetPoint("RIGHT", -5, 0)
+    local hl = b:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetPoint("TOPLEFT", 1, -1); hl:SetPoint("BOTTOMRIGHT", -1, 1)
+    hl:SetColorTexture(1, 0.9, 0.6, 0.10)
+    function f:SetValue(v)
+        self.current = v
+        for _, c in ipairs(choices) do
+            if c[1] == v then b.text:SetText(c[2]) return end
+        end
+        b.text:SetText(tostring(v))
+    end
+    local function pick(v)
+        f:SetValue(v)
+        if onChange then onChange(v) end
+    end
+    b:SetScript("OnClick", function(self)
+        if MenuUtil and MenuUtil.CreateContextMenu then
+            MenuUtil.CreateContextMenu(self, function(_, root)
+                for _, c in ipairs(choices) do
+                    root:CreateRadio(c[2], function() return f.current == c[1] end, function() pick(c[1]) end)
+                end
+            end)
+        else
+            -- No menu API: step to the next choice.
+            local idx = 1
+            for i, c in ipairs(choices) do if c[1] == f.current then idx = i end end
+            pick(choices[idx % #choices + 1][1])
+        end
+    end)
+    function f:SetLocked(locked)
+        b:SetEnabled(not locked)
+        UI.Color(self.label, locked and UI.DIM or UI.INK)
+        b:SetAlpha(locked and 0.5 or 1)
+    end
     return f
 end
 
