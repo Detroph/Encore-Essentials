@@ -5,7 +5,8 @@ local _, ns = ...
 local P = ns.P
 local Encore = _G.EncoreEssentials
 
-local WIDTH, PAD = 372, 12
+local WIDTH, PAD = 400, 12
+local SCALE = 1.12 -- the guide is drawn a little larger than the profession window: bigger text, wider
 local GAP = 66 -- space between the profession window and the guide, for its side tabs
 local INNER = WIDTH - 2 * PAD
 local TOP = -60 -- the views start under the portrait
@@ -232,7 +233,7 @@ local function buildCraft(p)
     -- Every step, sortable
     v.table = UI().Table(v, {
         { key = "skill", head = "Skill", w = 52 },
-        { key = "name", head = "Recipe", w = 126 },
+        { key = "name", head = "Recipe", w = 150 },
         { key = "crafts", head = "Crafts", w = 38, right = true },
         { key = "cost", head = "Cost", w = 88, right = true },
     }, {
@@ -354,9 +355,10 @@ end
 local function build()
     panel = CreateFrame("Frame", "EncoreProfessionsPanel", ProfessionsFrame, "PortraitFrameTemplate")
     panel:SetWidth(WIDTH)
+    panel:SetScale(SCALE)
     -- Far enough right to clear the profession tabs down the window's right edge.
-    panel:SetPoint("TOPLEFT", ProfessionsFrame, "TOPRIGHT", GAP, 0)
-    panel:SetPoint("BOTTOMLEFT", ProfessionsFrame, "BOTTOMRIGHT", GAP, 0)
+    panel:SetPoint("TOPLEFT", ProfessionsFrame, "TOPRIGHT", GAP / SCALE, 0)
+    panel:SetPoint("BOTTOMLEFT", ProfessionsFrame, "BOTTOMRIGHT", GAP / SCALE, 0)
     panel:EnableMouse(true)
     UI().Skin(panel, ICON, true) -- darker, to sit with the profession window
     -- Closing the guide turns it off, as the Encore button by the skill bar does.
