@@ -146,9 +146,10 @@ local function fillRow(btn, d)
     btn.icon:SetTexture(item.icon or U.itemIcon(item.key))
     btn.name:SetText(item.name or "")
     local r, g, b = 1, 1, 1
-    if item.quality and C_Item and C_Item.GetItemQualityColor then
-        local qr, qg, qb = C_Item.GetItemQualityColor(item.quality)
-        if qr then r, g, b = qr, qg, qb end
+    local q = item.quality
+    if type(q) == "number" and q >= 0 and C_Item and C_Item.GetItemQualityColor then
+        local ok, qr, qg, qb = pcall(C_Item.GetItemQualityColor, q)
+        if ok and qr then r, g, b = qr, qg, qb end
     end
     btn.name:SetTextColor(r, g, b)
     local dimmed = o and (o.state == "bought" or o.state == "skipped" or o.state == "over")
