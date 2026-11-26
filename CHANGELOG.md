@@ -12,6 +12,8 @@
 - All Encore windows share one look: borders in Encore-DB and Encore-Stonks keep every edge visible at small UI scales, like Encore-QoL's. The Encore title font now lives in EncoreEssentials (saved font choices move with it).
 - Tooltips on the minimap button and Encore-DB recipe icons follow the mouse; the "click to sort" tooltip on column headers is gone.
 - The "Encore Essentials loaded" chat line is off for new installs. /encore help lists every module's commands.
+- Encore-DB: item tooltips say where an item drops (boss and dungeon with the drop chance), who sells it, or that it is a world drop, up to three places. Works once Encore-DB is loaded; new option Load Encore-DB at login (off) makes it work from the start.
+- Encore-DB: new AH column in item lists with Encore-Stonks' 7-day average price, sortable like every column (Options > AddOns > Encore-DB to turn it off).
 - The download no longer contains a 2.3 MB test file by mistake (it was 42% of the zip).
 
 ## 0.2.5
