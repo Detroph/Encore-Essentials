@@ -205,7 +205,7 @@ function UI.Skin(f, icon, dark)
     if dark then
         local bg = f:CreateTexture(nil, "BACKGROUND", nil, 2)
         bg:SetPoint("TOPLEFT", 4, -22); bg:SetPoint("BOTTOMRIGHT", -4, 4)
-        bg:SetColorTexture(0.13, 0.10, 0.075, 0.88)
+        bg:SetColorTexture(0.20, 0.16, 0.12, 0.95)
         f.encoreBg = bg
     end
     local portrait = f.GetPortrait and f:GetPortrait() or f.portrait
