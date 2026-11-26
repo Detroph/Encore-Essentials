@@ -13,6 +13,7 @@ Locales\enUS.lua
 Core.lua
 UI\Kit.lua
 WhatsNew.lua
+Services.lua
 Hub.lua
 Minimap.lua
 QuestRewards.lua
