@@ -170,9 +170,9 @@ local DB_PAGE = {
             dbChanged("ahPrices")
         end },
     { kind = "header", text = L.OPT_DB_TOOLTIPS },
-    { kind = "checkbox", key = "DBTooltipSources", name = L.OPT_DB_SOURCES, tooltip = L.OPT_DB_SOURCES_TIP, default = true,
-        get = function() return dbSettings().tooltipSources ~= false end,
-        set = function(v) if v then dbSettings().tooltipSources = nil else dbSettings().tooltipSources = false end end },
+    { kind = "checkbox", key = "DBTooltipSources", name = L.OPT_DB_SOURCES, tooltip = L.OPT_DB_SOURCES_TIP, default = false,
+        get = function() return dbSettings().tooltipSources == true end,
+        set = function(v) dbSettings().tooltipSources = v or nil end },
     { kind = "checkbox", key = "DBLoadAtLogin", name = L.OPT_DB_LOGIN, tooltip = L.OPT_DB_LOGIN_TIP, default = false,
         get = function() return dbSettings().loadAtLogin == true end,
         set = function(v)
