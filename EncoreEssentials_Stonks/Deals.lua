@@ -102,9 +102,15 @@ function Deals.CanScan()
     return (Deals.ScanWait() or 0) == 0
 end
 
+-- As Auctionator's own scan button does: Auctionator starts the full scan, or says in chat when the next one is
+-- allowed. The click always reaches Auctionator, so it never looks like nothing happened.
 function Deals.StartScan()
     local f = fullScanFrame()
-    if f and f.InitiateScan and Deals.CanScan() then f:InitiateScan() end
+    if f and f.InitiateScan then
+        f:InitiateScan()
+    else
+        print("|cffd9a066Encore-Stonks|r Auctionator's full scan isn't ready: turn Auctionator on, then close and open the auction house.")
+    end
 end
 
 -- The player's own listings are left out. On WoW Forever UnitName returns first name and surname apart.
@@ -506,13 +512,8 @@ local function updateOverlay()
     overlay.button:SetShown(showButton)
     if showButton then
         local wait = Deals.ScanWait() or 0
-        if Deals.CanScan() then
-            overlay.button:Enable()
-            overlay.button:SetText("Start full scan")
-        else
-            overlay.button:Disable()
-            overlay.button:SetText(wait > 0 and ("Next full scan in " .. clock(wait)) or "Start full scan")
-        end
+        overlay.button:Enable()
+        overlay.button:SetText(wait > 0 and not Deals.CanScan() and ("Next full scan in " .. clock(wait)) or "Start full scan")
     end
 end
 
@@ -532,10 +533,10 @@ local function updateScanLine()
         scanButton:Disable()
     elseif wait and wait > 0 then
         cdText:SetText("Next full scan in " .. clock(wait))
-        scanButton:Disable()
+        scanButton:Enable() -- Auctionator says in chat when the next one is allowed
     else
         cdText:SetText(fullScanFrame() and "Full scan ready" or "")
-        scanButton:SetEnabled(Deals.CanScan())
+        scanButton:SetEnabled(fullScanFrame() ~= nil)
     end
 end
 
