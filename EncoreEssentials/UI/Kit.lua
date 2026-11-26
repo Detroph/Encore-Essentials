@@ -200,12 +200,12 @@ UI.CREST = UI.MEDIA .. "encore-crest"
 -- given), the frame tinted copper, the gem in the bottom corner.
 -- frame.title is the title text, so frame.title:SetText() works on every Encore window.
 function UI.Skin(f, icon, dark)
-    -- The frame's own background, as Encore-DB has it; dark = true lays a near-black one over it (the profession
+    -- The frame's own background, as Encore-DB has it; dark = true lays a dark brown one over it (the profession
     -- window's darkness, for panels beside it).
     if dark then
         local bg = f:CreateTexture(nil, "BACKGROUND", nil, 2)
         bg:SetPoint("TOPLEFT", 4, -22); bg:SetPoint("BOTTOMRIGHT", -4, 4)
-        bg:SetColorTexture(0.02, 0.016, 0.012, 0.92)
+        bg:SetColorTexture(0.13, 0.10, 0.075, 0.88)
         f.encoreBg = bg
     end
     local portrait = f.GetPortrait and f:GetPortrait() or f.portrait
