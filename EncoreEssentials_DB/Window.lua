@@ -459,7 +459,18 @@ local function recipeCell(r, prof)
     c.name = r[2] or c.name or ("Spell " .. r[1])
     if r[8] and r[8] > 1 then c.name = c.name .. " |cffc8b898x" .. r[8] .. "|r" end
     c.skill = skillText(r)
-    c.sortv = { skill = r[3] or r.level or 9999 }
+    local sv = c.sortv or {} -- cellFromInfo made a fresh table (it may hold the AH price)
+    sv.skill = r[3] or r.level or 9999
+    c.sortv = sv
+    -- Profit: what the product sells for at the AH minus its reagents at AH prices (only when every price is known)
+    if makes and ns.LootData then
+        local sell = ns.LootData.Price(makes)
+        local cost, missing = ns.LootData.CraftCost(r[9])
+        if sell and cost and missing == 0 then
+            local p = sell * (r[8] or 1) - cost
+            c.profit, sv.profit = ns.LootData.ProfitText(p), p
+        end
+    end
     if type(r[10]) == "number" then c.recipeItem = r[10] end -- learned from this recipe item
     c.isNew, c.changed = r.new == true, r.changed == true
     c.recipe = r
@@ -1193,12 +1204,13 @@ local COLUMNS = {
     { key = "standing", w = 76, head = "Needs" },
     { key = "cost", w = 92, head = "Price", right = true },
     { key = "ah", w = 92, head = "AH", right = true },
+    { key = "profit", w = 92, head = "Profit", right = true },
     { key = "chance", w = 46, head = "Chance", right = true },
     { key = "from", w = 140, head = "From" },
 }
 -- Columns dropped in this order when the items side by side are too narrow for them (the item tooltip still
 -- shows them). Chance and price always stay.
-local DROP_FIRST = { "req", "ilvl", "from", "ah", "type", "standing", "slot", "skill" }
+local DROP_FIRST = { "req", "ilvl", "from", "ah", "profit", "type", "standing", "slot", "skill" }
 
 local function listWidth()
     local w = lootList and lootList:GetWidth()
