@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Title: |cffeb9339Encore|r-Professions
-## Notes: Levelling routes beside the profession window for Encore Essentials: the cheapest or fastest recipes from trainers and vendors, where to learn them, an Auctionator shopping list, and where to farm for gathering and fishing. /eprof turns it on or off.
+## Notes: Levelling routes beside the profession window for Encore Essentials: the cheapest or fastest recipes from trainers and vendors, where to learn them, an Auctionator shopping list, where to farm for gathering and fishing, and a Selling guide (auction house, vendor, Waylaid Crates and Craftsman's Writs). /eprof turns it on or off.
 ## Author: Encore
 ## X-License: GPL-3.0
 ## Version: @project-version@
@@ -11,10 +11,12 @@
 
 Data\Recipes.lua
 Data\World.lua
+Data\Selling.lua
 Core.lua
 Prices.lua
 Planner.lua
 RecipeList.lua
 Shopping.lua
 Gather.lua
+Selling.lua
 Panel.lua

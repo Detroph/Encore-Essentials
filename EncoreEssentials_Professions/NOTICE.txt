@@ -30,6 +30,11 @@ Data
   quests, zone maps, beasts and mob levels per zone: QuestieDB
   (https://github.com/Questie/QuestieDB, GPL-3.0), its WoW Forever data.
   tools/professions/build.py builds both data files; nothing is copied by hand.
+  Waylaid Crates (the bundles that fill each crate) and Craftsman's Writs (the item each
+  writ asks for, its NPC and zone, and the Coin Pouch averages from Wowhead's looter data)
+  in Data/Selling.lua: Wowhead Forever (https://www.wowhead.com/forever), read on
+  2026-11-26; tools/professions/selling.py builds the file. Merchant's Favor per crate:
+  player reports.
 
 What's Training? licence
 

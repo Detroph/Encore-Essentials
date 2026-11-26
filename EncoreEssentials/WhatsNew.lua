@@ -7,6 +7,9 @@ local L = ns.L
 -- Newest first. A version here is the tag without the leading v ("0.2.6.1-beta" is written "0.2.6.1").
 -- A full release (three numbers) sums up its betas: players updating to it see only that entry.
 local NOTES = {
+    { version = "0.2.6.2", lines = {
+        "Encore-Professions: a Selling guide tab: what you can craft for a profit at the auction house or a vendor, and the cost of Waylaid Crate bundles and Craftsman's Writ items.",
+    } },
     { version = "0.2.6.1", lines = {
         "New module Encore-PvP: battleground timers and history.",
         "New module Encore-Professions: a levelling guide beside the profession window (the Encore button by the skill bar).",

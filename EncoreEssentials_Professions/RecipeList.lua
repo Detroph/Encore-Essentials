@@ -48,6 +48,8 @@ local function fromClient(recipeID)
     end
     return { recipeID, nil, nil, nil, nil, nil, s.outputItemID, s.quantityMin or 1, reagents }
 end
+P.RecipeFor = recipeFor
+P.RecipeFromClient = fromClient
 
 -- chance (0..1 or nil), colour key, profit (copper or nil) for one recipe at this skill.
 function P.RowValues(prof, recipeInfo, skill, bonus, cache)

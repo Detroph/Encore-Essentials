@@ -375,6 +375,60 @@ function UI.Choice(parent, label, choices, onChange, width)
     return f
 end
 
+-- A row of tabs in the game's tab shape with the Encore copper edge, for pages of one window (Encore-Professions'
+-- Levelling guide and Selling guide). labels = { "First", "Second", ... }; onSelect(index) runs on a click.
+-- row:Select(i) shows a tab as picked without calling onSelect; row.tabs[i] are the buttons. Anchor the row by
+-- its BOTTOMLEFT: picked tabs stand 3 units taller and reach down over the frame's edge.
+function UI.Tabs(parent, labels, onSelect)
+    local row = CreateFrame("Frame", nil, parent)
+    row:SetSize(10, 28)
+    row.tabs = {}
+    local x = 0
+    for i, label in ipairs(labels) do
+        local b = CreateFrame("Button", nil, row)
+        b.index = i
+        b.bg = b:CreateTexture(nil, "BACKGROUND")
+        b.bg:SetPoint("TOPLEFT", 1, -1); b.bg:SetPoint("BOTTOMRIGHT", -1, 0)
+        b.bgOff = b:CreateTexture(nil, "BACKGROUND")
+        b.bgOff:SetPoint("TOPLEFT", 1, -1); b.bgOff:SetPoint("BOTTOMRIGHT", -1, 1)
+        fade(b.bg, { 0.16, 0.11, 0.07 }, { 0.32, 0.22, 0.12 })
+        fade(b.bgOff, { 0.06, 0.04, 0.03 }, { 0.15, 0.11, 0.08 })
+        b.edge = UI.Border(b, UI.COPPER, 0.8)
+        local hl = b:CreateTexture(nil, "HIGHLIGHT")
+        hl:SetPoint("TOPLEFT", 1, -1); hl:SetPoint("BOTTOMRIGHT", -1, 1)
+        hl:SetColorTexture(1, 0.9, 0.6, 0.08)
+        b.text = UI.Text(b, "GameFontNormal", label)
+        b.text:SetPoint("CENTER", 0, -1)
+        b.text:SetJustifyH("CENTER")
+        local w = math.max(96, math.floor((b.text:GetStringWidth() or 80) + 28))
+        b:SetWidth(w)
+        b:SetPoint("BOTTOMLEFT", x, 0)
+        x = x + w + 3
+        b:SetScript("OnClick", function(self)
+            row:Select(self.index)
+            if onSelect then onSelect(self.index) end
+        end)
+        row.tabs[i] = b
+    end
+    row:SetWidth(math.max(10, x - 3))
+    function row:Select(index)
+        self.selected = index
+        for i, b in ipairs(self.tabs) do
+            local on = i == index
+            b:SetHeight(on and 28 or 25)
+            b:ClearAllPoints()
+            local left = 0
+            for k = 1, i - 1 do left = left + self.tabs[k]:GetWidth() + 3 end
+            b:SetPoint("BOTTOMLEFT", left, on and -3 or 0)
+            b.bg:SetShown(on); b.bgOff:SetShown(not on)
+            b.edge[2]:SetShown(not on) -- the picked tab opens into the frame below it
+            UI.Color(b.text, on and UI.GOLD or UI.DIM)
+        end
+    end
+    row:Select(1)
+    return row
+end
+
 -- Text in a scroll box that can be selected and copied (Ctrl+A, Ctrl+C). Read-only unless editable is true.
 function UI.ScrollText(parent, editable)
     local scroll = CreateFrame("ScrollFrame", nil, parent, "UIPanelScrollFrameTemplate")
