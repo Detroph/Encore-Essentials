@@ -1,0 +1,18 @@
+# Runs tools/check.py on every pull request and every push to main: Lua 5.1 compile of every file, .toc and
+# .xml file lists, texture/font paths, and what the release zip would contain.
+name: Check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lua 5.1
+        run: sudo apt-get update -q && sudo apt-get install -y -q lua5.1
+      - name: Check the addons
+        run: python3 tools/check.py

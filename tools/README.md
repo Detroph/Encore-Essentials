@@ -106,3 +106,7 @@ node tools/quests/build-quests.mjs                    # QuestieDB, then Wowhead 
 ```
 
 Quests come from QuestieDB with Wowhead Forever filling blanks, through a swappable source layer. See `tools/quests/README.md` for the QuestieDB checkout and the Wowhead step.
+
+## Checks
+
+`python3 tools/check.py` (needs `luac5.1` or `pip install lupa`) compiles every Lua file as Lua 5.1, checks the .toc and .xml file lists and texture paths, and lists what the release zip would hold. GitHub runs it on every pull request, and the release workflow runs it before tagging.
