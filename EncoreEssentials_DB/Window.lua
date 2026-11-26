@@ -680,7 +680,7 @@ local TABS = {
     { key = "professions", text = "Professions" },
     { key = "pvp", text = "PvP", vendorKind = "pvp" },
     { key = "reputations", text = "Reputations", vendorKind = "faction" },
-    { key = "events", text = "World Events", soon = true },
+    -- World Events comes back when WoW Forever runs its first events (no event loot is shown until then).
     { key = "collections", text = "Collections" },
 }
 local TAB_BY_KEY = {}
@@ -2327,6 +2327,11 @@ end
 function renderAll()
     if not frame then return end
     if state.tab == "dungeons" and not (state.inst and Loot.instances[state.inst]) then state.inst, state.boss = firstInstance(), 1 end
+    -- Remembered for the next session: the dungeon (by key, as wings can change the list) and the boss page.
+    if state.inst and Loot.instances[state.inst] then
+        local s = settings()
+        s.inst, s.boss = Loot.instances[state.inst].key, state.boss
+    end
     if state.tab == "professions" and not (state.prof and Recipes[state.prof]) then state.prof, state.bracket = firstProfession(), 1 end
     local tab = TAB_BY_KEY[state.tab]
     if tab and tab.vendorKind and not (state.vendor[state.tab] and Loot.vendors[state.vendor[state.tab]]) then
@@ -2666,12 +2671,19 @@ local function createWindow()
     searchBox:SetPoint("TOPRIGHT", -18, -73)
     searchBox:SetAutoFocus(false)
     if searchBox.Instructions then searchBox.Instructions:SetText("Search loot and recipes") end
+    -- Searches a moment after typing stops, so each letter doesn't ask the game for every matching item.
     searchBox:HookScript("OnTextChanged", function(self)
         local text = strtrim(self:GetText() or "")
-        if text ~= state.search then
+        self.typed = (self.typed or 0) + 1
+        if text == state.search then return end
+        local apply = function()
+            if strtrim(self:GetText() or "") ~= text then return end
             state.search = text
             renderLoot()
         end
+        if text == "" then apply() return end
+        local token = self.typed
+        C_Timer.After(0.3, function() if token == self.typed then apply() end end)
     end)
 
     -- Panes
@@ -2789,14 +2801,53 @@ ns.UI = {
     isShown = function() return frame ~= nil and frame:IsShown() end,
 }
 
+-- Inside a dungeon or raid Encore-DB knows, opening the window shows it (once per visit, so browsing other
+-- dungeons from inside still works). Wings sharing one map are told apart by the subzone name.
+function DB:ShowCurrentInstance()
+    if not (IsInInstance and GetInstanceInfo) then return false end
+    local inside, kind = IsInInstance()
+    if not inside or (kind ~= "party" and kind ~= "raid") then state.autoInstance = nil return false end
+    local name, _, _, _, _, _, _, id = GetInstanceInfo()
+    if not id or id == state.autoInstance then return false end
+    name = (name or ""):lower()
+    local sub = (GetSubZoneText and GetSubZoneText() or ""):lower()
+    local found, wing
+    for i, inst in ipairs(Loot.instances or {}) do
+        if inst.foreverdb == id or (not inst.foreverdb and inst.name:lower() == name) then
+            found = found or i
+            if sub ~= "" and inst.parent and inst.name:lower():find(sub, 1, true) then wing = i end
+        end
+    end
+    found = wing or found
+    if not found then return false end
+    state.autoInstance = id
+    if state.inst ~= found then state.inst, state.boss = found, 1 end
+    state.tab = "dungeons"
+    settings().tab = "dungeons"
+    return true
+end
+
 function DB:ToggleWindow()
     if not frame then
         local saved = settings()
         if saved.tab and TAB_BY_KEY[saved.tab] then state.tab = saved.tab end
+        if type(saved.inst) == "string" then
+            for i, inst in ipairs(Loot.instances or {}) do
+                if inst.key == saved.inst then
+                    state.inst = i
+                    local b = saved.boss
+                    if b == "quests" or (type(b) == "number" and inst.bosses and inst.bosses[b]) then state.boss = b end
+                    break
+                end
+            end
+        end
         local h = tonumber(saved.highlight)
         if h and h >= 1 and h <= 3 then state.highlight = h end
         if ICON_SIZES[saved.iconSize] then state.iconSize = saved.iconSize end
         createWindow()
+    end
+    if not frame:IsShown() then
+        if DB:ShowCurrentInstance() then clearSearch() end
     end
     frame:SetShown(not frame:IsShown())
 end

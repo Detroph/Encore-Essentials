@@ -8,6 +8,7 @@
 - Encore: /encore reset restores default settings only. Noted quest rewards are kept; /encore forgetquests clears them.
 - Encore: a short "What's new" window opens once on the first login after an update. /encore whatsnew shows it again.
 - Encore-QoL: self-test. In beta versions it runs a few seconds after login and opens a window listing any Lua error, blocked action, addon that didn't load, mixed Encore versions, broken feature or setting; errors later in the session open it again. /eqol selftest runs it in any version. It only reads, never changes a setting.
+- Encore-DB: opens on the dungeon you are in, and remembers the last dungeon and boss you looked at. Search waits until you stop typing. The empty World Events tab is gone until WoW Forever runs events.
 - The download no longer contains a 2.3 MB test file by mistake (it was 42% of the zip).
 
 ## 0.2.5
