@@ -681,39 +681,43 @@ local function create()
     -- The shared Encore frame with the Encore-QoL icon, as Encore-DB has it (EncoreEssentials/UI/Kit.lua)
     _G.EncoreEssentials.UI.Skin(frame, Q.ICON)
 
+    -- Two dark panes, as Encore-DB has them: the list on the left, the page on the right
+    local UI = _G.EncoreEssentials.UI
+    local treeWell = UI.Well(frame)
+    treeWell:SetPoint("TOPLEFT", frame, "TOPLEFT", 8, -56)
+    treeWell:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 8, 28)
+    treeWell:SetWidth(TREE_W - 10)
+    local pageWell = UI.Well(frame)
+    pageWell:SetPoint("TOPLEFT", frame, "TOPLEFT", TREE_W + 2, -56)
+    pageWell:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -8, 28)
+
     -- Search across every setting
-    search = CreateFrame("EditBox", nil, frame, "SearchBoxTemplate")
+    search = CreateFrame("EditBox", nil, treeWell, "SearchBoxTemplate")
     search:SetSize(TREE_W - 24, 22)
-    search:SetPoint("TOPLEFT", 18, -62)
+    search:SetPoint("TOPLEFT", frame, "TOPLEFT", 18, -62)
     search:SetAutoFocus(false)
     search:HookScript("OnTextChanged", function() if frame:IsShown() then layoutPage() pageScroll:SetVerticalScroll(0) end end)
     if type(search.Instructions) == "table" then search.Instructions:SetText("Search all settings") end
 
     -- Tree
-    treeScroll = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
-    treeScroll:SetPoint("TOPLEFT", 10, -92)
-    treeScroll:SetPoint("BOTTOMLEFT", 10, 30)
+    treeScroll = CreateFrame("ScrollFrame", nil, treeWell, "UIPanelScrollFrameTemplate")
+    treeScroll:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, -92)
+    treeScroll:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 10, 32)
     treeScroll:SetWidth(TREE_W - 36) -- its scroll bar sits in the gap before the divider
     tree = CreateFrame("Frame", nil, treeScroll)
     tree:SetSize(TREE_W - 36, 10)
     treeScroll:SetScrollChild(tree)
 
-    local divider = frame:CreateTexture(nil, "ARTWORK")
-    divider:SetPoint("TOPLEFT", TREE_W, -58)
-    divider:SetPoint("BOTTOMLEFT", TREE_W, 26)
-    divider:SetWidth(1)
-    divider:SetColorTexture(W.COPPER[1], W.COPPER[2], W.COPPER[3], 0.6)
-
     -- Page heading
-    crumb = W.Text(frame, "GameFontNormalSmall", "", W.DIM)
-    crumb:SetPoint("TOPLEFT", TREE_W + 16, -62)
-    title = W.Text(frame, "GameFontNormalLarge", "", W.GOLD)
+    crumb = W.Text(pageWell, "GameFontNormalSmall", "", W.DIM)
+    crumb:SetPoint("TOPLEFT", frame, "TOPLEFT", TREE_W + 16, -62)
+    title = W.Text(pageWell, "GameFontNormalLarge", "", W.GOLD)
     title:SetPoint("TOPLEFT", crumb, "BOTTOMLEFT", 0, -4)
     title:SetWordWrap(false) -- the game's large gold font, as Encore-DB's headings
 
-    pageScroll = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
-    pageScroll:SetPoint("TOPLEFT", TREE_W + 14, -104)
-    pageScroll:SetPoint("BOTTOMRIGHT", -30, 30)
+    pageScroll = CreateFrame("ScrollFrame", nil, pageWell, "UIPanelScrollFrameTemplate")
+    pageScroll:SetPoint("TOPLEFT", frame, "TOPLEFT", TREE_W + 14, -104)
+    pageScroll:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -30, 32)
     page = CreateFrame("Frame", nil, pageScroll)
     page:SetSize(400, 10)
     pageScroll:SetScrollChild(page)

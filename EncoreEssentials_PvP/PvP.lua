@@ -147,7 +147,8 @@ local function buildWindow()
     local UI = Encore.UI
     local width = 28
     for _, c in ipairs(COLS) do width = width + c.w + 6 end
-    win = UI.Window({ name = "EncorePvPHistory", title = "Battleground history", width = width, height = 440 })
+    win = UI.Window({ name = "EncorePvPHistory", title = "Battleground history", width = width, height = 440,
+        icon = UI.MEDIA .. "encore-pvp-icon" })
     win.sort = db().window.sort or { key = "t", desc = true }
     win.summary = UI.Text(win.content, "GameFontHighlightSmall", "")
     win.summary:SetPoint("TOPLEFT", 0, 0)

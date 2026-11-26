@@ -111,8 +111,6 @@ local function build()
     EncoreAltsDB.sort = EncoreAltsDB.sort or { key = "name", desc = false }
     win.total = UI.Text(win.header, "GameFontHighlight", "")
     win.total:SetPoint("LEFT", 0, 0)
-    local well = UI.Well(win.content)
-    well:SetAllPoints()
     win.table = UI.Table(win.content, COLS, {
         sort = EncoreAltsDB.sort,
         tooltip = tooltip,
@@ -122,8 +120,8 @@ local function build()
             end
         end,
     })
-    win.table:SetPoint("TOPLEFT", 6, -6)
-    win.table:SetPoint("BOTTOMRIGHT", -4, 6)
+    win.table:SetPoint("TOPLEFT", 0, 0)
+    win.table:SetPoint("BOTTOMRIGHT", 0, 0)
     win:HookScript("OnShow", function() A:Refresh() end)
 end
 
