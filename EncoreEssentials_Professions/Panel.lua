@@ -358,7 +358,7 @@ local function build()
     panel:SetPoint("TOPLEFT", ProfessionsFrame, "TOPRIGHT", GAP, 0)
     panel:SetPoint("BOTTOMLEFT", ProfessionsFrame, "BOTTOMRIGHT", GAP, 0)
     panel:EnableMouse(true)
-    UI().Skin(panel, ICON)
+    UI().Skin(panel, ICON, true) -- darker, to sit with the profession window
     -- Closing the guide turns it off, as the Encore button by the skill bar does.
     if panel.CloseButton then panel.CloseButton:SetScript("OnClick", function() P:SetOn(false) end) end
     panel.modes = {}
@@ -400,6 +400,21 @@ function P.ReagentTooltip(tt, item)
     end
 end
 
+-- Where a route recipe is learned, for its tooltip in the guide: the nearest trainer or recipe vendor for your side.
+function P.LearnedWhere(st)
+    if st.spell and P.Knows(st.spell) then return "Already known" end
+    if st.how == "a" then return "Known from the start" end
+    local o = P:Open()
+    if type(st.how) == "number" then
+        local v = P.Nearest(ns.RecipeVendors and ns.RecipeVendors[st.how])
+        if v then return ("%s (%s), %s"):format(itemName(st.how), v.name, P.PlaceText(v)) end
+        return itemName(st.how) .. ", from a vendor"
+    end
+    local t = o and P:Trainer(o.name, (st.learnAt or st.from or 0) + 1)
+    if t then return ("%s, %s"):format(t.name, P.PlaceText(t)) end
+    return "Any " .. (o and o.name or "") .. " trainer"
+end
+
 function P.StepTooltip(tt, st)
     if st.kind == "craft" then
         if tt.SetSpellByID then tt:SetSpellByID(st.spell) else tt:SetText(st.name) end
@@ -411,6 +426,8 @@ function P.StepTooltip(tt, st)
         if (st.learn or 0) > 0 then
             tt:AddDoubleLine(type(st.how) == "number" and "Recipe from a vendor" or "Learn at a trainer", P.Coins(st.learn), 0.64, 0.57, 0.47, 1, 1, 1)
         end
+        local where = P.LearnedWhere(st)
+        if where then tt:AddDoubleLine("Learned", where, 0.64, 0.57, 0.47, 1, 1, 1) end
         if st.unknown then tt:AddLine("A reagent has no price yet: scan the auction house and recalculate.", 1, 0.5, 0.25, true) end
     elseif st.kind == "rank" then
         local o = P:Open()

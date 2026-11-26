@@ -434,23 +434,11 @@ local function sectionsOf(tab)
     return list
 end
 
+-- Side list rows in the shared Encore look (as in Encore-DB): EncoreEssentials/UI/Kit.lua UI.NavRow.
 local function treeButton(kind)
     local b = CreateFrame("Button", nil, tree)
-    b:SetHeight(kind == "leaf" and 20 or 24)
-    b.sel = b:CreateTexture(nil, "BACKGROUND")
-    b.sel:SetAllPoints()
-    b.sel:SetColorTexture(0.7, 0.04, 0.03, 0.6)
-    local hl = b:CreateTexture(nil, "HIGHLIGHT")
-    hl:SetAllPoints()
-    hl:SetColorTexture(0.92, 0.58, 0.2, 0.15)
-    b.text = W.Text(b, kind == "leaf" and "GameFontHighlightSmall" or "GameFontNormal", "", kind == "leaf" and W.INK or W.GOLD)
-    b.text:SetPoint("LEFT", kind == "leaf" and 26 or 18, 0)
-    b.text:SetPoint("RIGHT", -4, 0)
-    b.text:SetWordWrap(false)
-    if kind == "tab" then
-        b.caret = W.Text(b, "GameFontNormalSmall", "", W.COPPER)
-        b.caret:SetPoint("LEFT", 5, 0)
-    end
+    b:SetHeight(kind == "tab" and 22 or 20)
+    _G.EncoreEssentials.UI.NavRow(b)
     b.kind = kind
     return b
 end
@@ -470,8 +458,7 @@ local function layoutTree()
         y = y - b:GetHeight() - 1
     end
     nodes.overview = nodes.overview or treeButton("top")
-    nodes.overview.text:SetText("Overview")
-    nodes.overview.sel:SetShown(isPage("overview", nil))
+    _G.EncoreEssentials.UI.NavSet(nodes.overview, { text = "Overview", selected = isPage("overview", nil), indent = -14 })
     nodes.overview:SetScript("OnClick", function() Q:ShowPage("overview") end)
     place(nodes.overview)
     for _, t in ipairs(Q.TABS) do
@@ -492,23 +479,18 @@ local function layoutTree()
                 tabHeads[t.id] = head
             end
             local open = saved().open[t.id]
-            head.text:SetText(t.name)
-            head.caret:SetText(open and "-" or "+")
-            head.sel:Hide()
+            _G.EncoreEssentials.UI.NavSet(head, { text = t.name, head = true, open = open })
             place(head)
             for _, section in ipairs(sectionsOf(t.id)) do
                 local key = t.id .. "\001" .. section
                 local leaf = nodes[key]
                 if not leaf then
                     leaf = treeButton("leaf")
-                    leaf.text:SetText(section)
                     leaf:SetScript("OnClick", function() Q:ShowPage(t.id, section) end)
                     nodes[key] = leaf
                 end
                 if open then
-                    local sel = isPage(t.id, section)
-                    leaf.sel:SetShown(sel)
-                    W.Color(leaf.text, sel and W.GOLD or W.INK)
+                    _G.EncoreEssentials.UI.NavSet(leaf, { text = section, selected = isPage(t.id, section), indent = 4 })
                     place(leaf)
                 else
                     leaf:Hide()
@@ -696,19 +678,8 @@ local function create()
     if type(p) == "table" and p[1] then frame:SetPoint(p[1], UIParent, p[2], p[3], p[4]) else frame:SetPoint("CENTER") end
     frame:SetTitle("Encore-QoL")
     if frame.CloseButton then frame.CloseButton:SetScript("OnClick", function() frame:Hide() end) end
-    local portrait = frame.GetPortrait and frame:GetPortrait() or frame.portrait
-    if portrait then
-        portrait:SetTexture(Q.ICON)
-        portrait:SetTexCoord(0, 1, 0, 1)
-    end
-    if frame.NineSlice then
-        for _, region in ipairs({ frame.NineSlice:GetRegions() }) do
-            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
-        end
-    end
-    local bg = frame:CreateTexture(nil, "BACKGROUND", nil, -6)
-    bg:SetPoint("TOPLEFT", 4, -22); bg:SetPoint("BOTTOMRIGHT", -4, 4)
-    bg:SetColorTexture(0.07, 0.05, 0.04, 0.96)
+    -- The shared Encore frame with the Encore-QoL icon, as Encore-DB has it (EncoreEssentials/UI/Kit.lua)
+    _G.EncoreEssentials.UI.Skin(frame, Q.ICON)
 
     -- Search across every setting
     search = CreateFrame("EditBox", nil, frame, "SearchBoxTemplate")
@@ -738,9 +709,7 @@ local function create()
     crumb:SetPoint("TOPLEFT", TREE_W + 16, -62)
     title = W.Text(frame, "GameFontNormalLarge", "", W.GOLD)
     title:SetPoint("TOPLEFT", crumb, "BOTTOMLEFT", 0, -4)
-    title:SetWordWrap(false)
-    local font = title:GetFont()
-    if not title:SetFont(W.FONT_TITLE, 20, "") and font then title:SetFont(font, 18, "") end
+    title:SetWordWrap(false) -- the game's large gold font, as Encore-DB's headings
 
     pageScroll = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
     pageScroll:SetPoint("TOPLEFT", TREE_W + 14, -104)

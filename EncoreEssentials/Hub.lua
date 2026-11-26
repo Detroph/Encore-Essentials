@@ -6,7 +6,6 @@ local L = ns.L
 local Encore = ns.Encore
 
 local MEDIA = "Interface\\AddOns\\EncoreEssentials\\Media\\"
-local CREST = MEDIA .. "encore-crest"
 
 -- The modules shown in the window, in order. New modules are added here.
 Encore.MODULE_LIST = {
@@ -250,17 +249,7 @@ local function createWindow()
         frame.CloseButton:SetScript("OnClick", function() frame:Hide() end)
     end
 
-    local portrait = frame.GetPortrait and frame:GetPortrait() or frame.portrait
-    if portrait then
-        portrait:SetTexture(CREST)
-        portrait:SetTexCoord(0, 1, 0, 1)
-    end
-    -- Copper frame, like the Encore-DB window
-    if frame.NineSlice then
-        for _, region in ipairs({ frame.NineSlice:GetRegions() }) do
-            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
-        end
-    end
+    Encore.UI.Skin(frame) -- the shared Encore frame with the Encore crest
 
     local heading = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     heading:SetPoint("TOPLEFT", 70, -36)

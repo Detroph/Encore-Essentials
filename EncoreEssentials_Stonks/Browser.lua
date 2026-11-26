@@ -60,31 +60,13 @@ local function auctionatorDays(key)
 end
 
 ---------------------------------------------------------------------------
--- Category tree (looks like the auction house's filter list)
+-- Category tree (the auction house's categories), in the shared Encore side list look (as in Encore-DB)
 ---------------------------------------------------------------------------
 local function initTreeRow(row)
     if row.built then return end
     row.built = true
     row:SetHeight(TREE_ROW_H)
-    row.bg = row:CreateTexture(nil, "BACKGROUND")
-    row.bg:SetPoint("TOPLEFT", 0, -1)
-    row.bg:SetPoint("BOTTOMRIGHT", 0, 1)
-    gradient(row.bg, "VERTICAL", 0.16, 0.11, 0.07, 1, 0.30, 0.22, 0.14, 1)
-    row.edge = U.addBorder(row, 0.45, 0.33, 0.2, 0.9)
-    row.edge[1]:SetPoint("TOPLEFT", 0, -1); row.edge[1]:SetPoint("TOPRIGHT", 0, -1)
-    row.edge[2]:SetPoint("BOTTOMLEFT", 0, 1); row.edge[2]:SetPoint("BOTTOMRIGHT", 0, 1)
-    row.sel = row:CreateTexture(nil, "ARTWORK")
-    row.sel:SetPoint("TOPLEFT", 1, -2)
-    row.sel:SetPoint("BOTTOMRIGHT", -1, 2)
-    gradient(row.sel, "HORIZONTAL", 0.55, 0.75, 1, 0.55, 0.35, 0.55, 1, 0.15)
-    local hl = row:CreateTexture(nil, "HIGHLIGHT")
-    hl:SetPoint("TOPLEFT", 1, -2)
-    hl:SetPoint("BOTTOMRIGHT", -1, 2)
-    hl:SetColorTexture(1, 0.9, 0.6, 0.12)
-    row.text = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    row.text:SetPoint("RIGHT", -4, 0)
-    row.text:SetJustifyH("LEFT")
-    row.text:SetWordWrap(false)
+    _G.EncoreEssentials.UI.NavRow(row)
     row:SetScript("OnClick", function(self)
         local d = self.data
         if not d or d.heading then return end
@@ -106,33 +88,18 @@ end
 local function fillTreeRow(row, d)
     initTreeRow(row)
     row.data = d
-    row.text:ClearAllPoints()
-    row.text:SetPoint("LEFT", 8 + (d.depth or 0) * 12, 0)
-    row.text:SetPoint("RIGHT", -4, 0)
-    row.text:SetText(d.text)
-    local selected = d.id == state.node
-    row.sel:SetShown(selected)
-    if d.heading then
-        row.bg:Hide()
-        for _, t in ipairs(row.edge) do t:Hide() end
-        row.text:SetFontObject("GameFontDisableSmall")
-        row.text:SetTextColor(0.5, 0.5, 0.5)
-        row:EnableMouse(false)
-        return
-    end
-    row:EnableMouse(true)
-    row.bg:Show()
-    for _, t in ipairs(row.edge) do t:Show() end
-    row.bg:SetAlpha((d.depth or 0) > 0 and 0.7 or 1)
-    -- Auction house colours: gold categories, white subcategories, white for the selected entry.
-    -- Set every time: rows are recycled, and a font object doesn't undo an earlier SetTextColor.
-    if (d.depth or 0) > 0 then
-        row.text:SetFontObject("GameFontHighlightSmall")
-        row.text:SetTextColor(1, 1, 1)
-    else
-        row.text:SetFontObject("GameFontNormalSmall")
-        if selected then row.text:SetTextColor(1, 1, 1) else row.text:SetTextColor(1, 0.82, 0) end
-    end
+    local depth = d.depth or 0
+    local head = depth == 0 and d.children ~= nil and #d.children > 0
+    _G.EncoreEssentials.UI.NavSet(row, {
+        text = d.text,
+        head = head,
+        open = state.expanded[d.id] and true or false,
+        selected = (not d.heading) and d.id == state.node,
+        indent = depth * 12 - ((head or d.heading) and 0 or 14),
+        dim = d.heading,
+    })
+    if d.heading then row.label:SetFontObject("GameFontDisableSmall") end
+    row:EnableMouse(not d.heading)
 end
 
 -- The built list is kept and reused until new prices, refreshed summaries, or a different search, category or

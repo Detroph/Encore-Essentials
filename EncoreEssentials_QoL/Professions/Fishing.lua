@@ -425,8 +425,7 @@ function Q:ToggleCatchLog()
         log:SetScript("OnDragStop", log.StopMovingOrSizing)
         log:SetTitle("Encore-QoL: catch log")
         if log.CloseButton then log.CloseButton:SetScript("OnClick", function() log:Hide() end) end
-        local portrait = log.GetPortrait and log:GetPortrait() or log.portrait
-        if portrait then portrait:SetTexture(Q.ICON) portrait:SetTexCoord(0, 1, 0, 1) end
+        _G.EncoreEssentials.UI.Skin(log, Q.ICON) -- the shared Encore frame
         local x = 20
         for _, col in ipairs(COLS) do
             local b = CreateFrame("Button", nil, log)

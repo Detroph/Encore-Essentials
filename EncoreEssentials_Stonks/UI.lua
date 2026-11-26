@@ -316,17 +316,8 @@ function U.CreateWindow(opts)
         U.tooltip(cog, function(tt) tt:SetText("Encore-Stonks options") end)
     end
 
-    local portrait = frame.GetPortrait and frame:GetPortrait() or frame.portrait
-    if portrait then
-        portrait:SetTexture(U.TEX.crest)
-        portrait:SetTexCoord(0, 1, 0, 1)
-    end
-    if frame.NineSlice then
-        for _, region in ipairs({ frame.NineSlice:GetRegions() }) do
-            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
-        end
-    end
-    U.gem(frame, "BOTTOMLEFT", 3, 3)
+    -- The shared Encore frame with the Encore-Stonks icon (EncoreEssentials/UI/Kit.lua)
+    _G.EncoreEssentials.UI.Skin(frame, U.TEX.market)
 
     -- Resize grip, sized by hand from the cursor (StartSizing snaps to maximum size on some clients)
     local grip = CreateFrame("Button", nil, frame)

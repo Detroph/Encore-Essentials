@@ -285,16 +285,7 @@ local function createWindow()
     frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
     if frame.SetTitle then frame:SetTitle("|cffeb9339Encore|r Essentials") end
     if frame.CloseButton then frame.CloseButton:SetScript("OnClick", function() frame:Hide() end) end
-    local portrait = frame.GetPortrait and frame:GetPortrait() or frame.portrait
-    if portrait then
-        portrait:SetTexture(MEDIA .. "encore-crest")
-        portrait:SetTexCoord(0, 1, 0, 1)
-    end
-    if frame.NineSlice then
-        for _, region in ipairs({ frame.NineSlice:GetRegions() }) do
-            if region.SetVertexColor then region:SetVertexColor(1, 0.74, 0.5) end
-        end
-    end
+    UI.Skin(frame) -- the shared Encore frame with the Encore crest
 
     frame.intro = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     frame.intro:SetPoint("TOPLEFT", 70, -34)
