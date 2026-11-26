@@ -27,3 +27,6 @@ tools/refresh.config.json
 
 # Wowhead collection scripts live in the separate encore-data-tools project (copied in locally)
 tools/loot/wowhead-*.mjs
+
+# Python wheels (test tooling) never ship
+*.whl

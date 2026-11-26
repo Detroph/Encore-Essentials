@@ -1,5 +1,13 @@
 # Encore Essentials
 
+## Next (not released yet)
+
+- Encore-QoL: settings that change a game option for a moment (the fishing sound boost, auto loot while fishing) now remember the original value in saved variables and put it back at logout and on the next login. Before, a crash or /reload while fishing could leave music and ambience at 0.
+- Encore-QoL: every game option Encore-QoL changes keeps its original value across sessions, so turning a feature off later still restores your own setting.
+- Encore-QoL: battleground timers (Alterac Valley, Arathi Basin) now work on clients in other languages. The herald's lines are read by faction and by the order of events instead of English words; Arathi Basin's bases have German, French and Spanish names built in, and every client learns its own map labels. New command /eqol bgpoi lists the map labels and how they are matched.
+- Encore: /encore reset restores default settings only. Noted quest rewards are kept; /encore forgetquests clears them.
+- The download no longer contains a 2.3 MB test file by mistake (it was 42% of the zip).
+
 ## 0.2.5
 
 Full release of everything in the 0.2.5.1 to 0.2.5.7 betas below. In short, for Encore-QoL:

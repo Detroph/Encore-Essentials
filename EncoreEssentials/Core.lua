@@ -65,10 +65,26 @@ function Encore:InitDB()
     self.db = EncoreEssentialsDB
 end
 
+-- Settings only. What Encore has learned is kept: quest rewards seen at quest givers (questRewards), login count
+-- and Encore-DB's boss portrait cache.
 function Encore:ResetDB()
-    EncoreEssentialsDB = {}
+    local db = EncoreEssentialsDB
+    if type(db) ~= "table" then db = {} end
+    local old = type(db.settings) == "table" and db.settings or {}
+    local dbWindow = type(old.dbWindow) == "table" and old.dbWindow or nil
+    db.settings = {}
+    if dbWindow and type(dbWindow.displays) == "table" then
+        db.settings.dbWindow = { displays = dbWindow.displays, displaysBuild = dbWindow.displaysBuild }
+    end
+    EncoreEssentialsDB = db
     self:InitDB()
     if self.RefreshMinimapButton then self:RefreshMinimapButton() end
+end
+
+-- Forgets the quest rewards Encore noted at quest givers and in the quest log (Encore-DB falls back to its data).
+function Encore:ForgetQuestRewards()
+    if type(EncoreEssentialsDB) == "table" then EncoreEssentialsDB.questRewards = {} end
+    if self.QuestRewards then self.QuestRewards.version = self.QuestRewards.version + 1 end
 end
 
 ---------------------------------------------------------------------------
@@ -139,6 +155,7 @@ local function showHelp()
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_OPTIONS)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_INFO)
     DEFAULT_CHAT_FRAME:AddMessage(L.HELP_RESET)
+    DEFAULT_CHAT_FRAME:AddMessage(L.HELP_FORGET_QUESTS)
 end
 
 local COMMANDS = {
@@ -148,6 +165,10 @@ local COMMANDS = {
     reset = function()
         Encore:ResetDB()
         Encore:Print(L.RESET_DONE)
+    end,
+    forgetquests = function()
+        Encore:ForgetQuestRewards()
+        Encore:Print(L.FORGET_QUESTS_DONE)
     end,
     db = function() Encore:ToggleDB() end,
     stonks = function() Encore:ToggleStonks() end,

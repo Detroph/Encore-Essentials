@@ -151,19 +151,56 @@ end
 ---------------------------------------------------------------------------
 -- Chat lines
 ---------------------------------------------------------------------------
+-- Node names in other client languages. Battleground chat and map labels use the client's language, while
+-- Encore keys its nodes by the English names. Arathi Basin's five bases are listed here; any client also learns
+-- each node's map label (and its POI ID) the first time it is matched, saved in EncoreQoLDB.frames.poiIDs.
+local ALIASES = {
+    AB = {
+        Stables = { "Ställe", "écuries", "establos" },
+        Farm = { "Hof", "ferme", "granja" },
+        Blacksmith = { "Schmiede", "forge", "herrería" },
+        ["Lumber Mill"] = { "Sägewerk", "scierie", "aserradero" },
+        ["Gold Mine"] = { "Goldmine", "mine d'or", "mina de oro" },
+    },
+}
+BG.localNames = {} -- [name as the client writes it] = node key, for this battleground
+
+local function addLocalName(text, key)
+    if type(text) == "string" and text ~= "" and text ~= key then BG.localNames[text] = key end
+end
+
+local function resetLocalNames(kind)
+    wipe(BG.localNames)
+    for key, list in pairs(ALIASES[kind] or {}) do
+        for _, alias in ipairs(list) do addLocalName(alias, key) end
+    end
+end
+
 local function nodeIn(text)
-    local best
+    local best, bestLen
     for name in pairs(BG.nodes) do
-        if text:find(name, 1, true) and (not best or #name > #best) then best = name end
+        if text:find(name, 1, true) and (not bestLen or #name > bestLen) then best, bestLen = name, #name end
+    end
+    for alias, key in pairs(BG.localNames) do
+        if BG.nodes[key] and text:find(alias, 1, true) and (not bestLen or #alias > bestLen) then best, bestLen = key, #alias end
     end
     return best
+end
+
+-- The game's own words for the two factions, so this works in any client language.
+local function factionWords(side)
+    if side == "H" then return { FACTION_HORDE, "Horde" } end
+    return { FACTION_ALLIANCE, "Alliance" }
 end
 
 local function teamIn(text, event)
     if event == "CHAT_MSG_BG_SYSTEM_HORDE" then return "H" end
     if event == "CHAT_MSG_BG_SYSTEM_ALLIANCE" then return "A" end
-    if text:find("Horde", 1, true) then return "H" end
-    if text:find("Alliance", 1, true) then return "A" end
+    for _, side in ipairs({ "H", "A" }) do
+        for _, word in ipairs(factionWords(side)) do
+            if type(word) == "string" and word ~= "" and text:find(word, 1, true) then return side end
+        end
+    end
 end
 
 local function learnTexture(node)
@@ -193,20 +230,42 @@ function BG:Settle(name, owner, destroyed)
     self:Changed()
 end
 
+-- What a line says happened. English lines are read by their words; in other languages the battleground's own
+-- order of events is used: a node that isn't being taken is now assaulted, one being taken is now captured (or
+-- destroyed, for a tower) by the side that assaulted it or defended by the other side. Mines change hands at once.
+local function englishVerb(lower)
+    if lower:find("under attack") or lower:find("assault") or lower:find("claims") then return "contest" end
+    if lower:find("destroyed") then return "destroy" end
+    if lower:find("taken") or lower:find("captured") or lower:find("defended") or lower:find("controls") then return "settle" end
+end
+
+local lastLine = {} -- [node] = GetTime() of the last line read without English words (the herald repeats them)
+
 local function onSystem(event, text)
     if not BG.kind or not text then return end
     local name = nodeIn(text)
     if not name then return end
     local team = teamIn(text, event)
-    local lower = text:lower()
-    if lower:find("under attack") or lower:find("assault") or lower:find("claims") then
+    local verb = englishVerb(text:lower())
+    local n = BG.nodes[name]
+    if not verb then
+        local now = GetTime()
+        if lastLine[name] and now - lastLine[name] < 3 then return end
+        lastLine[name] = now
+        if n.kind == "mine" then
+            verb = "settle"
+        elseif n.contestedBy then
+            verb = (n.kind == "tower" and team == n.contestedBy) and "destroy" or "settle"
+        else
+            verb = "contest"
+        end
+    end
+    if verb == "contest" then
         BG:Contest(name, team, nil, true)
-    elseif lower:find("destroyed") then
+    elseif verb == "destroy" then
         BG:Settle(name, team, true)
-    elseif lower:find("taken") or lower:find("captured") or lower:find("defended") or lower:find("controls") then
-        BG:Settle(name, team)
     else
-        return
+        BG:Settle(name, team)
     end
     C_Timer.After(1, function()
         BG:ScanPOIs()
@@ -222,11 +281,18 @@ function BG:ScanPOIs()
     local map = C_Map.GetBestMapForUnit("player")
     if not map then return end
     local learned = type(Q.db.frames.poiTextures) == "table" and Q.db.frames.poiTextures[self.kind] or {}
+    if type(Q.db.frames.poiIDs) ~= "table" then Q.db.frames.poiIDs = {} end
+    local ids = Q.db.frames.poiIDs[self.kind] or {}
+    Q.db.frames.poiIDs[self.kind] = ids
     for _, poiID in ipairs(C_AreaPoiInfo.GetAreaPOIForMap(map) or {}) do
         local info = C_AreaPoiInfo.GetAreaPOIInfo(map, poiID)
         local name = info and info.name and nodeIn(info.name)
+        if not name and self.nodes[ids[poiID] or ""] then name = ids[poiID] end
         local n = name and self.nodes[name]
         if n then
+            -- Remember which POI this node is and what this client calls it, for chat in any language.
+            ids[poiID] = name
+            addLocalName(info.name, name)
             local old = n.poi and n.poi.textureIndex
             n.poi = { id = poiID, textureIndex = info.textureIndex }
             if type(info.position) == "table" and info.position.GetXY then
@@ -242,6 +308,22 @@ function BG:ScanPOIs()
                     n.contestedBy, n.ends = nil, nil
                 end
             end
+        end
+    end
+end
+
+-- /eqol bgpoi: lists the map labels on this map with their POI IDs and the node each one is matched to, so
+-- node names in other client languages can be added to ALIASES.
+function BG:DumpPOIs()
+    local map = C_Map and C_Map.GetBestMapForUnit("player")
+    if not (map and C_AreaPoiInfo) then Q:Print("No map here.") return end
+    Q:Print(("Map %d, battleground %s:"):format(map, tostring(self.kind)))
+    local ids = type(Q.db.frames.poiIDs) == "table" and Q.db.frames.poiIDs[self.kind or ""] or {}
+    for _, poiID in ipairs(C_AreaPoiInfo.GetAreaPOIForMap(map) or {}) do
+        local info = C_AreaPoiInfo.GetAreaPOIInfo(map, poiID)
+        if info then
+            local node = (info.name and nodeIn(info.name)) or ids[poiID] or "-"
+            Q:Print(("  %d  %s  (texture %s) = %s"):format(poiID, tostring(info.name), tostring(info.textureIndex), node))
         end
     end
 end
@@ -423,6 +505,8 @@ local function zoneCheck()
     if bg ~= BG.kind then
         BG.kind = bg
         resetNodes(bg)
+        resetLocalNames(bg)
+        wipe(lastLine)
         cappingBad = false
         if bg then
             C_Timer.After(3, function()

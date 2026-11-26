@@ -331,19 +331,39 @@ function Q.GroupChannel()
 end
 
 -- Remembers a CVar's value the first time Encore changes it, and puts it back later.
-local savedCVars = {}
-function Q.SetCVar(name, value)
+-- The original is kept in the saved data (EncoreQoLDB.cvars), because the game saves CVars across sessions: a
+-- value kept only in memory was lost at the next /reload, and turning the feature off then changed nothing.
+-- temporary = true for short boosts (fishing sound): those are put back at logout, and at the next login if the
+-- game closed without one.
+local memoryCVars = {}
+local function cvarStore()
+    local db = Q.db
+    if not db then return memoryCVars, {} end
+    if type(db.cvars) ~= "table" then db.cvars = {} end
+    if type(db.cvarTemp) ~= "table" then db.cvarTemp = {} end
+    return db.cvars, db.cvarTemp
+end
+function Q.SetCVar(name, value, temporary)
     local current = C_CVar.GetCVar(name)
     if current == nil then return false end
-    if savedCVars[name] == nil then savedCVars[name] = current end
+    local originals, temp = cvarStore()
+    if originals[name] == nil then originals[name] = current end
+    if temporary then temp[name] = true end
     C_CVar.SetCVar(name, tostring(value))
     return true
 end
 function Q.RestoreCVar(name)
-    if savedCVars[name] ~= nil then
-        C_CVar.SetCVar(name, savedCVars[name])
-        savedCVars[name] = nil
+    local originals, temp = cvarStore()
+    if originals[name] ~= nil then
+        C_CVar.SetCVar(name, tostring(originals[name]))
+        originals[name] = nil
     end
+    temp[name] = nil
+end
+-- Puts back every temporary change (logout, or a login after the game closed without one).
+function Q.RestoreTemporaryCVars()
+    local _, temp = cvarStore()
+    for name in pairs(temp) do Q.RestoreCVar(name) end
 end
 
 ---------------------------------------------------------------------------
@@ -361,11 +381,14 @@ end)
 Q:On("PLAYER_LOGIN", function()
     if not Q.db then Q:InitDB() end
     Q.ready = true
+    Q.RestoreTemporaryCVars() -- left over when the game closed during a boost
     for _, f in ipairs(Q.order) do Q:Apply(f) end
     if Q.ReportNewOverlaps then Q:ReportNewOverlaps() end
     local Encore = _G.EncoreEssentials
     if Encore and Encore.RegisterModule then Encore:RegisterModule("QoL", Q) end
 end)
+
+Q:On("PLAYER_LOGOUT", function() Q.RestoreTemporaryCVars() end)
 
 function Q:Toggle()
     if self.ToggleWindow then self:ToggleWindow() end
@@ -382,6 +405,8 @@ SlashCmdList.ENCOREQOL = function(input)
         Q:RollDebug()
     elseif cmd == "preview" and Q.TogglePreview then
         Q:TogglePreview()
+    elseif cmd == "bgpoi" and Q.BG and Q.BG.DumpPOIs then
+        Q.BG:DumpPOIs()
     else
         Q:Toggle()
     end

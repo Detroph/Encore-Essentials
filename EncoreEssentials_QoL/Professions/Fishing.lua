@@ -93,12 +93,12 @@ local function boost(on)
     boosted = on
     if on then
         if fish:Get("loud") then
-            Q.SetCVar("Sound_SFXVolume", "1")
-            Q.SetCVar("Sound_EnableSFX", "1")
-            Q.SetCVar("Sound_MusicVolume", "0")
-            Q.SetCVar("Sound_AmbienceVolume", "0")
+            Q.SetCVar("Sound_SFXVolume", "1", true)
+            Q.SetCVar("Sound_EnableSFX", "1", true)
+            Q.SetCVar("Sound_MusicVolume", "0", true)
+            Q.SetCVar("Sound_AmbienceVolume", "0", true)
         end
-        if fish:Get("autoLoot") then Q.SetCVar("autoLootDefault", "1") end
+        if fish:Get("autoLoot") then Q.SetCVar("autoLootDefault", "1", true) end
     else
         for _, c in ipairs({ "Sound_SFXVolume", "Sound_EnableSFX", "Sound_MusicVolume", "Sound_AmbienceVolume", "autoLootDefault" }) do Q.RestoreCVar(c) end
     end
