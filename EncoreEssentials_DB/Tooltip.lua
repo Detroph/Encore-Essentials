@@ -1,5 +1,6 @@
 -- Encore-DB: item tooltips say where the item drops or who sells it (up to three places).
--- Works once Encore-DB is loaded: after the window was opened, or at login with "Load at login" on.
+-- Off by default (Encore options: Show where items drop). Works once Encore-DB is loaded: after the window
+-- was opened, or at login with "Load at login" on.
 local _, ns = ...
 local Encore = _G.EncoreEssentials
 local D = ns.LootData
@@ -7,7 +8,7 @@ local MAX = 3
 
 local function on()
     local s = Encore.db and Encore.db.settings and Encore.db.settings.dbWindow
-    return not (type(s) == "table" and s.tooltipSources == false)
+    return type(s) == "table" and s.tooltipSources == true
 end
 
 local function addLines(tooltip, id)
