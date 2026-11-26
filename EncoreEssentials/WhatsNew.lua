@@ -12,6 +12,7 @@ local NOTES = {
         "Wishlist: Alt-click an item in Encore-DB; Encore tells you when it drops, is rolled for or is at the AH.",
         "Encore-DB: AH price and crafting profit columns; tooltips can show where items drop (option).",
         "Encore-QoL: open all mail, restock at vendors, ready check buffs.",
+        "Encore-Stonks: a Stonks tab in the auction house lists items under vendor price or under the market average.",
         "Share your settings with /encore export and /encore import. Key bindings for every window.",
         "Beta versions test themselves at login and show any error in a window (/eqol selftest).",
     } },

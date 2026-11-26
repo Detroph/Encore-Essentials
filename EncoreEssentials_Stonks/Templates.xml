@@ -5,4 +5,6 @@
 	<Button name="EncoreStonksTreeRowTemplate" virtual="true"/>
 	<Button name="EncoreStonksResultRowTemplate" virtual="true"/>
 	<Button name="EncoreStonksSyncRowTemplate" virtual="true"/>
+	<Button name="EncoreStonksDealRowTemplate" virtual="true"/>
+	<Button name="EncoreStonksDealBuyRowTemplate" virtual="true"/>
 </Ui>

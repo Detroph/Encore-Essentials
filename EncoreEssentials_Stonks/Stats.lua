@@ -343,7 +343,9 @@ local function leanDailyLows(self, key)
     return #lowDays
 end
 
-function Stonks:ItemStats(key, points)
+-- beforeDay (a Stonks.DayNumber) leaves out that day and later ones: the Deals tab compares a scan's listings with
+-- the averages of the days before it, so the scan's own low prices don't pull the average down.
+function Stonks:ItemStats(key, points, beforeDay)
     key = tostring(key)
     local r = self.realmData
     local st = Stonks.ParseStat(r and r.stat[key]) -- a fresh table every call, safe to change
@@ -356,6 +358,7 @@ function Stonks:ItemStats(key, points)
     else
         for i = 1, leanDailyLows(self, key) do
             local d = lowDays[i]
+            if beforeDay and d >= beforeDay then break end -- lowDays is sorted
             Stonks.StatAdd(st, d, lowPrice[d])
             last = lowPrice[d]
         end
