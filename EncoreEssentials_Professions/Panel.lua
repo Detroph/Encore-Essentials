@@ -277,7 +277,7 @@ local function buildGather(p)
     v.picks = {}
     for i = 1, 3 do
         local c = card(v)
-        c:SetSize(INNER, 44)
+        c:SetSize(INNER, 50) -- the zone and buttons on top, the details on a line of their own under them
         c.rank = UI().Text(c, "GameFontNormalSmall", i == 1 and "Best" or i == 2 and "2nd" or "3rd", UI().COPPER)
         c.rank:SetPoint("TOPLEFT", 8, -6)
         c.zone = UI().Text(c, "GameFontHighlight", "")
@@ -285,7 +285,7 @@ local function buildGather(p)
         c.zone:SetWidth(INNER - 44 - 150)
         c.zone:SetWordWrap(false)
         c.sub = UI().Text(c, "GameFontHighlightSmall", "", UI().DIM)
-        c.sub:SetPoint("TOPLEFT", c.zone, "BOTTOMLEFT", 0, -2)
+        c.sub:SetPoint("TOPLEFT", 44, -30)
         c.sub:SetWidth(INNER - 44 - 8)
         c.sub:SetWordWrap(false)
         c.map = smallButton(c, "Map", 46, function() P.ShowMap(c.mapID) end, "dark")
@@ -662,7 +662,7 @@ local function showGather(o)
             c:ClearAllPoints()
             c:SetPoint("TOPLEFT", 0, y)
             c:Show()
-            y = y - 48
+            y = y - 54
         else
             c:Hide()
         end
