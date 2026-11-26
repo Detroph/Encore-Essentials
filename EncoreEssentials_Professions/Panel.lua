@@ -387,6 +387,26 @@ local function build()
     buildCraft(panel.well)
     buildGather(panel.well)
     buildEmpty(panel.well)
+    view.sell = P.BuildSellingView(panel.well, INNER, PAD)
+
+    -- Two pages in tabs along the top, as the profession window has them: the levelling guide and the Selling guide.
+    panel.tabs = UI().Tabs(panel, { "Levelling guide", "Selling guide" }, function(i)
+        P:DB().tab = i == 2 and "sell" or "level"
+        P:Refresh()
+    end)
+    panel.tabs:SetPoint("BOTTOMLEFT", panel, "TOPLEFT", 64, -1)
+    panel.basis = UI().Choice(panel, "Prices", { { "last", "Last scan" }, { "avg", "7-day average" } }, function(value)
+        P.SellingDB().basis = value
+        P:Refresh()
+    end, 110)
+    panel.basis:SetSize(156, 22)
+    panel.basis:SetPoint("TOPRIGHT", -12, -31)
+    tip(panel.basis.button, function(_, tt)
+        tt:SetText("Prices", 1, 0.82, 0)
+        tt:AddLine("Last scan: the newest Auctionator scan of each item.", 1, 1, 1, true)
+        tt:AddLine("7-day average: Encore-Stonks' average of the last 7 days, steadier when one scan is odd.", 1, 1, 1, true)
+        tt:AddLine("Either falls back to the other when it has no price. Vendor materials always count at the vendor's price.", 0.64, 0.57, 0.47, true)
+    end)
 end
 
 ---------------------------------------------------------------------------
@@ -737,15 +757,25 @@ function P:Refresh()
     if not (self:IsOn() and ProfessionsFrame:IsShown()) then panel:Hide() return end
     panel:Show()
     local o = self:Open()
-    view.empty:Hide(); view.craft:Hide(); view.gather:Hide()
+    view.empty:Hide(); view.craft:Hide(); view.gather:Hide(); view.sell:Hide()
     for _, b in pairs(panel.modes) do b:Hide() end
+    local selling = self:DB().tab == "sell"
+    panel.tabs:Select(selling and 2 or 1)
+    panel.basis:SetShown(selling)
     if not o then
-        panel.title:SetText("Levelling guide")
+        panel.title:SetText(selling and "Selling guide" or "Levelling guide")
         view.empty:Show()
         lastKey = nil
         return
     end
     lastKey = o.name .. ":" .. o.base .. ":" .. o.max
+    if selling then
+        panel.title:SetText("Selling guide")
+        panel.basis:SetValue(P.SellingDB().basis)
+        view.sell:Show()
+        P.ShowSelling(o)
+        return
+    end
     if P.GATHERING[o.name] or o.name == "Fishing" then
         panel.title:SetText(o.name == "Fishing" and "Where to fish" or "Where to farm")
         view.gather:Show()

@@ -61,6 +61,28 @@ function P.Worth(item)
     if type(sell) == "number" and sell > 0 then return sell, "vendor" end
 end
 
+-- The auction price on one basis, for the Selling guide: "last" the newest Auctionator scan, "avg" the
+-- Encore-Stonks 7-day average; each falls back to the other. copper, or nil when neither is known.
+function P.MarketPrice(item, basis)
+    local last = auctionator(item)
+    local avg = stonks(item)
+    if basis == "avg" then return avg or last end
+    return last or avg
+end
+
+-- The age of the newest Auctionator scan of an item, in days, or nil.
+function P.ScanAge(item)
+    local _, age = auctionator(item)
+    return age
+end
+
+-- What a vendor pays for one of the item (the client's sell price), or nil while the item isn't loaded.
+function P.SellPrice(item)
+    local sell = GetItemInfo and select(11, GetItemInfo(item))
+    if type(sell) == "number" then return sell end
+    if C_Item and C_Item.RequestLoadItemDataByID then C_Item.RequestLoadItemDataByID(item) end
+end
+
 function P.Have(item) return GetItemCount and GetItemCount(item, true) or 0 end
 
 ---------------------------------------------------------------------------
