@@ -648,6 +648,9 @@ Q:Feature{
 ---------------------------------------------------------------------------
 -- Sets UIParent's scale directly, so values under the game's 0.64 slider floor work.
 -- 768 / screen height gives a pixel-perfect UI; the presets are that for common screens.
+-- Ideas from Enhance QoL's UI scaling options (All Rights Reserved): own code.
+local SCALE_MIN, SCALE_MAX = 0.1, 2
+
 local SCALE_CHOICES = {
     { "auto", "Auto (768 / screen height)" },
     { "custom", "Custom" },
@@ -658,50 +661,185 @@ local SCALE_CHOICES = {
     { "0.8888", "0.8888 (1080p 125%)" },
 }
 
+local function clampScale(s)
+    s = tonumber(s)
+    if not s then return nil end
+    return math.max(SCALE_MIN, math.min(SCALE_MAX, s))
+end
+
 local function wantedScale(f)
     local mode = f:Get("mode")
     if mode == "auto" then
         local _, h = GetPhysicalScreenSize()
-        if h and h > 0 then return 768 / h end
+        if h and h > 0 then return clampScale(768 / h) end
         return nil
     elseif mode == "custom" then
-        return f:Get("custom")
+        return clampScale(f:Get("custom"))
     end
-    return tonumber(mode)
+    return clampScale(mode)
 end
+
+local function cvar(name) return C_CVar.GetCVar(name) end
+local function setCVar(name, value)
+    if tostring(cvar(name)) ~= tostring(value) then C_CVar.SetCVar(name, value) end
+end
+-- Short text for the CVar: "0.533333" rather than a long float tail.
+local function scaleText(s) return (("%.6f"):format(s):gsub("0+$", ""):gsub("%.$", "")) end
 
 Q:Feature{
     id = "uiScale", tab = "interface", section = "UI scaling", name = "Login UI scaling",
     desc = "Sets the UI scale each time you log in, including values smaller than the game's slider allows. Turn it off to go back to the game's own scaling.",
-    defaults = { mode = "auto", custom = 0.64 },
+    defaults = { mode = "auto", custom = 0.64, saveCVar = true },
     options = {
         { kind = "choice", key = "mode", name = "Scale", choices = SCALE_CHOICES },
         { kind = "group", text = "Custom scale", when = function(self) return self:Get("mode") == "custom" end },
-        { kind = "slider", key = "custom", name = "Scale", min = 0.3, max = 1.2, step = 0.01, fmt = function(v) return ("%.2f"):format(v) end },
+        { kind = "slider", key = "custom", name = "Scale", min = SCALE_MIN, max = SCALE_MAX, step = 0.01, fmt = function(v) return ("%.2f"):format(v) end },
+        { kind = "check", key = "saveCVar", name = "Save as the game's UI scale",
+          tip = "Also writes the scale into the game's own UI scale setting, so the loading screen and the game's options start at the same size. Turning Login UI scaling off puts the old setting back." },
     },
+    detect = { { eqol = function(p) return p.uiScalePreset ~= nil and p.uiScalePreset ~= "NoScaling" end } },
     Enable = function(f)
         if not f.original then f.original = UIParent:GetScale() end
         local function apply()
             local s = wantedScale(f)
             if not s then return end
-            s = math.max(0.3, math.min(1.2, s))
             if InCombatLockdown() then f.pending = true return end
             f.pending = nil
+            if f:Get("saveCVar") then
+                local saved = f:Saved()
+                -- Remember the game's own setting once, to put it back when the feature turns off.
+                if not saved.prevCVar then saved.prevCVar = { use = cvar("useUiScale") or "0", scale = cvar("uiScale") or "1" } end
+                f.busy = true
+                setCVar("useUiScale", "1")
+                if math.abs((tonumber(cvar("uiScale")) or 0) - s) > 0.0001 then setCVar("uiScale", scaleText(s)) end
+                f.busy = nil
+            end
             if math.abs(UIParent:GetScale() - s) > 0.0001 then UIParent:SetScale(s) end
         end
         f.apply = apply
         -- The game resets the scale when the window or its own scale setting changes.
-        f:On("UI_SCALE_CHANGED", function() C_Timer.After(0, apply) end)
+        f:On("UI_SCALE_CHANGED", function() if not f.busy then C_Timer.After(0, apply) end end)
         f:On("DISPLAY_SIZE_CHANGED", function() C_Timer.After(0, apply) end)
         f:On("PLAYER_ENTERING_WORLD", apply)
         f:On("PLAYER_REGEN_ENABLED", function() if f.pending then apply() end end)
         apply()
     end,
-    OnOption = function(f) if f.apply then f.apply() end end,
+    OnOption = function(f, key)
+        if key == "saveCVar" and not f:Get("saveCVar") then f:RestoreCVar() end
+        if f.apply then f.apply() end
+    end,
     Disable = function(f)
         if InCombatLockdown() then return end
+        f:RestoreCVar()
         local s = f.original
-        if C_CVar.GetCVar("useUiScale") == "1" then s = tonumber(C_CVar.GetCVar("uiScale")) or s end
+        if cvar("useUiScale") == "1" then s = tonumber(cvar("uiScale")) or s end
         if s then UIParent:SetScale(s) end
+    end,
+    -- Puts the game's own UI scale setting back to what it was before Encore saved into it.
+    RestoreCVar = function(f)
+        local saved = f:Saved()
+        local prev = saved.prevCVar
+        if not prev then return end
+        saved.prevCVar = nil
+        f.busy = true
+        setCVar("useUiScale", prev.use)
+        setCVar("uiScale", prev.scale)
+        f.busy = nil
+    end,
+}
+
+-- Minimap cluster: the map with its zone text, clock and buttons, as one block.
+Q:Feature{
+    id = "minimapClusterScale", tab = "interface", section = "UI scaling", name = "Minimap cluster size",
+    desc = "Changes the size of the whole minimap block: the map, zone text, clock and the buttons around it.",
+    defaults = { scale = 100 },
+    options = {
+        { kind = "slider", key = "scale", name = "Size", min = 50, max = 200, step = 5, fmt = function(v) return v .. "%" end },
+    },
+    detect = { { eqol = "enableMinimapClusterScale" }, { addon = "SexyMap" } },
+    Enable = function(f)
+        local cluster = MinimapCluster
+        if not cluster then return end
+        if not f.original then f.original = cluster:GetScale() end
+        local function apply()
+            if not f.active then return end
+            if InCombatLockdown() then f.pending = true return end
+            f.pending = nil
+            local s = (tonumber(f:Get("scale")) or 100) / 100
+            if math.abs(cluster:GetScale() - s) > 0.001 then cluster:SetScale(s) end
+        end
+        f.apply = apply
+        -- Edit Mode puts its own size back when a layout loads.
+        f:On("EDIT_MODE_LAYOUTS_UPDATED", function() C_Timer.After(0, apply) end)
+        f:On("PLAYER_ENTERING_WORLD", function() C_Timer.After(0, apply) end)
+        f:On("PLAYER_REGEN_ENABLED", function() if f.pending then apply() end end)
+        apply()
+    end,
+    OnOption = function(f) if f.apply then f.apply() end end,
+    Disable = function(f)
+        if InCombatLockdown() or not MinimapCluster then return end
+        MinimapCluster:SetScale(f.original or 1)
+    end,
+}
+
+-- Experience and reputation bars at the bottom of the screen. Sizes are a share of the game's own size,
+-- so they follow whatever width the game picks for the screen.
+local function trackingBars() return _G.MainStatusTrackingBarContainer or _G.StatusTrackingBarManager end
+
+Q:Feature{
+    id = "xpBarSize", tab = "interface", section = "UI scaling", name = "Experience bar size",
+    desc = "Changes the width, height and scale of the experience and reputation bars.",
+    defaults = { width = 100, height = 100, scale = 100 },
+    options = {
+        { kind = "slider", key = "width", name = "Width", min = 50, max = 200, step = 5, fmt = function(v) return v .. "%" end },
+        { kind = "slider", key = "height", name = "Height", min = 50, max = 300, step = 5, fmt = function(v) return v .. "%" end },
+        { kind = "slider", key = "scale", name = "Scale", min = 50, max = 200, step = 5, fmt = function(v) return v .. "%" end },
+    },
+    detect = { { eqol = "modifyXPRepBar" } },
+    Enable = function(f)
+        local bars = trackingBars()
+        if not bars then return end
+        f.bars = bars
+        if not f.base then f.base = { w = bars:GetWidth(), h = bars:GetHeight(), s = bars:GetScale() } end
+        local function layout()
+            if bars.ResizeContainerBars then bars:ResizeContainerBars() end
+            -- Bars inside follow the container; the rested fill has no anchor of its own on some clients.
+            for _, bar in pairs(bars.bars or {}) do
+                if bar.ExhaustionLevelFillBar and bar.StatusBar then bar.ExhaustionLevelFillBar:SetHeight(bar.StatusBar:GetHeight()) end
+            end
+        end
+        local function apply()
+            if not f.active or f.busy then return end
+            if InCombatLockdown() then f.pending = true return end
+            f.pending = nil
+            f.busy = true
+            -- The game can pick a new width (screen size); take that as the base.
+            local gameW = bars.GetExpectedWidth and bars:GetExpectedWidth()
+            if gameW and gameW > 0 then f.base.w = gameW end
+            bars:SetSize(f.base.w * f:Get("width") / 100, f.base.h * f:Get("height") / 100)
+            bars:SetScale(f.base.s * f:Get("scale") / 100)
+            pcall(layout)
+            f.busy = nil
+        end
+        f.apply = apply
+        if bars.ResizeContainerBars then f:Hook(bars, "ResizeContainerBars", function()
+            -- Our own layout call runs this hook too; only react to the game's.
+            if not f.busy then C_Timer.After(0, apply) end
+        end) end
+        f:On("PLAYER_ENTERING_WORLD", function() C_Timer.After(0, apply) end)
+        f:On("DISPLAY_SIZE_CHANGED", function() C_Timer.After(0, apply) end)
+        f:On("PLAYER_REGEN_ENABLED", function() if f.pending then apply() end end)
+        apply()
+    end,
+    OnOption = function(f) if f.apply then f.apply() end end,
+    Disable = function(f)
+        local bars, base = f.bars, f.base
+        if not bars or not base or InCombatLockdown() then return end
+        f.busy = true
+        local w = bars.GetExpectedWidth and bars:GetExpectedWidth() or base.w
+        bars:SetSize(w, base.h)
+        bars:SetScale(base.s)
+        if bars.ResizeContainerBars then pcall(bars.ResizeContainerBars, bars) end
+        f.busy = nil
     end,
 }
