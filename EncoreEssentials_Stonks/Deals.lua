@@ -218,7 +218,8 @@ local function process(data, count, get)
             end
         end
         scan.rows, scan.listings = rows, n
-        scan.at = time()
+        scan.at = scan.scanTime or time()
+        scan.scanTime = nil
         scan.busy, scan.progress = false, 1
         if Deals.Refresh then Deals.Refresh() end
     end
@@ -271,6 +272,19 @@ local function readReplicate()
     scan.scanning, scan.ownAt = false, time()
     process(nil, n, replicateEntry)
     return true
+end
+
+-- After a /reload (or reopening the auction house) the game still holds the last full scan's listings. If
+-- Auctionator's last full scan is under 15 minutes old, Deals uses it instead of asking for a new one.
+function Deals.Restore()
+    if scan.at or scan.busy or scan.scanning then return end
+    local A = auctionator()
+    local last = A and A.SavedState and A.SavedState.TimeOfLastReplicateScan
+    if not last or time() - last >= FRESH_SECONDS then return end
+    local f = fullScanFrame()
+    if f and f.inProgress then return end -- a scan is on its way; its listings come with REPLICATE_ITEM_LIST_UPDATE
+    scan.scanTime = last
+    if not readReplicate() then scan.scanTime = nil end
 end
 
 local replicateFrame = CreateFrame("Frame")
@@ -903,6 +917,7 @@ local function build()
 
     local ticker
     tab:SetScript("OnShow", safe(function()
+        Deals.Restore()
         render()
         if ticker then ticker:Cancel() end
         local wasFresh = Deals.Fresh()
