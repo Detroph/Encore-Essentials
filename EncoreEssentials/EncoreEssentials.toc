@@ -16,6 +16,7 @@ WhatsNew.lua
 Services.lua
 Wishlist.lua
 Share.lua
+GroupQuests.lua
 Hub.lua
 Minimap.lua
 QuestRewards.lua

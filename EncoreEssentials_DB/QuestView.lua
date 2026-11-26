@@ -230,6 +230,10 @@ local function questRow(id, opts)
     elseif active then
         tags[#tags + 1] = "|cffffd100In your log|r"
     end
+    -- Dungeon prep: group members with Encore who have it in their log (EncoreEssentials GroupQuests.lua)
+    local Encore = _G.EncoreEssentials
+    local holders = Encore and Encore.GroupQuestHolders and Encore:GroupQuestHolders(id)
+    if holders and #holders > 0 then tags[#tags + 1] = "|cff73d966Group: " .. table.concat(holders, ", ") .. "|r" end
     local open = U.state.questOpen and U.state.questOpen[id]
     return {
         kind = "quest", id = id, level = q.level, title = title(id), sub = table.concat(sub, "  ·  "),
@@ -621,3 +625,16 @@ events:SetScript("OnEvent", function()
         if U.isShown() and U.state.boss == "quests" then U.renderLoot(true) end
     end)
 end)
+
+-- Redraw the quest list when a group member's quest log arrives.
+do
+    local Encore = _G.EncoreEssentials
+    local previous = Encore and Encore.OnGroupQuests
+    if Encore then
+        function Encore:OnGroupQuests(who)
+            if previous then previous(self, who) end
+            local U = ui()
+            if U and U.isShown() and U.state.tab == "dungeons" and U.state.boss == "quests" then U.renderLoot(true) end
+        end
+    end
+end
