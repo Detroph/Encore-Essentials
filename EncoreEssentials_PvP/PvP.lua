@@ -25,7 +25,7 @@ end
 ---------------------------------------------------------------------------
 -- Battleground history: one line per finished battleground
 ---------------------------------------------------------------------------
-local MAX = 300
+local KEEP = 300 -- default for "Games kept"
 local match -- the battleground being played: { map, start }
 local saved -- true once this match was written
 
@@ -53,7 +53,7 @@ local function finish(f)
         t = time(), map = match.map, won = (winner == side) or nil, draw = (winner ~= 0 and winner ~= 1) or nil,
         secs = math.floor(GetTime() - match.start), kb = kb, hk = hk, deaths = deaths, honor = honor and math.floor(honor),
     })
-    for i = #h, MAX + 1, -1 do h[i] = nil end
+    P.TrimHistory(f:Get("keep"))
     if f:Get("chat") then
         local e = h[1]
         Q:Print("%s: %s in %d:%02d, %d honorable kills, %d honor.", tostring(e.map), e.won and "won" or (e.draw and "draw" or "lost"),
@@ -61,6 +61,27 @@ local function finish(f)
     end
     if P.RefreshHistory then P.RefreshHistory() end
 end
+
+-- Drops the oldest games beyond the limit.
+function P.TrimHistory(keep)
+    keep = math.max(1, math.floor(tonumber(keep) or KEEP))
+    local h = db().history
+    for i = #h, keep + 1, -1 do h[i] = nil end
+    if P.RefreshHistory then P.RefreshHistory() end
+end
+
+function P.ClearHistory()
+    db().history = {}
+    if P.RefreshHistory then P.RefreshHistory() end
+    Q:Print("Battleground history deleted.")
+end
+
+StaticPopupDialogs["ENCORE_PVP_CLEAR_HISTORY"] = {
+    text = "Delete your whole battleground history? This cannot be undone.",
+    button1 = YES, button2 = NO,
+    OnAccept = function() P.ClearHistory() end,
+    timeout = 0, whileDead = true, hideOnEscape = true, preferredIndex = 3,
+}
 
 local function zone(f)
     local inside, kind = IsInInstance()
@@ -220,17 +241,24 @@ end
 function P:ShowHistory()
     if not win then buildWindow() end
     win:Show()
+    P.TrimHistory(Q:Get("bgHistory", "keep"))
     P.RefreshHistory()
 end
 
 Q:Feature{
     id = "bgHistory", tab = "pvp", section = "Battleground helpers", name = "Battleground history",
-    desc = "Keeps a line for every battleground you finish: which one, won or lost, how long, killing blows, honorable kills, deaths and honor. The last 300 are kept.",
-    defaults = { chat = true },
+    desc = "Keeps a line for every battleground you finish: which one, won or lost, how long, killing blows, honorable kills, deaths and honor. Only the newest games are kept, as many as you set.",
+    defaults = { chat = true, keep = KEEP },
     options = {
         { kind = "check", key = "chat", name = "Sum up each match in chat" },
+        { kind = "slider", key = "keep", name = "Games kept", min = 25, max = 1000, step = 25,
+            tip = "How many battlegrounds the history keeps. When it is full, the oldest game goes. Lowering it deletes the oldest games at once." },
         { kind = "button", name = "Open history", always = true, onClick = function() P:ShowHistory() end },
+        { kind = "button", name = "Delete history", always = true, onClick = function() StaticPopup_Show("ENCORE_PVP_CLEAR_HISTORY") end },
     },
+    OnOption = function(f, key, value)
+        if key == "keep" then P.TrimHistory(value) end
+    end,
     Enable = function(f)
         f:On("PLAYER_ENTERING_WORLD", function() zone(f) end)
         f:On("ZONE_CHANGED_NEW_AREA", function() zone(f) end)
@@ -256,6 +284,8 @@ SlashCmdList.ENCOREPVP = function(input)
     local cmd = strtrim(input or ""):lower()
     if cmd == "history" then
         P:ShowHistory()
+    elseif cmd == "history clear" then
+        StaticPopup_Show("ENCORE_PVP_CLEAR_HISTORY")
     elseif cmd == "bgpoi" and Q.BG and Q.BG.DumpPOIs then
         Q.BG:DumpPOIs()
     else
