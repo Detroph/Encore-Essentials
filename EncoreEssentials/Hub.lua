@@ -75,10 +75,28 @@ Encore.MODULE_LIST = {
             return nil
         end,
     },
+    {
+        name = "Encore-Alts",
+        folder = "EncoreEssentials_Alts",
+        icon = "Interface\\Icons\\INV_Misc_GroupNeedMore",
+        desc = L.MODULE_ALTS_DESC,
+        missing = L.ALTS_MISSING,
+        open = function()
+            local a = Encore:LoadModule("Alts", "EncoreEssentials_Alts", L.ALTS_MISSING)
+            if a then a:Toggle() end
+        end,
+        status = function()
+            local a = Encore.modules.Alts
+            if not (a and a.Chars) then return nil end
+            local n, gold = 0, 0
+            for _, c in pairs(a:Chars()) do n = n + 1; gold = gold + (c.money or 0) end
+            return L.STATUS_ALTS:format(n, math.floor(gold / 10000)), "good"
+        end,
+    },
 }
 
 -- Modules are laid out as tiles, left to right, starting a new row after COLUMNS tiles.
-local COLUMNS = 4
+local COLUMNS = 5
 local TILE_W = 150
 local TILE_H = 156
 local TILE_GAP = 8

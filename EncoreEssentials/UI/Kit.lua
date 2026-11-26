@@ -160,3 +160,118 @@ function UI.ScrollText(parent, editable)
     scroll.box = box
     return scroll
 end
+
+-- A list with a heading per column; every column sorts on click (again to reverse), like every Encore list.
+-- cols = { { key, head, w, right }, ... }. t:SetRows(rows, text(row, key) -> text [, colour], value(row, key) -> sort value)
+-- opts.sort = { key, desc } (kept and changed in place), opts.rowHeight, opts.onRowClick(row, button).
+function UI.Table(parent, cols, opts)
+    opts = opts or {}
+    local t = CreateFrame("Frame", nil, parent)
+    t.sort = opts.sort or { key = cols[1].key, desc = false }
+    local rowH = opts.rowHeight or 18
+    local width, heads = 0, {}
+    for _, c in ipairs(cols) do
+        local b = CreateFrame("Button", nil, t)
+        b:SetSize(c.w, 18)
+        b:SetPoint("TOPLEFT", width, 0)
+        b.text = UI.Text(b, "GameFontNormalSmall", c.head, UI.GOLD)
+        b.text:SetAllPoints()
+        b.text:SetJustifyH(c.right and "RIGHT" or "LEFT")
+        b:SetScript("OnClick", function()
+            if t.sort.key == c.key then t.sort.desc = not t.sort.desc else t.sort.key, t.sort.desc = c.key, c.right == true end
+            if opts.onSort then opts.onSort(t.sort) end
+            t:Refresh()
+        end)
+        b.col = c
+        heads[#heads + 1] = b
+        width = width + c.w + 6
+    end
+    local scroll = CreateFrame("ScrollFrame", nil, t, "UIPanelScrollFrameTemplate")
+    scroll:SetPoint("TOPLEFT", 0, -22)
+    scroll:SetPoint("BOTTOMRIGHT", -24, 0)
+    local child = CreateFrame("Frame", nil, scroll)
+    child:SetSize(width, 10)
+    scroll:SetScrollChild(child)
+    local rows = {}
+
+    local function row(i)
+        local r = rows[i]
+        if r then return r end
+        r = CreateFrame("Button", nil, child)
+        r:SetSize(width, rowH)
+        r:SetPoint("TOPLEFT", 0, -(i - 1) * rowH)
+        r:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+        if i % 2 == 0 then
+            local bg = r:CreateTexture(nil, "BACKGROUND")
+            bg:SetAllPoints()
+            bg:SetColorTexture(1, 1, 1, 0.04)
+        end
+        local hl = r:CreateTexture(nil, "HIGHLIGHT")
+        hl:SetAllPoints()
+        hl:SetColorTexture(UI.COPPER[1], UI.COPPER[2], UI.COPPER[3], 0.12)
+        r.cells = {}
+        local x = 0
+        for k, c in ipairs(cols) do
+            local fs = UI.Text(r, "GameFontHighlightSmall", "")
+            fs:SetPoint("LEFT", x, 0)
+            fs:SetWidth(c.w)
+            fs:SetJustifyH(c.right and "RIGHT" or "LEFT")
+            fs:SetWordWrap(false)
+            r.cells[k] = fs
+            x = x + c.w + 6
+        end
+        r:SetScript("OnClick", function(self, button) if opts.onRowClick and self.data then opts.onRowClick(self.data, button) end end)
+        if opts.tooltip then
+            r:SetScript("OnEnter", function(self)
+                if not self.data then return end
+                GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+                if opts.tooltip(self.data, GameTooltip) ~= false then GameTooltip:Show() end
+            end)
+            r:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        end
+        rows[i] = r
+        return r
+    end
+
+    function t:SetRows(list, text, value)
+        self.list, self.text, self.value = list, text, value
+        self:Refresh()
+    end
+
+    function t:Refresh()
+        local list = {}
+        for i, e in ipairs(self.list or {}) do list[i] = e end
+        local key, desc, value = self.sort.key, self.sort.desc, self.value
+        local pos = {}
+        for i, e in ipairs(list) do pos[e] = i end
+        table.sort(list, function(a, b)
+            local x, y = value(a, key), value(b, key)
+            if x == nil or y == nil then
+                if x == nil and y == nil then return pos[a] < pos[b] end
+                return y == nil
+            end
+            if type(x) ~= type(y) then x, y = tostring(x), tostring(y) end
+            if x == y then return pos[a] < pos[b] end
+            if desc then return x > y end
+            return x < y
+        end)
+        for _, b in ipairs(heads) do
+            b.text:SetText(b.col.head .. ((b.col.key == key) and (desc and " v" or " ^") or ""))
+        end
+        for i, e in ipairs(list) do
+            local r = row(i)
+            r.data = e
+            for k, c in ipairs(cols) do
+                local s, colour = self.text(e, c.key)
+                r.cells[k]:SetText(s or "")
+                UI.Color(r.cells[k], colour or UI.INK)
+            end
+            r:Show()
+        end
+        for i = #list + 1, #rows do rows[i]:Hide(); rows[i].data = nil end
+        child:SetHeight(math.max(10, #list * rowH))
+    end
+
+    t.width = width
+    return t
+end
