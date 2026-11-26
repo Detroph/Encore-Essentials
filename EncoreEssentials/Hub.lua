@@ -16,6 +16,10 @@ Encore.MODULE_LIST = {
         icon = MEDIA .. "encore-db-icon",
         desc = L.MODULE_DB_DESC,
         open = function() Encore:ToggleDB() end,
+        status = function()
+            if Encore.modules.DB then return L.STATUS_DB_READY, "good" end
+            return L.STATUS_DB_IDLE, "dim"
+        end,
     },
     {
         name = "Encore-Stonks",
@@ -24,6 +28,13 @@ Encore.MODULE_LIST = {
         desc = L.MODULE_STONKS_DESC,
         missing = L.STONKS_MISSING,
         open = function() Encore:ToggleStonks() end,
+        status = function()
+            local s = Encore.modules.Stonks
+            if not s then return nil end
+            if s.HasAuctionator and not s:HasAuctionator() then return L.STATUS_STONKS_OFF, "bad" end
+            if s.IsRecording and s:IsRecording() then return L.STATUS_STONKS_ON, "good" end
+            return L.STATUS_STONKS_WAIT, "dim"
+        end,
     },
     {
         name = "Encore-QoL",
@@ -32,6 +43,17 @@ Encore.MODULE_LIST = {
         desc = L.MODULE_QOL_DESC,
         missing = L.QOL_MISSING,
         open = function() Encore:ToggleQoL() end,
+        status = function()
+            local q = Encore.modules.QoL
+            if not (q and q.order) then return nil end
+            local on, bad = 0, 0
+            for _, f in ipairs(q.order) do
+                if f.active then on = on + 1 end
+                if f.status == "error" then bad = bad + 1 end
+            end
+            if bad > 0 then return L.STATUS_QOL_ERR:format(on, bad), "bad" end
+            return L.STATUS_QOL:format(on), on > 0 and "good" or "dim"
+        end,
     },
 }
 
@@ -95,12 +117,20 @@ local function createRow(parent, module, index)
 
     local desc = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     desc:SetPoint("TOP", name, "BOTTOM", 0, -4)
-    desc:SetPoint("BOTTOM", 0, 6)
+    desc:SetPoint("BOTTOM", 0, 22)
     desc:SetWidth(TILE_W - 12)
     desc:SetJustifyH("CENTER")
     desc:SetJustifyV("TOP")
     desc:SetText(module.desc or "")
     row.desc = desc
+
+    -- What the module is doing right now (filled in each time the window opens)
+    local status = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    status:SetPoint("BOTTOM", 0, 8)
+    status:SetWidth(TILE_W - 12)
+    status:SetJustifyH("CENTER")
+    status:SetWordWrap(false)
+    row.status = status
 
     row:SetScript("OnClick", function()
         if not isInstalled(module) then
@@ -121,6 +151,23 @@ local function refreshRows()
         row.icon:SetAlpha(installed and 1 or 0.5)
         row.name:SetTextColor(installed and 1 or 0.5, installed and 0.82 or 0.5, installed and 0 or 0.5)
         row.desc:SetText(installed and (row.module.desc or "") or L.MODULE_MISSING)
+        local text, tone
+        if installed and row.module.status then
+            local ok, t, c = pcall(row.module.status)
+            if ok then text, tone = t, c end
+        end
+        local c = tone == "good" and { 0.45, 0.85, 0.40 } or tone == "bad" and { 1, 0.35, 0.3 } or { 0.64, 0.57, 0.47 }
+        row.status:SetTextColor(c[1], c[2], c[3])
+        row.status:SetText(text or "")
+    end
+    if frame.hint then
+        if Encore.newerVersion then
+            frame.hint:SetText(L.HUB_NEWER:format(Encore.newerVersion))
+            frame.hint:SetFontObject(GameFontNormalSmall)
+        else
+            frame.hint:SetText(L.HUB_HINT)
+            frame.hint:SetFontObject(GameFontDisableSmall)
+        end
     end
 end
 
@@ -170,6 +217,7 @@ local function createWindow()
     local hint = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
     hint:SetPoint("BOTTOM", 0, 14)
     hint:SetText(L.HUB_HINT)
+    frame.hint = hint
 
     frame:SetScript("OnShow", function(self)
         -- Always open in the middle of the screen
