@@ -23,5 +23,6 @@ Templates.xml
 Window.lua
 QuestView.lua
 CollectionsView.lua
+WishlistView.lua
 ProfessionView.lua
 VendorGroups.lua

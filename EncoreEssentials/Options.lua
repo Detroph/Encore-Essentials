@@ -89,9 +89,12 @@ local function minimap() return Encore.db.settings.minimap end
 
 local MAIN = {
     { kind = "header", text = L.OPT_GENERAL },
-    { kind = "checkbox", key = "LoginMessage", name = L.MENU_LOGIN_MESSAGE, tooltip = L.OPT_LOGIN_MESSAGE_TIP, default = true,
+    { kind = "checkbox", key = "LoginMessage", name = L.MENU_LOGIN_MESSAGE, tooltip = L.OPT_LOGIN_MESSAGE_TIP, default = false,
         get = function() return Encore.db.settings.showLoginMessage end,
         set = function(v) Encore.db.settings.showLoginMessage = v end },
+    { kind = "checkbox", key = "WishAlerts", name = L.OPT_WISH_ALERTS, tooltip = L.OPT_WISH_ALERTS_TIP, default = true,
+        get = function() return Encore.db.settings.wishAlerts ~= false end,
+        set = function(v) if v then Encore.db.settings.wishAlerts = nil else Encore.db.settings.wishAlerts = false end end },
     { kind = "button", text = L.MENU_HUB, tooltip = L.OPT_HUB_TIP, onClick = function()
         HideUIPanel(SettingsPanel)
         Encore:ToggleHub()

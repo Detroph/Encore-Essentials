@@ -689,6 +689,7 @@ local TABS = {
     { key = "reputations", text = "Reputations", vendorKind = "faction" },
     -- World Events comes back when WoW Forever runs its first events (no event loot is shown until then).
     { key = "collections", text = "Collections" },
+    { key = "wishlist", text = "Wishlist" },
 }
 local TAB_BY_KEY = {}
 for _, t in ipairs(TABS) do TAB_BY_KEY[t.key] = t end
@@ -828,6 +829,8 @@ local function treeRows()
         end
     elseif state.tab == "collections" and ns.CollectionsView then
         for _, g in ipairs(ns.CollectionsView.tree(pick)) do group(g.key, g.text, g.entries) end
+    elseif state.tab == "wishlist" and ns.WishlistView then
+        for _, g in ipairs(ns.WishlistView.tree(pick)) do group(g.key, g.text, g.entries) end
     end
     return rows
 end
@@ -948,6 +951,8 @@ local function sectionRows()
         end
     elseif state.tab == "collections" and ns.CollectionsView then
         ns.CollectionsView.sections(rows)
+    elseif state.tab == "wishlist" and ns.WishlistView then
+        ns.WishlistView.sections(rows)
     end
     return rows
 end
@@ -1018,6 +1023,7 @@ local function lootBlocks()
     if state.search ~= "" then return searchBlocks() end
     local tab = TAB_BY_KEY[state.tab]
     if state.tab == "collections" and ns.CollectionsView then return ns.CollectionsView.blocks() end
+    if state.tab == "wishlist" and ns.WishlistView then return ns.WishlistView.blocks() end
     if tab.soon then
         blocks[1] = emptyLine("Nothing here yet. " .. tab.text .. " comes in a later version of Encore-DB.")
         return blocks, tab.text
@@ -1830,6 +1836,9 @@ local function cellEnter(self)
         GameTooltip:AddLine("Click to open " .. d.where.text .. ".", GOLD[1], GOLD[2], GOLD[3], true)
     end
     if isItem or d.spell then GameTooltip:AddLine("Shift-click to link it in chat.", DIM[1], DIM[2], DIM[3]) end
+    if isItem then
+        GameTooltip:AddLine(Encore:IsWished(d.id) and "Alt-click to take it off your wishlist." or "Alt-click to add it to your wishlist.", DIM[1], DIM[2], DIM[3])
+    end
     GameTooltip:Show()
 end
 
@@ -1838,6 +1847,10 @@ local togglePopup -- defined with the popup below
 local function cellClick(self)
     local d = self.data
     if not d then return end
+    if IsAltKeyDown() and d.id and Encore.ToggleWish then
+        Encore:ToggleWish(d.id)
+        return
+    end
     if IsModifiedClick() then
         if d.id then linkItem(d.id) elseif d.spell then linkSpell(d.spell) end
         return
@@ -1933,6 +1946,19 @@ local function fillCell(c, d, L)
     c.name:SetWidth(L.nameW)
     c.name:SetText(d.name or "")
     c.name:SetTextColor(r, g, b)
+    -- Gold star on wished items (Alt-click)
+    if d.id and Encore.IsWished and Encore:IsWished(d.id) then
+        if not c.wish then
+            c.wish = c:CreateTexture(nil, "OVERLAY", nil, 7)
+            c.wish:SetSize(12, 12)
+            c.wish:SetPoint("TOPLEFT", c.icon, "TOPLEFT", -3, 3)
+            c.wish:SetTexture("Interface\\COMMON\\ReputationStar")
+            c.wish:SetTexCoord(0, 0.5, 0, 0.5)
+        end
+        c.wish:Show()
+    elseif c.wish then
+        c.wish:Hide()
+    end
     for _, fs in pairs(c.colText) do fs:Hide() end
     for _, col in ipairs(L.cols) do
         local fs = c.colText[col.key]

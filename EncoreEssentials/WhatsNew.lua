@@ -10,6 +10,7 @@ local NOTES = {
     { version = "0.2.6.1", lines = {
         "Encore-DB opens on the dungeon you are in and remembers your last pick.",
         "Encore-DB: tooltips show where items drop, and lists have an AH price column from Encore-Stonks.",
+        "Wishlist: Alt-click an item in Encore-DB; Encore tells you when it drops, is rolled for or is at the AH.",
         "Encore-QoL: UI scaling can also set the game's own UI scale, and resize the minimap and experience bar.",
         "Encore-QoL: game options changed for a moment, like the fishing sound boost, are always put back.",
         "Encore-QoL: battleground timers now work on German, French and Spanish clients.",

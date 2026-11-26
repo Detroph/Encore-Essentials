@@ -15,6 +15,7 @@
 - Encore-DB: item tooltips say where an item drops (boss and dungeon with the drop chance), who sells it, or that it is a world drop, up to three places. Works once Encore-DB is loaded; new option Load Encore-DB at login (off) makes it work from the start.
 - Encore-DB: new AH column in item lists with Encore-Stonks' 7-day average price, sortable like every column (Options > AddOns > Encore-DB to turn it off).
 - Encore: the main window shows what each module is doing (Encore-Stonks recording or missing Auctionator, how many Encore-QoL features are on or have errors, whether Encore-DB is loaded). When a guild member has a newer full release, you get one chat line and the main window says so.
+- Wishlist: Alt-click any item in Encore-DB to wish for it (a gold star marks it; new Wishlist tab lists them by where they drop, click one to go there). Encore tells you when a wished item comes up for a roll or is in loot (raid warning and sound), is linked in chat, or Encore-Stonks sees it at the auction house, and its tooltip says it is on your list. Options > AddOns > Encore Essentials > Wishlist alerts.
 - The download no longer contains a 2.3 MB test file by mistake (it was 42% of the zip).
 
 ## 0.2.5
