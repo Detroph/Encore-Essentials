@@ -137,8 +137,8 @@ function UI.Window(o)
     return f
 end
 
--- Read-only text in a scroll box that can be selected and copied (Ctrl+A, Ctrl+C).
-function UI.ScrollText(parent)
+-- Text in a scroll box that can be selected and copied (Ctrl+A, Ctrl+C). Read-only unless editable is true.
+function UI.ScrollText(parent, editable)
     local scroll = CreateFrame("ScrollFrame", nil, parent, "UIPanelScrollFrameTemplate")
     local box = CreateFrame("EditBox", nil, scroll)
     box:SetMultiLine(true)
@@ -147,7 +147,7 @@ function UI.ScrollText(parent)
     box:SetWidth(200)
     box:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
     box:SetScript("OnTextChanged", function(self, byUser)
-        if byUser then self:SetText(self.shown or "") end
+        if byUser and not editable then self:SetText(self.shown or "") end
     end)
     scroll:SetScrollChild(box)
     scroll:SetScript("OnSizeChanged", function(self, w) box:SetWidth(math.max(50, w - 4)) end)

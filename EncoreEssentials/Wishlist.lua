@@ -41,6 +41,12 @@ function Encore:ToggleWish(id)
     if self.OnWishlistChanged then self:OnWishlistChanged(id) end
 end
 
+-- Opens Encore-DB on its Wishlist tab (key binding, /encore wishlist).
+function Encore:ShowWishlist()
+    local db = self:LoadModule("DB", "EncoreEssentials_DB")
+    if db and db.ShowTab then db:ShowTab("wishlist") elseif db then db:Toggle() end
+end
+
 local function alertsOn() return not (Encore.db and Encore.db.settings.wishAlerts == false) end
 
 -- One alert per item per place a minute at most (chat links and AH scans repeat).

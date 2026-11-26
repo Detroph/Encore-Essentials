@@ -1,0 +1,10 @@
+<Bindings>
+	<!-- Options > Keybindings > AddOns > Encore Essentials. No keys are set by default. -->
+	<Binding name="ENCORE_TOGGLE_HUB" header="ENCORE" category="ADDONS">EncoreEssentials:ToggleHub()</Binding>
+	<Binding name="ENCORE_TOGGLE_DB" category="ADDONS">EncoreEssentials:ToggleDB()</Binding>
+	<Binding name="ENCORE_TOGGLE_STONKS" category="ADDONS">EncoreEssentials:ToggleStonks()</Binding>
+	<Binding name="ENCORE_TOGGLE_QOL" category="ADDONS">EncoreEssentials:ToggleQoL()</Binding>
+	<Binding name="ENCORE_TOGGLE_PVP" category="ADDONS">local p = EncoreEssentials:LoadModule("PvP", "EncoreEssentials_PvP") if p then p:Toggle() end</Binding>
+	<Binding name="ENCORE_PVP_HISTORY" category="ADDONS">local p = EncoreEssentials:LoadModule("PvP", "EncoreEssentials_PvP") if p then p:ShowHistory() end</Binding>
+	<Binding name="ENCORE_WISHLIST" category="ADDONS">EncoreEssentials:ShowWishlist()</Binding>
+</Bindings>

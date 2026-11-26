@@ -19,6 +19,8 @@
 - Encore-DB: profession lists get a Profit column: the product's AH price (times how many one craft makes) minus its reagents at AH prices, from Encore-Stonks, when every price is known. Sortable.
 - New module Encore-PvP: the battleground timers, Alterac Valley and Arathi Basin frames, enemy bars, resurrection timer and battleground helpers move out of Encore-QoL into their own addon folder (settings are kept, still on the PvP page of the Encore-QoL window; /epvp opens it). Turn the folder off if you don't play battlegrounds. New feature Battleground history: every finished battleground with result, time, killing blows, honorable kills, deaths and honor, win rate per battleground, all columns sortable (/epvp history).
 - Encore-QoL: new Errands section. Open all mail (a button on the mailbox; skips cash on delivery, stops when bags are full, Shift-click for money only). Restock at vendors (item IDs and amounts you always carry, with a gold limit per visit). Ready check: my buffs (tells only you about a missing food buff, flask or battle elixir, or weapon enhancement).
+- Encore: key bindings (Options > Keybindings > AddOns > Encore Essentials) for the main window, Encore-DB, Encore-Stonks, Encore-QoL, Encore-PvP, battleground history and the wishlist. /encore wishlist opens the wishlist.
+- Encore: settings sharing. /encore export (or the button in Options) gives one text with your settings for every module; a guildmate pastes it in /encore import. Window places, price history, wishlists and learned data stay yours. The text is read, never run, so it is safe to paste.
 - The download no longer contains a 2.3 MB test file by mistake (it was 42% of the zip).
 
 ## 0.2.5
