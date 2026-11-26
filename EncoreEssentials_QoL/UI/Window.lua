@@ -475,7 +475,8 @@ local function layoutTree()
     nodes.overview:SetScript("OnClick", function() Q:ShowPage("overview") end)
     place(nodes.overview)
     for _, t in ipairs(Q.TABS) do
-        if t.id ~= "overview" then
+        -- A tab without features (PvP when Encore-PvP isn't installed) isn't listed
+        if t.id ~= "overview" and #sectionsOf(t.id) > 0 then
             local head = tabHeads[t.id]
             if not head then
                 head = treeButton("tab")

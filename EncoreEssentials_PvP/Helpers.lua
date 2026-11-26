@@ -1,6 +1,6 @@
 -- Encore-QoL: PvP tab, battleground helpers (moved here from Combat and QoL by Det).
 local _, ns = ...
-local Q = ns.QoL
+local Q = _G.EncoreQoL -- Encore-PvP plugs its features into Encore-QoL (same window, same saved settings)
 
 local function inBattleground()
     local _, kind = IsInInstance()

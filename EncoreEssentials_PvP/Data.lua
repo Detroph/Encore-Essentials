@@ -10,7 +10,7 @@
 --                                  read too, and Encore answers in Capping's format for players who have it.
 -- Forever keeps the combat log away from addons, so deaths come from health hitting 0 or a tower falling.
 local _, ns = ...
-local Q = ns.QoL
+local Q = _G.EncoreQoL -- Encore-PvP plugs its features into Encore-QoL (same window, same saved settings)
 
 local BG = {}
 Q.BG = BG

@@ -55,6 +55,26 @@ Encore.MODULE_LIST = {
             return L.STATUS_QOL:format(on), on > 0 and "good" or "dim"
         end,
     },
+    {
+        name = "Encore-PvP",
+        folder = "EncoreEssentials_PvP",
+        icon = "Interface\\Icons\\Ability_DualWield",
+        desc = L.MODULE_PVP_DESC,
+        missing = L.PVP_MISSING,
+        open = function()
+            local p = Encore:LoadModule("PvP", "EncoreEssentials_PvP", L.PVP_MISSING)
+            if p then p:Toggle() end
+        end,
+        status = function()
+            local p = Encore.modules.PvP
+            local q = Encore.modules.QoL
+            if not (p and q and q.features) then return nil end
+            local h = q.features.bgHistory
+            local list = type(EncorePvPDB) == "table" and EncorePvPDB.history
+            if h and h.active and type(list) == "table" then return L.STATUS_PVP:format(#list), "good" end
+            return nil
+        end,
+    },
 }
 
 -- Modules are laid out as tiles, left to right, starting a new row after COLUMNS tiles.

@@ -6,7 +6,7 @@
 -- combat the order holds; health, range and the glow on the best target still update. Idea from HighGround (MIT);
 -- no HighGround code is used.
 local _, ns = ...
-local Q = ns.QoL
+local Q = _G.EncoreQoL -- Encore-PvP plugs its features into Encore-QoL (same window, same saved settings)
 local W = Q.W
 local BG = Q.BG
 
