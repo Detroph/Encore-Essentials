@@ -22,6 +22,7 @@
 - Encore: key bindings (Options > Keybindings > AddOns > Encore Essentials) for the main window, Encore-DB, Encore-Stonks, Encore-QoL, Encore-PvP, battleground history and the wishlist. /encore wishlist opens the wishlist.
 - Encore: settings sharing. /encore export (or the button in Options) gives one text with your settings for every module; a guildmate pastes it in /encore import. Window places, price history, wishlists and learned data stay yours. The text is read, never run, so it is safe to paste.
 - New module Encore-Alts (/ealts): a window with every character you log in on: level, gold (and the total), rested experience (growing while you are logged out), professions, profession cooldowns (transmute, Mooncloth, Salt Shaker), raid lockouts and when you last played them, every column sortable; hover a row for details, right-click to forget a character. Item tooltips show how many your other characters have in their bags and bank.
+- Encore-DB: dungeon prep. In a group, players with Encore share which quests are in their quest log (quest IDs only), and a dungeon's quest list tags each quest with who in the group has it.
 - The download no longer contains a 2.3 MB test file by mistake (it was 42% of the zip).
 
 ## 0.2.5
