@@ -1,4 +1,4 @@
--- Encore-Professions: the guide panel beside the profession window, and the round Encore button by the skill bar
+-- Encore-Professions: the guide panel beside the profession window, and the round Encore button in its title bar
 -- that turns it on or off (remembered for the account). While it is on, the panel opens with the profession window:
 -- "Select a profession" until one is shown, then that profession's route or where to farm.
 local _, ns = ...
@@ -251,12 +251,12 @@ local function buildCraft(p)
     -- Every step, sortable
     v.table = UI().Table(v, {
         { key = "skill", head = "Skill", w = 46 },
-        { key = "name", head = "Recipe", w = LEFTW - 24 - 46 - 34 - 80 - 56 - 40 - 56 - 6 * 6, icon = true },
+        { key = "name", head = "Recipe", w = LEFTW - 24 - 46 - 34 - 64 - 66 - 40 - 66 - 6 * 6, icon = true },
         { key = "crafts", head = "Crafts", w = 34, right = true },
-        { key = "reag", head = "Reagents each", w = 80 },
-        { key = "cost", head = "Cost", w = 56, right = true },
+        { key = "reag", head = "Reagents each", w = 64 },
+        { key = "cost", head = "Cost", w = 66, right = true },
         { key = "then", head = "Then", w = 40 },
-        { key = "net", head = "Net", w = 56, right = true },
+        { key = "net", head = "Net", w = 66, right = true },
     }, {
         sort = { key = "skill", desc = false },
         tooltip = function(st, tt) return P.StepTooltip(tt, st) end,
@@ -385,7 +385,7 @@ local function build()
     panel.well = UI().Well(panel)
     panel.well:SetPoint("TOPLEFT", EDGE, -56)
     panel.well:SetPoint("BOTTOMRIGHT", -EDGE, EDGE)
-    -- Closing the guide turns it off, as the Encore button by the skill bar does.
+    -- Closing the guide turns it off, as the Encore button in the title bar does.
     if panel.CloseButton then panel.CloseButton:SetScript("OnClick", function() P:SetOn(false) end) end
     panel.modes = {}
     local prev
@@ -481,6 +481,7 @@ function P.ThenTooltip(tt, st)
     tt:AddLine("The route picks recipes on what they cost after this comes back.", 0.64, 0.57, 0.47, true)
 end
 
+local NEG, POS = { 1, 0.38, 0.38 }, { 0.5, 0.88, 0.42 }
 local function stepNet(st)
     return (st.total or 0) + (st.learn or 0) - (st.backTotal or 0)
 end
@@ -544,10 +545,12 @@ local function stepText(st, key)
         return THEN[st.sellTo], st.sellTo == "ah" and { 1, 0.82, 0 } or { 0.07, 0.78, 0.78 }
     elseif key == "net" then
         if st.kind == "gap" then return "" end
-        if st.kind == "rank" then return P.Coins(st.cost or 0) end
+        -- Net is what the step leaves you with: minus while it costs, plus when the sales pay it back and more.
+        if st.kind == "rank" then return "-" .. P.Coins(st.cost or 0), NEG end
         local n = stepNet(st)
-        if n < 0 then return "+" .. P.Coins(-n), { 0.5, 0.88, 0.42 } end
-        return P.Coins(n), st.unknown and { 1, 0.5, 0.25 } or nil
+        if n < 0 then return "+" .. P.Coins(-n), POS end
+        if n == 0 then return P.Coins(0) end
+        return "-" .. P.Coins(n), st.unknown and { 1, 0.5, 0.25 } or NEG
     end
 end
 
@@ -558,7 +561,7 @@ local function stepValue(st, key)
     if key == "reag" then return st.reag and st.reag[1] and itemName(st.reag[1]) or "" end
     if key == "cost" then return st.kind == "rank" and (st.cost or 0) or ((st.total or 0) + (st.learn or 0)) end
     if key == "then" then return st.sellTo or "" end
-    if key == "net" then return st.kind == "rank" and (st.cost or 0) or stepNet(st) end
+    if key == "net" then return -(st.kind == "rank" and (st.cost or 0) or stepNet(st)) end
 end
 
 local function showCraft(o)
@@ -679,7 +682,8 @@ local function showCraft(o)
     local last = route.steps[#route.steps]
     local goal = last and (last.kind == "gap" and last.from or last.to or last.at) or route.top
     v.foot:SetText(("To %d: %d crafts · %s, %s back"):format(goal, crafts, P.Coins(cost), P.Coins(back)))
-    v.footRight:SetText("Net " .. P.Coins(cost - back))
+    local net = back - cost
+    v.footRight:SetText("Net " .. (net < 0 and "|cffff6060-|r" or net > 0 and "|cff80e06b+|r" or "") .. P.Coins(math.abs(net)))
 end
 
 ---------------------------------------------------------------------------
@@ -885,19 +889,25 @@ local function protectedRefresh()
 end
 
 ---------------------------------------------------------------------------
--- The Encore button by the skill bar
+-- The Encore button in the title bar
 ---------------------------------------------------------------------------
 local function buildButton()
     button = CreateFrame("Button", "EncoreProfessionsButton", ProfessionsFrame)
-    button:SetSize(28, 28)
-    local page = ProfessionsFrame.CraftingPage
-    local bar = page and page.RankBar
-    if bar then
-        button:SetPoint("LEFT", bar, "RIGHT", 8, 0)
+    -- In the title bar beside the close button, so it shows on every tab of the window (the overview too), and on
+    -- a frame level above everything the window's pages draw (their bars and art sit hundreds of levels up).
+    button:SetSize(24, 24)
+    local close = ProfessionsFrame.CloseButton or _G.ProfessionsFrameCloseButton
+    if close then
+        button:SetPoint("RIGHT", close, "LEFT", -6, 0)
     else
-        button:SetPoint("TOPRIGHT", ProfessionsFrame, "TOPRIGHT", -40, -28)
+        button:SetPoint("TOPRIGHT", ProfessionsFrame, "TOPRIGHT", -34, -2)
     end
-    button:SetFrameLevel((ProfessionsFrame:GetFrameLevel() or 1) + 20)
+    local function raise()
+        button:SetFrameStrata(ProfessionsFrame:GetFrameStrata())
+        button:SetFrameLevel(math.min(9000, (ProfessionsFrame:GetFrameLevel() or 1) + 1000))
+    end
+    raise()
+    ProfessionsFrame:HookScript("OnShow", raise)
     button.icon = button:CreateTexture(nil, "ARTWORK")
     button.icon:SetAllPoints()
     button.icon:SetTexture(ICON)
@@ -907,11 +917,11 @@ local function buildButton()
     button.icon:AddMaskTexture(mask)
     local ring = button:CreateTexture(nil, "OVERLAY")
     ring:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-    ring:SetSize(48, 48)
-    ring:SetPoint("TOPLEFT", -4, 4)
+    ring:SetSize(41, 41)
+    ring:SetPoint("TOPLEFT", -3, 3)
     button.glow = button:CreateTexture(nil, "BACKGROUND")
     button.glow:SetPoint("CENTER")
-    button.glow:SetSize(40, 40)
+    button.glow:SetSize(34, 34)
     button.glow:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
     button.glow:SetBlendMode("ADD")
     button.glow:SetVertexColor(0.07, 0.78, 0.78)
@@ -945,7 +955,7 @@ local attached
 local function attach()
     if attached or not ProfessionsFrame then return end
     attached = true
-    -- The button first, on its own: it stays by the skill bar even if the guide can't be built.
+    -- The button first, on its own: it stays in the title bar even if the guide can't be built.
     local okButton, errButton = pcall(buildButton)
     if not okButton then report(errButton) end
     local ok, err = pcall(build)
