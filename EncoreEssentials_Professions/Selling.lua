@@ -158,7 +158,8 @@ function P.SellingRows(prof, basis)
                 local net = price * count * CUT - cost
                 if net > 0 then
                     out.ah[#out.ah + 1] = { kind = "ah", id = "ah" .. L.id, name = L.name, item = item, count = count,
-                        L = L, cost = cost, price = price * count, each = price, net = net }
+                        L = L, cost = cost, price = price * count, each = price, net = net, trend = P.Trend(item),
+                        margin = cost > 0 and math.floor(net / cost * 100 + 0.5) or nil }
                 end
             end
             local sell = P.SellPrice(item)
@@ -166,7 +167,8 @@ function P.SellingRows(prof, basis)
                 local net = sell * count - cost
                 if net > 0 then
                     out.ven[#out.ven + 1] = { kind = "ven", id = "ven" .. L.id, name = L.name, item = item, count = count,
-                        L = L, cost = cost, sell = sell * count, each = sell, net = net }
+                        L = L, cost = cost, sell = sell * count, each = sell, net = net,
+                        margin = cost > 0 and math.floor(net / cost * 100 + 0.5) or nil }
                 end
             end
         end
@@ -219,15 +221,16 @@ end
 -- Columns
 ---------------------------------------------------------------------------
 local COLS = {
-    ah = { { key = "name", head = "Recipe" }, { key = "cost", head = "Cost", w = 62 }, { key = "price", head = "Sells", w = 62 },
-        { key = "net", head = "Profit", w = 70 } },
-    ven = { { key = "name", head = "Recipe" }, { key = "cost", head = "Cost", w = 62 }, { key = "sell", head = "Vendor", w = 62 },
-        { key = "net", head = "Profit", w = 70 } },
-    crate = { { key = "name", head = "Item" }, { key = "crate", head = "Crate", w = 84 }, { key = "net", head = "Net", w = 66 },
-        { key = "per", head = "Per Favor", w = 62 } },
-    writ = { { key = "name", head = "Item" }, { key = "rep", head = "Rep", w = 30 }, { key = "net", head = "Net", w = 72 },
-        { key = "per100", head = "Per 100 rep", w = 72 } },
+    ah = { { key = "name", head = "Recipe" }, { key = "cost", head = "Cost", w = 60 }, { key = "price", head = "Sells", w = 60 },
+        { key = "net", head = "Profit", w = 66 }, { key = "trend", head = "7 days", w = 46 } },
+    ven = { { key = "name", head = "Recipe" }, { key = "cost", head = "Cost", w = 60 }, { key = "sell", head = "Vendor", w = 60 },
+        { key = "net", head = "Profit", w = 66 }, { key = "margin", head = "Margin", w = 46 } },
+    crate = { { key = "name", head = "Item" }, { key = "crate", head = "Crate", w = 96 }, { key = "cost", head = "Crafting", w = 60 },
+        { key = "net", head = "Net", w = 62 }, { key = "per", head = "Per Favor", w = 58 } },
+    writ = { { key = "name", head = "Item" }, { key = "rep", head = "Rep", w = 30 }, { key = "zone", head = "Hand in", w = 96 },
+        { key = "net", head = "Net", w = 62 }, { key = "per100", head = "Per 100 rep", w = 66 } },
 }
+local MAXCOLS = 5
 
 local function crateName(c) return (ns.SellRanks[c[2]] or "") .. " " .. c[3] end
 
@@ -242,6 +245,12 @@ local function cellText(row, key)
         return crateName(row.crate), UI().DIM
     elseif key == "rep" then
         return tostring(row.rep)
+    elseif key == "zone" then
+        return row.writ[6], UI().DIM
+    elseif key == "trend" or key == "margin" then
+        local v = row[key]
+        if not v then return "", UI().DIM end
+        return (v > 0 and "+" or "") .. v .. "%", netColour(v)
     elseif key == "per100" then
         if not row.per100 then return "no price", UI().DIM end
         if row.per100 == 0 then return "free", UI().GREEN end
@@ -258,6 +267,7 @@ end
 local function sortValue(row, key)
     if key == "name" then return cellText(row, "name") end
     if key == "crate" then return row.crate[2] * 100 + (row.crate[1] % 100) end
+    if key == "zone" then return row.writ[6] end
     return row[key]
 end
 
@@ -320,11 +330,18 @@ local function breakdown(row, basis, ctx)
     return lines
 end
 
+
 ---------------------------------------------------------------------------
--- The view
+-- The view: the four sections on the left, the clicked row's breakdown on the right
 ---------------------------------------------------------------------------
 local view
 local state = { sel = nil }
+local ICON_W = ROW - 1
+
+local function itemIcon(id)
+    local icon = C_Item and C_Item.GetItemIconByID and C_Item.GetItemIconByID(id)
+    return icon or "Interface\\Icons\\INV_Misc_QuestionMark"
+end
 
 local function pool(list, i, make)
     local f = list[i]
@@ -373,7 +390,7 @@ local function makeColHead(parent)
     local f = CreateFrame("Frame", nil, parent)
     f:SetHeight(COLHEAD)
     f.buttons = {}
-    for i = 1, 4 do
+    for i = 1, MAXCOLS do
         local b = CreateFrame("Button", nil, f)
         b:SetHeight(COLHEAD)
         b.text = UI().Text(b, "GameFontNormalSmall", "", UI().GOLD)
@@ -381,7 +398,7 @@ local function makeColHead(parent)
         b:SetScript("OnClick", function(self)
             local sort = sdb().sort[f.key]
             if sort.key == self.col.key then sort.desc = not sort.desc
-            else sort.key, sort.desc = self.col.key, self.col.key ~= "name" and self.col.key ~= "crate" end
+            else sort.key, sort.desc = self.col.key, self.col.key ~= "name" and self.col.key ~= "crate" and self.col.key ~= "zone" end
             layout()
         end)
         f.buttons[i] = b
@@ -398,44 +415,40 @@ local function makeRow(parent)
     r.stripe:SetColorTexture(1, 1, 1, 0.04)
     r.selBg = r:CreateTexture(nil, "BACKGROUND", nil, 1)
     r.selBg:SetAllPoints()
-    r.selBg:SetColorTexture(UI().TEAL[1], UI().TEAL[2], UI().TEAL[3], 0.12)
+    r.selBg:SetColorTexture(UI().TEAL[1], UI().TEAL[2], UI().TEAL[3], 0.14)
+    r.selBar = r:CreateTexture(nil, "ARTWORK")
+    r.selBar:SetPoint("TOPLEFT"); r.selBar:SetPoint("BOTTOMLEFT"); r.selBar:SetWidth(2)
+    r.selBar:SetColorTexture(UI().TEAL[1], UI().TEAL[2], UI().TEAL[3], 1)
     local hl = r:CreateTexture(nil, "HIGHLIGHT")
     hl:SetAllPoints()
     hl:SetColorTexture(UI().COPPER[1], UI().COPPER[2], UI().COPPER[3], 0.12)
+    r.icon = r:CreateTexture(nil, "ARTWORK")
+    r.icon:SetSize(ROW - 4, ROW - 4)
+    r.icon:SetPoint("LEFT", 4, 0)
+    r.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
     r.cells = {}
-    for i = 1, 4 do
+    for i = 1, MAXCOLS do
         local fs = UI().Text(r, "GameFontHighlightSmall", "")
         fs:SetWordWrap(false)
         r.cells[i] = fs
     end
     r:SetScript("OnClick", function(self)
         if not self.data then return end
-        state.sel = state.sel ~= self.data.id and self.data.id or nil
+        state.sel = self.data.id
         layout()
     end)
     tip(r, function(self, tt)
         local d = self.data
         if not d then return false end
         tt:SetItemByID(d.item)
-        tt:AddLine(state.sel == d.id and "Click to close the breakdown." or "Click for the breakdown.", 0.64, 0.57, 0.47)
+        tt:AddLine("Click for the breakdown on the right.", 0.64, 0.57, 0.47)
     end)
     return r
 end
 
-local function makeDetail(parent)
-    local f = CreateFrame("Frame", nil, parent)
-    f.bg = f:CreateTexture(nil, "BACKGROUND")
-    f.bg:SetAllPoints()
-    f.bg:SetColorTexture(UI().TEAL[1], UI().TEAL[2], UI().TEAL[3], 0.06)
-    f.bar = f:CreateTexture(nil, "ARTWORK")
-    f.bar:SetPoint("TOPLEFT"); f.bar:SetPoint("BOTTOMLEFT"); f.bar:SetWidth(2)
-    f.bar:SetColorTexture(UI().TEAL[1], UI().TEAL[2], UI().TEAL[3], 0.9)
-    f.left, f.right = {}, {}
-    return f
-end
-
-local function fillDetail(f, lines, width)
-    local y = -4
+-- The breakdown lines in the right pane.
+local function fillLines(f, lines, width)
+    local y = 0
     for i, l in ipairs(lines) do
         local left = f.left[i]
         if not left then
@@ -450,21 +463,20 @@ local function fillDetail(f, lines, width)
         local right = f.right[i]
         local hasRight = l[2] ~= ""
         left:ClearAllPoints()
-        left:SetPoint("TOPLEFT", 10, y)
-        left:SetWidth(hasRight and (width - 10 - 90 - 6) or (width - 16))
+        left:SetPoint("TOPLEFT", 0, y)
+        left:SetWidth(hasRight and (width - 84 - 6) or width)
         left:SetText(l[4] and ("|cffffffff" .. l[1] .. "|r") or l[1])
         UI().Color(left, hasRight and UI().INK or UI().DIM)
         left:Show()
         right:ClearAllPoints()
-        right:SetPoint("TOPRIGHT", -6, y)
-        right:SetWidth(90)
+        right:SetPoint("TOPRIGHT", 0, y)
+        right:SetWidth(84)
         right:SetText(l[2])
         UI().Color(right, l[3] or UI().INK)
         right:SetShown(hasRight)
-        y = y - math.max(14, (left:GetStringHeight() or 12) + 2)
+        y = y - math.max(13, (left:GetStringHeight() or 12) + 3)
     end
     for i = #lines + 1, #f.left do f.left[i]:Hide(); f.right[i]:Hide() end
-    f:SetHeight(-y + 4)
 end
 
 local function summary(rows)
@@ -492,6 +504,55 @@ local function sortRows(rows, sort)
     end)
 end
 
+local KIND_SUB = { ah = "Auction house", ven = "Sell to a vendor" }
+
+local function showPane(d)
+    local pane = view.pane
+    pane.data = d
+    if not d then
+        pane.icon:Hide()
+        pane.title:SetText("")
+        pane.sub:SetText("")
+        pane.empty:Show()
+        fillLines(pane.body, {}, pane.width)
+        pane.select:Hide(); pane.shop:Hide()
+        return
+    end
+    pane.empty:Hide()
+    pane.icon:SetTexture(itemIcon(d.item))
+    pane.icon:Show()
+    pane.title:SetText(cellText(d, "name"))
+    local sub
+    if d.kind == "ah" then
+        sub = "Auction house" .. (d.trend and (" · %s%d%% vs 7-day average"):format(d.trend > 0 and "+" or "", d.trend) or "")
+    elseif d.kind == "crate" then
+        sub = "For Waylaid Crate: " .. crateName(d.crate)
+    elseif d.kind == "writ" then
+        sub = "For Craftsman's Writ · " .. (ns.SellRanks[d.writ[7]] or "")
+    else
+        sub = KIND_SUB[d.kind] or ""
+    end
+    pane.sub:SetText(sub)
+    fillLines(pane.body, breakdown(d, sdb().basis, view.data.ctx), pane.width)
+    pane.select:Show()
+    pane.shop:Show()
+    pane.shop:SetEnabled(P.HasShoppingAPI())
+end
+
+-- The materials for the row on show, less what the bags and bank hold, on the Auctionator list "Encore: Selling".
+local function shopForPane()
+    local d = view and view.pane.data
+    if not d then return end
+    local crafts = d.kind == "crate" and d.crafts or 1
+    local list = {}
+    for _, m in ipairs(materials(d.L.r, crafts, view.data.ctx)) do
+        local count = m.n - P.Have(m.item)
+        if m.source == "auction" and count > 0 then list[#list + 1] = { item = m.item, count = count } end
+    end
+    local ok = P.ShoppingListFor("Encore: Selling", list)
+    if ok then P.Print("Auctionator list \"Encore: Selling\": %d to buy for %s.", #list, cellText(d, "name")) end
+end
+
 layout = function()
     local v = view
     if not (v and v.data) then return end
@@ -499,7 +560,8 @@ layout = function()
     local W = v.width
     local child = v.child
     local y = 0
-    local nHead, nCol, nRow, nDetail, nMsg = 0, 0, 0, 0, 0
+    local nHead, nCol, nRow, nMsg = 0, 0, 0, 0
+    local selRow, firstRow
     for _, sec in ipairs(SECTIONS) do
         local rows = v.data[sec.key]
         nHead = nHead + 1
@@ -527,7 +589,7 @@ layout = function()
                 y = y - math.max(18, (m:GetStringHeight() or 12) + 8)
             else
                 local cols = COLS[sec.key]
-                local ws = widths(cols, W - 8)
+                local ws = widths(cols, W - 8 - ICON_W)
                 local sort = s.sort[sec.key]
                 nCol = nCol + 1
                 local ch = pool(v.colHeads, nCol, function() return makeColHead(child) end)
@@ -538,17 +600,24 @@ layout = function()
                 local x = 4
                 for i, b in ipairs(ch.buttons) do
                     local c = cols[i]
-                    b:ClearAllPoints()
-                    b:SetPoint("TOPLEFT", x, 0)
-                    b:SetWidth(ws[i])
-                    b.col = c
-                    b.text:SetJustifyH(i == 1 and "LEFT" or "RIGHT")
-                    b.text:SetText(c.head .. (sort.key == c.key and (sort.desc and " v" or " ^") or ""))
-                    x = x + ws[i] + GAP
+                    b:SetShown(c ~= nil)
+                    if c then
+                        local w = ws[i] + (i == 1 and ICON_W or 0)
+                        b:ClearAllPoints()
+                        b:SetPoint("TOPLEFT", x, 0)
+                        b:SetWidth(w)
+                        b.col = c
+                        b.text:SetJustifyH(i == 1 and "LEFT" or "RIGHT")
+                        if c.key == "crate" or c.key == "zone" then b.text:SetJustifyH("LEFT") end
+                        b.text:SetText(c.head .. (sort.key == c.key and (sort.desc and " v" or " ^") or ""))
+                        x = x + w + GAP
+                    end
                 end
                 y = y - COLHEAD
                 sortRows(rows, sort)
                 for idx, d in ipairs(rows) do
+                    firstRow = firstRow or d
+                    if state.sel == d.id then selRow = d end
                     nRow = nRow + 1
                     local r = pool(v.rows, nRow, function() return makeRow(child) end)
                     r.data = d
@@ -556,29 +625,25 @@ layout = function()
                     r:ClearAllPoints()
                     r:SetPoint("TOPLEFT", 0, y)
                     r.stripe:SetShown(idx % 2 == 0)
-                    r.selBg:SetShown(state.sel == d.id)
-                    x = 4
+                    local on = state.sel == d.id
+                    r.selBg:SetShown(on); r.selBar:SetShown(on)
+                    r.icon:SetTexture(itemIcon(d.item))
+                    x = 4 + ICON_W
                     for i, fs in ipairs(r.cells) do
                         local c = cols[i]
-                        local text, colour = cellText(d, c.key)
-                        fs:ClearAllPoints()
-                        fs:SetPoint("LEFT", x, 0)
-                        fs:SetWidth(ws[i])
-                        fs:SetJustifyH(i == 1 and "LEFT" or "RIGHT")
-                        fs:SetText(text or "")
-                        UI().Color(fs, colour or UI().INK)
-                        x = x + ws[i] + GAP
+                        fs:SetShown(c ~= nil)
+                        if c then
+                            local text, colour = cellText(d, c.key)
+                            fs:ClearAllPoints()
+                            fs:SetPoint("LEFT", x, 0)
+                            fs:SetWidth(ws[i])
+                            fs:SetJustifyH((i == 1 or c.key == "crate" or c.key == "zone") and "LEFT" or "RIGHT")
+                            fs:SetText(text or "")
+                            UI().Color(fs, colour or UI().INK)
+                            x = x + ws[i] + GAP
+                        end
                     end
                     y = y - ROW
-                    if state.sel == d.id then
-                        nDetail = nDetail + 1
-                        local f = pool(v.details, nDetail, function() return makeDetail(child) end)
-                        f:SetWidth(W)
-                        f:ClearAllPoints()
-                        f:SetPoint("TOPLEFT", 0, y)
-                        fillDetail(f, breakdown(d, s.basis, v.data.ctx), W)
-                        y = y - f:GetHeight() - 2
-                    end
                 end
             end
         end
@@ -587,37 +652,30 @@ layout = function()
     for i = nHead + 1, #v.heads do v.heads[i]:Hide() end
     for i = nCol + 1, #v.colHeads do v.colHeads[i]:Hide() end
     for i = nRow + 1, #v.rows do v.rows[i]:Hide(); v.rows[i].data = nil end
-    for i = nDetail + 1, #v.details do v.details[i]:Hide() end
     for i = nMsg + 1, #v.msgs do v.msgs[i]:Hide() end
     child:SetHeight(math.max(10, -y))
+    -- The pane shows the clicked row, or the first row on show until one is clicked.
+    if not selRow and firstRow then
+        state.sel = firstRow.id
+        return layout()
+    end
+    showPane(selRow)
 end
 
--- Builds the view in the guide's dark pane. inner: the pane's width less its padding; pad: that padding.
-function P.BuildSellingView(parent, inner, pad)
+-- Builds the view in the guide's dark pane. inner: the pane's width less its padding; pad: that padding;
+-- right: the width of the breakdown pane on the right.
+function P.BuildSellingView(parent, inner, pad, right)
+    right = right or 262
     local v = CreateFrame("Frame", nil, parent)
     v:SetPoint("TOPLEFT", pad, -pad)
     v:SetPoint("BOTTOMRIGHT", -pad, pad)
     view = v
     P.sellingView = v
-    v.width = inner - BAR
+    local listW = inner - right - 8
+    v.width = listW - BAR
     v.sub = UI().Text(v, "GameFontHighlightSmall", "Recipes you know, with materials bought", UI().DIM)
     v.sub:SetPoint("TOPLEFT", 0, 0)
-    v.sub:SetWidth(inner)
-    v.none = UI().Text(v, "GameFontHighlightSmall", "", UI().DIM)
-    v.none:SetPoint("TOPLEFT", 0, -22)
-    v.none:SetWidth(inner)
-    v.scroll = CreateFrame("ScrollFrame", nil, v, "UIPanelScrollFrameTemplate")
-    v.scroll:SetPoint("TOPLEFT", 0, -18)
-    v.scroll:SetPoint("BOTTOMRIGHT", -BAR, 18)
-    v.child = CreateFrame("Frame", nil, v.scroll)
-    v.child:SetSize(v.width, 10)
-    v.scroll:SetScrollChild(v.child)
-    v.heads, v.colHeads, v.rows, v.details, v.msgs = {}, {}, {}, {}, {}
-    v.foot = UI().Text(v, "GameFontHighlightSmall", "", UI().DIM)
-    v.foot:SetPoint("BOTTOMLEFT", 0, 0)
-    v.footRight = UI().Text(v, "GameFontHighlightSmall", "", UI().DIM)
-    v.footRight:SetPoint("BOTTOMRIGHT", 0, 0)
-    v.footRight:SetJustifyH("RIGHT")
+    v.sub:SetWidth(listW)
     v.subHit = CreateFrame("Frame", nil, v)
     v.subHit:SetPoint("TOPLEFT", v.sub)
     v.subHit:SetPoint("BOTTOMRIGHT", v.sub)
@@ -625,6 +683,68 @@ function P.BuildSellingView(parent, inner, pad)
         tt:SetText("Selling guide", 1, 0.82, 0)
         tt:AddLine("Every recipe you know of this profession. Materials are bought: vendor materials at the vendor's price, the rest at the auction house. A material made by a recipe you know counts at its crafting cost only when nobody sells it.", 1, 1, 1, true)
         tt:AddLine("Auction house and Vendor show only what makes a profit. Waylaid Crates and Craftsman's Writs show every item you can make for them, profit or loss.", 1, 1, 1, true)
+    end)
+    v.none = UI().Text(v, "GameFontHighlightSmall", "", UI().DIM)
+    v.none:SetPoint("TOPLEFT", 0, -22)
+    v.none:SetWidth(listW)
+    v.scroll = CreateFrame("ScrollFrame", nil, v, "UIPanelScrollFrameTemplate")
+    v.scroll:SetPoint("TOPLEFT", 0, -18)
+    v.scroll:SetPoint("BOTTOMRIGHT", v, "BOTTOMLEFT", listW - BAR, 18)
+    v.child = CreateFrame("Frame", nil, v.scroll)
+    v.child:SetSize(v.width, 10)
+    v.scroll:SetScrollChild(v.child)
+    v.heads, v.colHeads, v.rows, v.msgs = {}, {}, {}, {}
+    v.foot = UI().Text(v, "GameFontHighlightSmall", "", UI().DIM)
+    v.foot:SetPoint("BOTTOMLEFT", 0, 0)
+    v.footRight = UI().Text(v, "GameFontHighlightSmall", "", UI().DIM)
+    v.footRight:SetPoint("BOTTOMRIGHT", v, "BOTTOMLEFT", listW, 0)
+    v.footRight:SetJustifyH("RIGHT")
+
+    -- The breakdown pane
+    local pane = UI().Well(v)
+    v.pane = pane
+    pane:SetPoint("TOPLEFT", listW + 8, 0)
+    pane:SetPoint("BOTTOMRIGHT", 0, 0)
+    pane.width = right - 16
+    pane.icon = pane:CreateTexture(nil, "ARTWORK")
+    pane.icon:SetSize(28, 28)
+    pane.icon:SetPoint("TOPLEFT", 8, -8)
+    pane.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+    pane.title = UI().Text(pane, "GameFontNormal", "", UI().INK)
+    pane.title:SetPoint("TOPLEFT", pane.icon, "TOPRIGHT", 6, 0)
+    pane.title:SetWidth(right - 16 - 34)
+    pane.title:SetWordWrap(false)
+    pane.sub = UI().Text(pane, "GameFontHighlightSmall", "", UI().DIM)
+    pane.sub:SetPoint("TOPLEFT", pane.title, "BOTTOMLEFT", 0, -2)
+    pane.sub:SetWidth(right - 16 - 34)
+    pane.sub:SetWordWrap(false)
+    pane.empty = UI().Text(pane, "GameFontHighlightSmall", "Click a row to see where the money goes.", UI().DIM)
+    pane.empty:SetPoint("TOPLEFT", 8, -10)
+    pane.empty:SetWidth(right - 16)
+    pane.body = CreateFrame("Frame", nil, pane)
+    pane.body:SetPoint("TOPLEFT", 8, -46)
+    pane.body:SetPoint("BOTTOMRIGHT", -8, 34)
+    pane.body.left, pane.body.right = {}, {}
+    pane.select = UI().Button(pane, "Select recipe", function()
+        local d = pane.data
+        local box = ProfessionsFrame and ProfessionsFrame.CraftingPage and ProfessionsFrame.CraftingPage.RecipeList
+            and ProfessionsFrame.CraftingPage.RecipeList.SearchBox
+        if d and box then box:SetText(d.L.name or "") end
+    end, 100)
+    pane.select:SetHeight(20)
+    pane.select:SetPoint("BOTTOMLEFT", 8, 8)
+    tip(pane.select, function(_, tt)
+        tt:SetText("Select recipe", 1, 0.82, 0)
+        tt:AddLine("Finds the recipe in the list on the left of the profession window. Click it there to craft.", 1, 1, 1, true)
+    end)
+    pane.shop = UI().Button(pane, "Shopping list", shopForPane, 100)
+    pane.shop:SetHeight(20)
+    pane.shop:SetPoint("LEFT", pane.select, "RIGHT", 6, 0)
+    pane.shop:SetMotionScriptsWhileDisabled(true)
+    tip(pane.shop, function(_, tt)
+        tt:SetText("Auctionator shopping list", 1, 0.82, 0)
+        tt:AddLine("Puts the auction house materials for this craft in Auctionator's list \"Encore: Selling\", less what your bags and bank hold.", 1, 1, 1, true)
+        if not P.HasShoppingAPI() then tt:AddLine("Requires Auctionator.", 1, 0.3, 0.3) end
     end)
     v:Hide()
     return v
@@ -635,9 +755,11 @@ function P.ShowSelling(o)
     local v = view
     if not v then return end
     local s = sdb()
+    if v.prof ~= o.name then state.sel = nil; v.prof = o.name end
     v.data = P.SellingRows(o.name, s.basis)
     local any = v.data.known > 0
     v.scroll:SetShown(any)
+    v.pane:SetShown(any)
     v.none:SetShown(not any)
     if not any then
         v.none:SetText(("%s has no recipes you know that make an item."):format(o.shown or o.name))
@@ -650,7 +772,7 @@ function P.ShowSelling(o)
     end
     local stonks = Encore and Encore.modules and Encore.modules.Stonks
     v.footRight:SetText(stonks and "" or "Encore-Stonks off: no 7-day average")
-    layout()
+    if any then layout() end
 end
 
 -- Item names arrive from the server a moment after they are asked for; draw the list again once they have.

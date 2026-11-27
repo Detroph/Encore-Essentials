@@ -454,7 +454,8 @@ function UI.ScrollText(parent, editable)
 end
 
 -- A list with a heading per column; every column sorts on click (again to reverse), like every Encore list.
--- cols = { { key, head, w, right }, ... }. t:SetRows(rows, text(row, key) -> text [, colour], value(row, key) -> sort value)
+-- cols = { { key, head, w, right, icon }, ... }. t:SetRows(rows, text(row, key) -> text [, colour [, icon texture]],
+-- value(row, key) -> sort value). A column with icon = true shows the icon text() gives before its text.
 -- opts.sort = { key, desc } (kept and changed in place), opts.rowHeight, opts.onRowClick(row, button).
 function UI.Table(parent, cols, opts)
     opts = opts or {}
@@ -501,12 +502,22 @@ function UI.Table(parent, cols, opts)
         local hl = r:CreateTexture(nil, "HIGHLIGHT")
         hl:SetAllPoints()
         hl:SetColorTexture(UI.COPPER[1], UI.COPPER[2], UI.COPPER[3], 0.12)
-        r.cells = {}
+        r.cells, r.icons = {}, {}
         local x = 0
         for k, c in ipairs(cols) do
             local fs = UI.Text(r, "GameFontHighlightSmall", "")
-            fs:SetPoint("LEFT", x, 0)
-            fs:SetWidth(c.w)
+            local inset = 0
+            if c.icon then
+                -- An item icon before the text: text(row, key) returns its texture as a third value.
+                local ic = r:CreateTexture(nil, "ARTWORK")
+                ic:SetSize(rowH - 4, rowH - 4)
+                ic:SetPoint("LEFT", x, 0)
+                ic:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+                r.icons[k] = ic
+                inset = rowH - 1
+            end
+            fs:SetPoint("LEFT", x + inset, 0)
+            fs:SetWidth(c.w - inset)
             fs:SetJustifyH(c.right and "RIGHT" or "LEFT")
             fs:SetWordWrap(false)
             r.cells[k] = fs
@@ -554,9 +565,14 @@ function UI.Table(parent, cols, opts)
             local r = row(i)
             r.data = e
             for k, c in ipairs(cols) do
-                local s, colour = self.text(e, c.key)
+                local s, colour, icon = self.text(e, c.key)
                 r.cells[k]:SetText(s or "")
                 UI.Color(r.cells[k], colour or UI.INK)
+                local ic = r.icons[k]
+                if ic then
+                    ic:SetTexture(icon)
+                    ic:SetShown(icon ~= nil)
+                end
             end
             r:Show()
         end

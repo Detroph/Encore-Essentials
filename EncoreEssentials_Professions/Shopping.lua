@@ -76,3 +76,23 @@ function P:UpdateShopping(prof, route, from, skill)
         geterrorhandler()(err)
     end
 end
+
+-- Writes one Auctionator list from { { item, count }, ... } (the Selling guide's "Encore: Selling"). True when written.
+function P.ShoppingListFor(name, list)
+    local a = api()
+    if not a then return false end
+    local searches = {}
+    for _, e in ipairs(list) do
+        local item = C_Item.GetItemNameByID(e.item)
+        if not item then
+            if C_Item.RequestLoadItemDataByID then C_Item.RequestLoadItemDataByID(e.item) end
+            P.Print("item names are still loading; try again in a moment.")
+            return false
+        end
+        local ok, s = pcall(a.ConvertToSearchString, CALLER, { searchString = item, isExact = true, quantity = e.count })
+        if ok and s then searches[#searches + 1] = s end
+    end
+    local ok, err = pcall(a.CreateShoppingList, CALLER, name, searches)
+    if not ok then geterrorhandler()(err) end
+    return ok
+end

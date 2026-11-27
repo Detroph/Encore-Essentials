@@ -70,6 +70,12 @@ function P.MarketPrice(item, basis)
     return last or avg
 end
 
+-- How far the last scan is from the 7-day average, in whole percent (+12 = 12% dearer today), or nil.
+function P.Trend(item)
+    local last, avg = auctionator(item), stonks(item)
+    if last and avg and avg > 0 then return math.floor((last / avg - 1) * 100 + 0.5) end
+end
+
 -- The age of the newest Auctionator scan of an item, in days, or nil.
 function P.ScanAge(item)
     local _, age = auctionator(item)

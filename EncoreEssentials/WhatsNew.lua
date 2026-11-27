@@ -9,6 +9,7 @@ local L = ns.L
 local NOTES = {
     { version = "0.2.6.2", lines = {
         "Encore-Professions: a Selling guide tab: what you can craft for a profit at the auction house or a vendor, and the cost of Waylaid Crate bundles and Craftsman's Writ items.",
+        "Encore-Professions: the guide is wider, with item icons in its lists and a pane on the right for what to make now or a row's breakdown.",
     } },
     { version = "0.2.6.1", lines = {
         "New module Encore-PvP: battleground timers and history.",

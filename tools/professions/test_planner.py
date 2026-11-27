@@ -214,6 +214,9 @@ def selling_check(lua, ns):
                     if b._OnClick then b._OnClick(b) end
                 end
             end
+            -- the breakdown pane's buttons
+            v.pane.select._OnClick(v.pane.select)
+            v.pane.shop._OnClick(v.pane.shop)
             for i = 1, #v.heads do v.heads[i]._OnClick(v.heads[i]) end
             return n
         end""")(ns.P, basis)
