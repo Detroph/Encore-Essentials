@@ -28,7 +28,9 @@ C_Map = { GetBestMapForUnit = function() return 1453 end, GetMapInfo = function(
 Enum = { UIMapType = { Continent = 2 } }
 function GetCoinTextureString(c) return c .. "c" end
 function IsPlayerSpell() return false end
-C_Item = { GetItemCount = function() return 0 end, GetItemNameByID = function(id) return "Item " .. id end }
+C_Item = { GetItemCount = function() return 0 end, GetItemNameByID = function(id) return "Item " .. id end,
+  -- made-up vendor sell prices (11th value): 5c to 5s, stable per item
+  GetItemInfo = function(id) return "Item " .. id, nil, nil, nil, nil, nil, nil, nil, nil, nil, 5 + (id * 104729) % 500 end }
 function CreateFrame() return { RegisterEvent = function() end, SetScript = function() end } end
 function geterrorhandler() return function(e) error(e) end end
 -- made-up auction prices: 20c to 20s, stable per item
@@ -42,7 +44,7 @@ def run(profs):
     lua = lua51.LuaRuntime(unpack_returned_tuples=True)
     lua.execute(STUBS)
     ns = lua.eval("{}")
-    for f in ("Data/Recipes.lua", "Data/World.lua", "Core.lua", "Prices.lua", "Planner.lua", "Gather.lua"):
+    for f in ("Data/Recipes.lua", "Data/World.lua", "Data/Selling.lua", "Core.lua", "Prices.lua", "Planner.lua", "Gather.lua"):
         chunk = lua.eval("function(src, name) return assert(loadstring(src, name)) end")(
             open(os.path.join(ADDON, f), encoding="utf-8").read(), f)
         chunk("EncoreEssentials_Professions", ns)
@@ -56,8 +58,8 @@ def run(profs):
                         return P.Plan(prof, 1, { mode = mode, bonus = bonus, cap = 75, known = function() return false end }) end""")(P, prof, mode, bonus)
                     steps = [r.steps[i] for i in range(1, len(r.steps) + 1)]
                     crafts = [s for s in steps if s.kind == "craft"]
-                    print("%-14s %-5s WO %2d%%: %3d steps, %4d crafts, %8.2fg, ends %s" % (
-                        prof, mode, bonus * 100, len(steps), r.crafts, r.total / 10000,
+                    print("%-14s %-5s WO %2d%%: %3d steps, %4d crafts, %8.2fg, %7.2fg back, ends %s" % (
+                        prof, mode, bonus * 100, len(steps), r.crafts, r.total / 10000, (r.back or 0) / 10000,
                         steps[-1].kind + " " + str(steps[-1]["from"] or steps[-1].at)))
                     if not crafts:
                         bad += 1
