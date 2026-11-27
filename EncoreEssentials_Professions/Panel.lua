@@ -747,13 +747,13 @@ end
 ---------------------------------------------------------------------------
 local lastKey
 function P:Refresh()
-    if not (panel and ProfessionsFrame) then return end
     if button then
         local on = self:IsOn()
         button.icon:SetDesaturated(not on)
         button.icon:SetAlpha(on and 1 or 0.6)
         button.glow:SetShown(on)
     end
+    if not (panel and ProfessionsFrame) then return end
     if not (self:IsOn() and ProfessionsFrame:IsShown()) then panel:Hide() return end
     panel:Show()
     local o = self:Open()
@@ -796,7 +796,7 @@ end
 
 local function protectedRefresh()
     local ok, err = pcall(P.Refresh, P)
-    if not ok then geterrorhandler()(err) end
+    if not ok and P.Report then P.Report(err) end
 end
 
 ---------------------------------------------------------------------------
@@ -845,12 +845,31 @@ end
 ---------------------------------------------------------------------------
 -- Hooking the profession window (Blizzard_Professions loads when it is first opened)
 ---------------------------------------------------------------------------
+-- Errors are said once each in chat: many players have Lua errors hidden, and a guide that fails to build would
+-- otherwise just be missing.
+local reported = {}
+local function report(err)
+    err = tostring(err)
+    if reported[err] then return end
+    reported[err] = true
+    P.Print("|cffff6040the guide hit an error:|r %s", err)
+end
+P.Report = report
+
 local attached
 local function attach()
     if attached or not ProfessionsFrame then return end
     attached = true
-    build()
-    buildButton()
+    -- The button first, on its own: it stays by the skill bar even if the guide can't be built.
+    local okButton, errButton = pcall(buildButton)
+    if not okButton then report(errButton) end
+    local ok, err = pcall(build)
+    if not ok then
+        if panel then panel:Hide() end
+        panel = nil
+        report(err)
+        return
+    end
     panel:Hide()
     ProfessionsFrame:HookScript("OnShow", function() C_Timer.After(0, protectedRefresh) end)
     ProfessionsFrame:HookScript("OnHide", function() panel:Hide() end)
@@ -889,7 +908,7 @@ events:SetScript("OnEvent", function(_, event, name)
     elseif event == "BAG_UPDATE_DELAYED" or event == "TRADE_SKILL_LIST_UPDATE" then
         -- A recipe list update that arrives while a bag update is waiting still redraws the recipe rows.
         if event == "TRADE_SKILL_LIST_UPDATE" then rowsPending = true end
-        if panel and ProfessionsFrame:IsShown() and not bagsPending then
+        if panel and ProfessionsFrame and ProfessionsFrame:IsShown() and not bagsPending then
             bagsPending = true
             C_Timer.After(1, function()
                 bagsPending = false
