@@ -3,8 +3,9 @@
 -- auction house: the last Auctionator scan or the Encore-Stonks 7-day average):
 --   Auction house: what sells there for more than its materials, after the 5% cut.
 --   Vendor: what a vendor pays more for than its materials.
---   Waylaid Crates: the crate bundles you can craft, and what crafting one costs per Merchant's Favor.
---   Craftsman's Writs: the writ items you can craft, against the writ's Coin Pouch.
+--   Waylaid Crates: items you can craft that other players buy to fill their Waylaid Crates, sold on the
+--     auction house: crafting cost against the price after the 5% cut.
+--   Craftsman's Writs: items you can craft that other players buy for their Craftsman's Writs, the same way.
 -- Each section folds (remembered), sorts on every column, and opens a breakdown under a row on click.
 local _, ns = ...
 local P = ns.P
@@ -12,15 +13,11 @@ local Encore = _G.EncoreEssentials
 
 local CUT = 0.95 -- what the auction house leaves you of a sale
 local ROW, HEAD, COLHEAD, GAP, BAR = 18, 21, 18, 4, 22
-local CAMP = {
-    Horde = "Durotar Supply and Logistics, outside the Crossroads",
-    Alliance = "Azeroth Commerce Authority, Three Corners in Redridge",
-}
 local SECTIONS = {
     { key = "ah", title = "Auction house", empty = "No recipe you know sells on the auction house for more than its materials." },
     { key = "ven", title = "Vendor", empty = "No recipe you know sells to a vendor for more than its materials." },
-    { key = "crate", title = "Waylaid Crates", empty = "No recipe you know makes a Waylaid Crate bundle." },
-    { key = "writ", title = "Craftsman's Writs", empty = "No recipe you know makes a Craftsman's Writ item." },
+    { key = "crate", title = "Waylaid Crates", empty = "No recipe you know makes an item players buy for Waylaid Crates." },
+    { key = "writ", title = "Craftsman's Writs", empty = "No recipe you know makes an item players buy for Craftsman's Writs." },
 }
 local OPEN = { ah = true, ven = true, crate = false, writ = false }
 
@@ -174,22 +171,27 @@ function P.SellingRows(prof, basis)
         end
     end
 
+    -- Items other players buy for their own turn-ins, sold to them on the auction house: one row an item.
+    local function forTurnIn(list, L, use)
+        local item = L.r[7]
+        local row = list.byItem[item]
+        if not row then
+            local per = recipeCost(L.r, ctx)
+            local cost = per and per / math.max(1, L.r[8] or 1)
+            local price = P.MarketPrice(item, basis)
+            row = { kind = list.kind, id = list.kind .. item, name = itemName(item), item = item, L = L, uses = {},
+                cost = cost, price = price, net = cost and price and (price * CUT - cost) or nil }
+            list.byItem[item] = row
+            out[list.kind][#out[list.kind] + 1] = row
+        end
+        row.uses[#row.uses + 1] = use
+    end
+    local crates = { kind = "crate", byItem = {} }
     for _, c in ipairs(ns.Crates or {}) do
         local bundles = c[4]
         for i = 1, #bundles, 2 do
-            local item, k = bundles[i], bundles[i + 1]
-            local L = ctx.madeBy[item]
-            if L then
-                local per = recipeCost(L.r, ctx)
-                local crafts = math.ceil(k / math.max(1, L.r[8] or 1))
-                local cost = per and per * crafts
-                local price = P.MarketPrice(item, basis)
-                local value = price and price * k * CUT
-                local favor = ns.CrateFavor[c[2]] or 10
-                out.crate[#out.crate + 1] = { kind = "crate", id = "crate" .. c[1] .. ":" .. item, name = itemName(item),
-                    item = item, k = k, crafts = crafts, crate = c, L = L, cost = cost, value = value,
-                    net = cost and value and (value - cost) or nil, favor = favor, per = cost and cost / favor or nil }
-            end
+            local L = ctx.madeBy[bundles[i]]
+            if L then forTurnIn(crates, L, { crate = c, k = bundles[i + 1] }) end
         end
     end
 
@@ -199,20 +201,15 @@ function P.SellingRows(prof, basis)
         local n = C_Item and C_Item.GetItemNameByID and C_Item.GetItemNameByID(L.r[7])
         if n then byName[n] = byName[n] or L end
     end
-    local seen = {}
+    local writs = { kind = "writ", byItem = {} }
     for _, w in ipairs(ns.Writs or {}) do
         local L = ctx.madeBy[w[3]] or byName[w[4]]
-        if L and not seen[L.r[7]] then
-            seen[L.r[7]] = true
-            local per = recipeCost(L.r, ctx)
-            local cost = per and per / math.max(1, L.r[8] or 1)
-            local pouch, rep = ns.WritPouch[w[7]] or 0, ns.WritRep[w[7]] or 0
-            local net = cost and (pouch - cost) or nil
-            local per100
-            if net then per100 = net >= 0 and 0 or math.floor(-net / math.max(1, rep) + 0.5) * 100 end
-            out.writ[#out.writ + 1] = { kind = "writ", id = "writ" .. w[1], name = w[4], item = L.r[7], writ = w, L = L,
-                cost = cost, pouch = pouch, rep = rep, net = net, per100 = per100 }
-        end
+        if L then forTurnIn(writs, L, { writ = w }) end
+    end
+    for _, row in ipairs(out.writ) do
+        local lo
+        for _, u in ipairs(row.uses) do lo = math.min(lo or 9, u.writ[7]) end
+        row.rank = lo
     end
     return out
 end
@@ -225,10 +222,10 @@ local COLS = {
         { key = "net", head = "Profit", w = 66 }, { key = "trend", head = "7 days", w = 46 } },
     ven = { { key = "name", head = "Recipe" }, { key = "cost", head = "Cost", w = 60 }, { key = "sell", head = "Vendor", w = 60 },
         { key = "net", head = "Profit", w = 66 }, { key = "margin", head = "Margin", w = 46 } },
-    crate = { { key = "name", head = "Item" }, { key = "crate", head = "Crate", w = 96 }, { key = "cost", head = "Crafting", w = 60 },
-        { key = "net", head = "Net", w = 62 }, { key = "per", head = "Per Favor", w = 58 } },
-    writ = { { key = "name", head = "Item" }, { key = "rep", head = "Rep", w = 30 }, { key = "zone", head = "Hand in", w = 96 },
-        { key = "net", head = "Net", w = 62 }, { key = "per100", head = "Per 100 rep", w = 66 } },
+    crate = { { key = "name", head = "Item" }, { key = "crate", head = "Players need", w = 104 }, { key = "cost", head = "Cost", w = 60 },
+        { key = "price", head = "Sells", w = 60 }, { key = "net", head = "Profit", w = 66 } },
+    writ = { { key = "name", head = "Item" }, { key = "zone", head = "Writ", w = 104 }, { key = "cost", head = "Cost", w = 60 },
+        { key = "price", head = "Sells", w = 60 }, { key = "net", head = "Profit", w = 66 } },
 }
 local MAXCOLS = 5
 
@@ -236,25 +233,19 @@ local function crateName(c) return (ns.SellRanks[c[2]] or "") .. " " .. c[3] end
 
 local function cellText(row, key)
     if key == "name" then
-        if row.kind == "crate" then return row.k .. " × " .. itemName(row.item) end
-        if row.kind == "writ" then return row.name end
+        if row.kind == "crate" or row.kind == "writ" then return row.name end
         local n = row.name or ""
         if (row.count or 1) > 1 then n = n .. " ×" .. row.count end
         return n
     elseif key == "crate" then
-        return crateName(row.crate), UI().DIM
-    elseif key == "rep" then
-        return tostring(row.rep)
+        local u = row.uses[1]
+        return u.k .. " for " .. crateName(u.crate) .. (#row.uses > 1 and (" +" .. (#row.uses - 1)) or ""), UI().DIM
     elseif key == "zone" then
-        return row.writ[6], UI().DIM
+        return (ns.SellRanks[row.rank] or "") .. (#row.uses > 1 and (" ×" .. #row.uses) or ""), UI().DIM
     elseif key == "trend" or key == "margin" then
         local v = row[key]
         if not v then return "", UI().DIM end
         return (v > 0 and "+" or "") .. v .. "%", netColour(v)
-    elseif key == "per100" then
-        if not row.per100 then return "no price", UI().DIM end
-        if row.per100 == 0 then return "free", UI().GREEN end
-        return coins(row.per100)
     elseif key == "net" then
         if not row.net then return "no price", { 1, 0.5, 0.25 } end
         return signed(row.net), netColour(row.net)
@@ -266,8 +257,8 @@ end
 
 local function sortValue(row, key)
     if key == "name" then return cellText(row, "name") end
-    if key == "crate" then return row.crate[2] * 100 + (row.crate[1] % 100) end
-    if key == "zone" then return row.writ[6] end
+    if key == "crate" then local c = row.uses[1].crate; return c[2] * 100 + (c[1] % 100) end
+    if key == "zone" then return row.rank * 100 + #row.uses end
     return row[key]
 end
 
@@ -297,34 +288,28 @@ local function breakdown(row, basis, ctx)
         add("Crafting cost", signed(-row.cost), netColour(-1))
         add("A vendor pays", signed(row.sell), netColour(1))
         add("Profit", signed(row.net), netColour(row.net), true)
-    elseif row.kind == "crate" then
-        mats(row.crafts)
-        add(("Crafting cost (%d crafts)"):format(row.crafts), row.cost and signed(-row.cost) or "no price", netColour(row.cost and -1))
-        add(("Or sell the %d on the auction house, after the cut"):format(row.k), row.value and signed(row.value) or "no price", netColour(row.value and 1))
-        add("Net", row.net and signed(row.net) or "no price", netColour(row.net), true)
-        add(("Fills a %s crate: %d Merchant's Favor%s"):format(crateName(row.crate), row.favor,
-            row.per and (", " .. coins(row.per) .. " per Favor") or ""))
-        local others = {}
-        local b = row.crate[4]
-        for i = 1, #b, 2 do
-            if b[i] ~= row.item then others[#others + 1] = b[i + 1] .. " " .. itemName(b[i]) end
-        end
-        if #others > 0 then add("Or fill it with " .. table.concat(others, ", ") .. ".") end
-        local faction = UnitFactionGroup and UnitFactionGroup("player")
-        if CAMP[faction] then add("Hand in: " .. CAMP[faction] .. ".") end
-    elseif row.kind == "writ" then
-        local w = row.writ
+    elseif row.kind == "crate" or row.kind == "writ" then
         mats(1)
         local count = math.max(1, row.L.r[8] or 1)
-        add(count > 1 and ("Crafting cost (one of %d)"):format(count) or "Crafting cost", row.cost and signed(-row.cost) or "no price", netColour(row.cost and -1))
-        add("Coin Pouch, average", signed(row.pouch), netColour(1))
-        add("Net", row.net and signed(row.net) or "no price", netColour(row.net), true)
-        add(("%s writ: %d reputation"):format(ns.SellRanks[w[7]] or "", row.rep))
-        add("Hand in: " .. (w[5] and (w[5] .. ", ") or "") .. w[6] .. ".")
-        local writAH, itemAH = P.MarketPrice(w[1], basis), P.MarketPrice(row.item, basis)
-        if writAH or itemAH then
-            add(("Not counted: the writ sells for %s, the finished item for %s."):format(
-                writAH and coins(writAH) or "?", itemAH and coins(itemAH) or "?"))
+        add(count > 1 and ("Crafting cost (one of %d)"):format(count) or "Crafting cost",
+            row.cost and signed(-row.cost) or "no price", netColour(row.cost and -1))
+        add(("Auction house, %s"):format(basisName), row.price and signed(row.price) or "no price", netColour(row.price and 1))
+        if row.price then add("Auction house cut 5%", signed(-row.price * (1 - CUT)), netColour(-1)) end
+        add("Profit each", row.net and signed(row.net) or "no price", netColour(row.net), true)
+        add(" ")
+        if row.kind == "crate" then
+            add("Players buy it to fill a Waylaid Crate:")
+            for _, u in ipairs(row.uses) do
+                add(("  %d for a %s crate"):format(u.k, crateName(u.crate)),
+                    row.net and signed(row.net * u.k) or "", netColour(row.net))
+            end
+            add("List it in stacks of what a crate takes.", nil, nil)
+        else
+            add("Players buy it to hand in a Craftsman's Writ:")
+            for _, u in ipairs(row.uses) do
+                local w = u.writ
+                add(("  %s writ, %s"):format(ns.SellRanks[w[7]] or "", (w[5] and (w[5] .. ", ") or "") .. w[6]))
+            end
         end
     end
     return lines
@@ -526,9 +511,9 @@ local function showPane(d)
     if d.kind == "ah" then
         sub = "Auction house" .. (d.trend and (" · %s%d%% vs 7-day average"):format(d.trend > 0 and "+" or "", d.trend) or "")
     elseif d.kind == "crate" then
-        sub = "For Waylaid Crate: " .. crateName(d.crate)
+        sub = "Sells to players filling Waylaid Crates"
     elseif d.kind == "writ" then
-        sub = "For Craftsman's Writ · " .. (ns.SellRanks[d.writ[7]] or "")
+        sub = "Sells to players handing in Craftsman's Writs"
     else
         sub = KIND_SUB[d.kind] or ""
     end
@@ -543,7 +528,7 @@ end
 local function shopForPane()
     local d = view and view.pane.data
     if not d then return end
-    local crafts = d.kind == "crate" and d.crafts or 1
+    local crafts = d.kind == "crate" and math.ceil(d.uses[1].k / math.max(1, d.L.r[8] or 1)) or 1
     local list = {}
     for _, m in ipairs(materials(d.L.r, crafts, view.data.ctx)) do
         local count = m.n - P.Have(m.item)
@@ -682,7 +667,7 @@ function P.BuildSellingView(parent, inner, pad, right)
     tip(v.subHit, function(_, tt)
         tt:SetText("Selling guide", 1, 0.82, 0)
         tt:AddLine("Every recipe you know of this profession. Materials are bought: vendor materials at the vendor's price, the rest at the auction house. A material made by a recipe you know counts at its crafting cost only when nobody sells it.", 1, 1, 1, true)
-        tt:AddLine("Auction house and Vendor show only what makes a profit. Waylaid Crates and Craftsman's Writs show every item you can make for them, profit or loss.", 1, 1, 1, true)
+        tt:AddLine("Auction house and Vendor show only what makes a profit. Waylaid Crates and Craftsman's Writs show every item you can make that other players buy for their crates and writs, profit or loss, priced as an auction house sale.", 1, 1, 1, true)
     end)
     v.none = UI().Text(v, "GameFontHighlightSmall", "", UI().DIM)
     v.none:SetPoint("TOPLEFT", 0, -22)
