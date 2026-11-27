@@ -5,11 +5,14 @@ local _, ns = ...
 local P = ns.P
 local Encore = _G.EncoreEssentials
 
-local WIDTH, PAD = 400, 8
+local WIDTH, PAD = 760, 8
 local SCALE = 1.12 -- the guide is drawn a little larger than the profession window: bigger text, wider
 local GAP = 66 -- space between the profession window and the guide, for its side tabs
 local EDGE = 8 -- the dark pane's distance from the frame, as Encore-QoL and Encore-DB have it
 local INNER = WIDTH - 2 * EDGE - 2 * PAD
+local RIGHT = 262 -- the pane on the right: what to make now and the next trip, or the Selling guide's breakdown
+local LEFTW = INNER - RIGHT - 8 -- the list on the left
+local TALLER = 44 -- how far the guide reaches below the profession window
 local ICON = "Interface\\AddOns\\EncoreEssentials\\Media\\encore-professions-icon"
 local COLOUR = { o = { 1, 0.5, 0.25 }, y = { 1, 1, 0 }, g = { 0.25, 0.75, 0.25 }, x = { 0.5, 0.5, 0.5 } }
 local COLOUR_NAME = { o = "Orange", y = "Yellow", g = "Green", x = "Grey" }
@@ -127,11 +130,14 @@ local function buildCraft(p)
     v:SetPoint("BOTTOMRIGHT", -PAD, PAD)
     view.craft = v
 
+    -- Design B: the skill bar across the top, the route on the left, what to do now on the right.
+    local x0 = LEFTW + 8
     v.status = UI().Text(v, "GameFontHighlightSmall", "")
-    v.status:SetPoint("TOPLEFT", 0, 0)
-    v.status:SetWidth(INNER - 92)
+    v.status:SetPoint("TOPLEFT", x0, -24)
+    v.status:SetWidth(RIGHT - 94)
+    if v.status.SetMaxLines then v.status:SetMaxLines(2) end
     v.recalc = smallButton(v, "Recalculate", 88, function() P:Recalculate() end, "dark")
-    v.recalc:SetPoint("TOPRIGHT", 0, 2)
+    v.recalc:SetPoint("TOPRIGHT", 0, -22)
     tip(v.recalc, function(_, tt)
         tt:SetText("Recalculate route", 1, 0.82, 0)
         tt:AddLine("Plans the route again from your skill, the recipes you know and today's prices. The route never changes by itself.", 1, 1, 1, true)
@@ -139,7 +145,7 @@ local function buildCraft(p)
 
     v.wo = CreateFrame("CheckButton", nil, v, "UICheckButtonTemplate")
     v.wo:SetSize(22, 22)
-    v.wo:SetPoint("TOPLEFT", -3, -22)
+    v.wo:SetPoint("TOPLEFT", x0 - 3, -50)
     v.woText = UI().Text(v, "GameFontHighlightSmall", "Working Overtime")
     v.woText:SetPoint("LEFT", v.wo, "RIGHT", 0, 0)
     v.woMinus = smallButton(v, "-", 22, function() local _, n = P:WorkingOvertime(); P:SetWorkingOvertime(nil, n - 1); P:Recalculate() end, "dark")
@@ -161,12 +167,12 @@ local function buildCraft(p)
     tip(v.woPlus, woTip)
 
     v.bar = skillBar(v)
-    v.bar:SetPoint("TOPLEFT", 0, -50)
+    v.bar:SetPoint("TOPLEFT", 0, 0)
 
     -- The step to do now
     local now = card(v)
-    now:SetPoint("TOPLEFT", 0, -72)
-    now:SetSize(INNER, 140)
+    now:SetPoint("TOPLEFT", x0, -76)
+    now:SetSize(RIGHT, 140)
     v.now = now
     now.head = UI().Text(now, "GameFontNormalSmall", "", UI().DIM)
     now.head:SetPoint("TOPLEFT", 8, -6)
@@ -175,11 +181,12 @@ local function buildCraft(p)
     now.icon:SetPoint("TOPLEFT", 8, -20)
     now.title = UI().Text(now, "GameFontNormal", "")
     now.title:SetPoint("TOPLEFT", now.icon, "TOPRIGHT", 8, 0)
-    now.title:SetWidth(INNER - 56)
+    now.title:SetWidth(RIGHT - 56)
     now.title:SetWordWrap(false)
     now.sub = UI().Text(now, "GameFontHighlightSmall", "", UI().DIM)
     now.sub:SetPoint("TOPLEFT", now.title, "BOTTOMLEFT", 0, -2)
-    now.sub:SetWidth(INNER - 56)
+    now.sub:SetWidth(RIGHT - 56)
+    now.sub:SetWordWrap(false)
     now.hit = CreateFrame("Frame", nil, now)
     now.hit:SetPoint("TOPLEFT", now.icon)
     now.hit:SetPoint("BOTTOMRIGHT", now.sub, "BOTTOMRIGHT")
@@ -187,14 +194,14 @@ local function buildCraft(p)
     now.reag = {}
     for i = 1, 6 do
         local r = CreateFrame("Frame", nil, now)
-        r:SetSize(INNER - 16, 14)
+        r:SetSize(RIGHT - 16, 14)
         r:SetPoint("TOPLEFT", 8, -56 - (i - 1) * 14)
         r.icon = r:CreateTexture(nil, "ARTWORK")
         r.icon:SetSize(12, 12)
         r.icon:SetPoint("LEFT")
         r.left = UI().Text(r, "GameFontHighlightSmall", "")
         r.left:SetPoint("LEFT", 16, 0)
-        r.left:SetWidth(150)
+        r.left:SetWidth(RIGHT - 16 - 16 - 96)
         r.left:SetWordWrap(false)
         r.right = UI().Text(r, "GameFontHighlightSmall", "")
         r.right:SetPoint("RIGHT")
@@ -216,26 +223,28 @@ local function buildCraft(p)
 
     -- The next trainer, vendor or quest
     local t = card(v)
-    t:SetSize(INNER, 40)
+    t:SetSize(RIGHT, 66)
     v.trip = t
     t.text = UI().Text(t, "GameFontHighlightSmall", "")
     t.text:SetPoint("TOPLEFT", 8, -6)
-    t.text:SetWidth(INNER - 100)
+    t.text:SetWidth(RIGHT - 16)
     t.sub = UI().Text(t, "GameFontHighlightSmall", "", UI().DIM)
     t.sub:SetPoint("TOPLEFT", t.text, "BOTTOMLEFT", 0, -2)
-    t.sub:SetWidth(INNER - 100)
+    t.sub:SetWidth(RIGHT - 16)
+    t.sub:SetWordWrap(false)
     t.go = smallButton(t, "Waypoint", 80, function()
         local pl = t.place
         if pl then P.Waypoint(pl.map, pl.x, pl.y, pl.name or pl.by) end
     end)
-    t.go:SetPoint("RIGHT", -6, 0)
+    t.go:SetPoint("BOTTOMLEFT", 8, 6)
 
     -- Every step, sortable
     v.table = UI().Table(v, {
-        { key = "skill", head = "Skill", w = 52 },
-        { key = "name", head = "Recipe", w = 150 },
+        { key = "skill", head = "Skill", w = 50 },
+        { key = "name", head = "Recipe", w = LEFTW - 24 - 50 - 38 - 112 - 70 - 4 * 6, icon = true },
         { key = "crafts", head = "Crafts", w = 38, right = true },
-        { key = "cost", head = "Cost", w = 88, right = true },
+        { key = "reag", head = "Reagents each", w = 112 },
+        { key = "cost", head = "Cost", w = 70, right = true },
     }, {
         sort = { key = "skill", desc = false },
         tooltip = function(st, tt) return P.StepTooltip(tt, st) end,
@@ -245,7 +254,7 @@ local function buildCraft(p)
     v.shop:SetSize(22, 22)
     v.shopText = UI().Text(v, "GameFontHighlightSmall", "")
     v.shopText:SetPoint("LEFT", v.shop, "RIGHT", 0, 0)
-    v.shopText:SetWidth(INNER - 26)
+    v.shopText:SetWidth(LEFTW - 26)
     v.shop:SetScript("OnClick", function(self) P:DB().shopping = self:GetChecked() and true or false; P:Refresh() end)
     local shopTip = function(_, tt)
         local o = P:Open()
@@ -259,9 +268,8 @@ local function buildCraft(p)
     v.foot = UI().Text(v, "GameFontNormalSmall", "")
     v.foot:SetPoint("BOTTOMLEFT", 0, 0)
     v.footRight = UI().Text(v, "GameFontNormalSmall", "")
-    v.footRight:SetPoint("BOTTOMRIGHT", 0, 0)
+    v.footRight:SetPoint("BOTTOMRIGHT", v, "BOTTOMLEFT", LEFTW, 0)
     v.shop:SetPoint("BOTTOMLEFT", -3, 14)
-    v.table:SetPoint("BOTTOMRIGHT", 0, 38)
 end
 
 local function buildGather(p)
@@ -358,7 +366,7 @@ local function build()
     panel:SetScale(SCALE)
     -- Far enough right to clear the profession tabs down the window's right edge.
     panel:SetPoint("TOPLEFT", ProfessionsFrame, "TOPRIGHT", GAP / SCALE, 0)
-    panel:SetPoint("BOTTOMLEFT", ProfessionsFrame, "BOTTOMRIGHT", GAP / SCALE, 0)
+    panel:SetPoint("BOTTOMLEFT", ProfessionsFrame, "BOTTOMRIGHT", GAP / SCALE, -TALLER / SCALE)
     panel:EnableMouse(true)
     -- The shared Encore frame, with the guide in one dark pane, as Encore-QoL and Encore-DB have it.
     UI().Skin(panel, ICON)
@@ -387,7 +395,7 @@ local function build()
     buildCraft(panel.well)
     buildGather(panel.well)
     buildEmpty(panel.well)
-    view.sell = P.BuildSellingView(panel.well, INNER, PAD)
+    view.sell = P.BuildSellingView(panel.well, INNER, PAD, RIGHT)
 
     -- Two pages in tabs along the top, as the profession window has them: the levelling guide and the Selling guide.
     panel.tabs = UI().Tabs(panel, { "Levelling guide", "Selling guide" }, function(i)
@@ -480,7 +488,12 @@ local function stepText(st, key)
     elseif key == "name" then
         if st.kind == "rank" then return "Train " .. st.name, U.COPPER end
         if st.kind == "gap" then return "No trainer or vendor recipe", U.DIM end
-        return st.name, COLOUR[st.colour]
+        return st.name, COLOUR[st.colour], st.makes and itemIcon(st.makes) or nil
+    elseif key == "reag" then
+        if st.kind ~= "craft" then return "" end
+        local parts = {}
+        for k = 1, #st.reag, 2 do parts[#parts + 1] = st.reag[k + 1] .. " " .. itemName(st.reag[k]) end
+        return table.concat(parts, ", "), U.DIM
     elseif key == "crafts" then
         return st.kind == "craft" and tostring(st.crafts) or ""
     elseif key == "cost" then
@@ -494,6 +507,7 @@ local function stepValue(st, key)
     if key == "skill" then return st.at or st.from end
     if key == "name" then return st.name or "" end
     if key == "crafts" then return st.crafts or 0 end
+    if key == "reag" then return st.reag and st.reag[1] and itemName(st.reag[1]) or "" end
     if key == "cost" then return st.kind == "rank" and (st.cost or 0) or ((st.total or 0) + (st.learn or 0)) end
 end
 
@@ -519,7 +533,7 @@ local function showCraft(o)
 
     -- Now
     local now, st = v.now, route.steps[idx]
-    local y = -72 - 140 - 6
+    local y = -76 - 140 - 6
     if st and st.kind == "craft" then
         v.nowStep = st
         now:Show()
@@ -527,7 +541,7 @@ local function showCraft(o)
         now.head:SetText(("NOW · %d TO %d"):format(st.from, st.to))
         now.icon:SetTexture(st.makes and itemIcon(st.makes) or "Interface\\Icons\\INV_Misc_QuestionMark")
         now.title:SetText(hex(COLOUR[st.colour]) .. ("Make %d × %s|r"):format(left, st.name))
-        now.sub:SetText(("%s · about %d crafts for %d points · %s"):format(COLOUR_NAME[st.colour], st.crafts, st.to - st.from, P.Coins(st.total)))
+        now.sub:SetText(("%s · about %d crafts · %s"):format(COLOUR_NAME[st.colour], st.crafts, P.Coins(st.total)))
         local n = 0
         for k = 1, #st.reag, 2 do
             n = n + 1
@@ -547,7 +561,7 @@ local function showCraft(o)
     else
         v.nowStep = nil
         now:Hide()
-        y = -72
+        y = -76
     end
 
     -- Next trip: the first rank or recipe to learn from here on
@@ -563,15 +577,14 @@ local function showCraft(o)
         v.trip.place = t.place
         v.trip.go:SetEnabled(t.place ~= nil)
         v.trip:ClearAllPoints()
-        v.trip:SetPoint("TOPLEFT", 0, y)
+        v.trip:SetPoint("TOPLEFT", LEFTW + 8, y)
         v.trip:Show()
-        y = y - 46
     else
         v.trip:Hide()
     end
     v.table:ClearAllPoints()
-    v.table:SetPoint("TOPLEFT", 0, y)
-    v.table:SetPoint("BOTTOMRIGHT", 0, 38)
+    v.table:SetPoint("TOPLEFT", 0, -22)
+    v.table:SetPoint("BOTTOMRIGHT", v, "BOTTOMLEFT", LEFTW, 38)
     local rows = {}
     for i = idx + 1, #route.steps do rows[#rows + 1] = route.steps[i] end
     v.table:SetRows(rows, stepText, stepValue)
