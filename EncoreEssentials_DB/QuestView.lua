@@ -340,7 +340,9 @@ function View.blocks(inst)
         end
     end
     if nChains + nSingles == 0 then
-        rows[#rows + 1] = U.emptyLine(data.count > 0 and "No quests here match the filter above."
+        local live = DB.QuestieLive
+        local notice = data.count == 0 and live and live:Notice()
+        rows[#rows + 1] = U.emptyLine(notice or (data.count > 0 and "No quests here match the filter above.")
             or "No quests for this instance have been confirmed in WoW Forever yet.")
     end
 

@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """Builds Encore-Professions' data: EncoreEssentials_Professions/Data/Recipes.lua and Data/World.lua.
 
-    python3 tools/professions/build.py --wt <WhatsTraining> --questie <QuestieDB> --gatherlite <GatherLite> --skillup <SkillUpForever>
+    python3 tools/professions/build.py --wt <WhatsTraining> --gatherlite <GatherLite> --skillup <SkillUpForever>
 
 Inputs (every one is read as text, never run):
 - EncoreEssentials_DB/Data/Recipes.lua (ForeverDB.net, checked against Wowhead Forever): recipes, skill colours,
   reagents, how each is learned, trainer fees, vendors with places and prices, reputation and Merchant's Favor flags.
 - What's Training? (Fusionpit, MIT) Crafting/Recipes/Camelot: the rank of each profession (skill, level, fee, the
   book or quest that teaches it), and the learn skill where ForeverDB has none.
-- QuestieDB (GPL-3.0) data/Forever and support/Forever/Zones: profession trainers and their places, the NPCs and
-  quests behind the rank books and quests, zone maps, and the beasts and mob levels of each zone.
+- Not QuestieDB: trainers and their places, the rank books' vendors' and rank quests' names and places, and each
+  zone's mob and beast levels are read in the game from the QuestieDB addon (EncoreEssentials_Professions/
+  QuestieLive.lua), as QuestieDB's authors ask (2026-11-27). Only the NPC and quest IDs What's Training? gives ship.
 - GatherLite (Wuild, MIT) scripts/nodes.lua and plugins: herb and ore skill levels, node places, fish caught per zone.
 - SkillUp Forever (cjber, GPL-3.0-or-later) Data/Vendor.lua: reagents vendors sell and their client buy prices.
 
@@ -35,35 +36,7 @@ WT_FILES = {"Alchemy": "Alchemy", "Blacksmithing": "Blacksmithing", "Cooking": "
             "Engineering": "Engineering", "First Aid": "FirstAid", "Fishing": "Fishing", "Herbalism": "Herbalism",
             "Leatherworking": "Leatherworking", "Mining": "Mining", "Skinning": "Skinning", "Tailoring": "Tailoring"}
 RANK_CAP = {"Journeyman": 150, "Expert": 225, "Artisan": 300}
-
-# Profession trainers by their title in QuestieDB. Specialisation trainers (Mooncloth, Dragonscale, Gnomish ...)
-# teach no ranks and are left out.
-TRAINER_TITLE = {
-    "Alchemy": r"\bAlchemist\b|^Alchemy Trainer$",
-    "Blacksmithing": r"^(Journeyman|Expert|Artisan|Master) Blacksmith$|^Blacksmithing Trainer$",
-    "Enchanting": r"\bEnchanter\b|^Enchanting Trainer$",
-    "Engineering": r"^(Journeyman|Expert|Artisan|Master) Engineer$|^Engineering Trainer$",
-    "Leatherworking": r"^(Journeyman|Expert|Artisan|Master) Leatherworker$|^Leatherworking Trainer$",
-    "Tailoring": r"^(Journeyman|Expert|Artisan|Master) Tailor$|^Tailoring Trainer$",
-    "Cooking": r"^Cooking Trainer$|^Cook$|^Chef$",
-    "First Aid": r"^First Aid Trainer$|^Physician$|^Surgeon$",
-    "Fishing": r"^Fishing Trainer$|^Fisherman$|^Superior Fisherman$",
-    "Herbalism": r"^Herbalism Trainer$|^Herbalist$|^Superior Herbalist$",
-    "Mining": r"^Mining Trainer$|^Miner$",
-    "Skinning": r"^Skinning Trainer$|^Skinner$",
-}
-NOT_TRAINER = re.compile(r"Supplies|Supplier|Shadoweave|Mooncloth|Spellfire|Dragonscale|Elemental|Tribal|Gnom|Goblin|World")
-TRAINER_FLAG = 16
 COOLDOWN = {18560}  # Mooncloth (a cooldown at a moonwell); transmutes are left out by name
-
-# Skinnable beasts, by their names (QuestieDB has no creature type). Names only pick the mobs to count.
-BEAST = re.compile(r"\b(Wolf|Worg|Boar|Bear|Grizzly|Cat|Lion|Lioness|Panther|Tiger|Leopard|Lynx|Sabercat|Saber|Stalker|"
-                   r"Prowler|Raptor|Crocolisk|Basilisk|Hyena|Gorilla|Ape|Silverback|Scorpid|Spider|Widow|Lurker|Tarantula|"
-                   r"Recluse|Crab|Turtle|Tortoise|Snapjaw|Kodo|Thunder Lizard|Thunderhead|Lizard|Strider|Plainstrider|"
-                   r"Tallstrider|Hawk|Owl|Vulture|Buzzard|Carrion Bird|Bat|Wind Serpent|Serpent|Yeti|Stag|Deer|Ram|Goat|"
-                   r"Coyote|Jackal|Hippogryph|Chimaera|Devilsaur|Stegodon|Pterrordax|Diemetradon|Shardtooth|Frostsaber|"
-                   r"Nightsaber|Mountain Lion|Felstalker|Bloodfang|Mastiff|Hound|Gnoll Hound|Swoop|Wildkin|Thistlefur Bear|"
-                   r"Ashenvale Bear|Thrasher|Ravager|Ridge|Ironjaw|Mosshoof|Moonkin|Bristleback Boar|Elk)\b")
 
 
 def read(path):
@@ -101,45 +74,8 @@ def lua(v):
     raise TypeError(type(v))
 
 
-# QuestieDB ----------------------------------------------------------------------------------------------------
-def questie_block(path):
-    src = read(path)
-    m = re.search(r"\[\[return\s*", src)
-    return parse(src, m.end())[0]
-
-
-def zone_maps(qdb):
-    src = read(os.path.join(qdb, "support", "Forever", "Zones", "areaIdToUiMapId.lua"))
-    blocks = re.findall(r"=\s*\[\[return\s*(\{.*?\})\s*\]\]", src, re.S)
-    maps = {}
-    for b in reversed(blocks):  # the main table first, then the overrides on top
-        t, _ = parse(b, 0)
-        for k, v in (t.items() if isinstance(t, dict) else []):
-            if isinstance(v, int) and v > 0:
-                maps[k] = v
-    return maps
-
-
 def outdoor(map_id):
     return 1411 <= map_id <= 1458 or map_id >= 2000
-
-
-def npc_place(npc, maps):
-    spawns = npc.get(7) if isinstance(npc, dict) else (npc[6] if len(npc) > 6 else None)
-    if not isinstance(spawns, dict):
-        return None
-    for zone, coords in spawns.items():
-        coords = as_list(coords)
-        m = maps.get(zone)
-        if m and coords and isinstance(coords[0], list) and len(coords[0]) >= 2 and coords[0][0] >= 0:
-            return m, round(coords[0][0], 1), round(coords[0][1], 1)
-    return None
-
-
-def field(npc, n):
-    if isinstance(npc, dict):
-        return npc.get(n)
-    return npc[n - 1] if len(npc) >= n else None
 
 
 # Recipes ------------------------------------------------------------------------------------------------------
@@ -152,7 +88,7 @@ def wt_entries(wt, prof):
     return as_list(t)
 
 
-def build_recipes(args, maps, npcs, quests):
+def build_recipes(args):
     src = read(os.path.join(ROOT, "EncoreEssentials_DB", "Data", "Recipes.lua"))
     recipes = find_table(src, "ns.Recipes")
     sources = find_table(src, "ns.RecipeSources")
@@ -172,30 +108,15 @@ def build_recipes(args, maps, npcs, quests):
                 r["how"], r["cost"] = "trainer", e.get("cost")
             elif "vendor" in srcs and e.get("teach"):
                 r["how"], r["item"] = "book", e["teach"]
-                vl = []
-                for v in as_list(e.get("vendors")):
-                    n = npcs.get(v.get("npc"))
-                    place = n and npc_place(n, maps)
-                    if place:
-                        vl.append({"npc": v["npc"], "name": field(n, 1), "map": place[0], "x": place[1], "y": place[2],
-                                   "side": {"Alliance": "A", "Horde": "H"}.get(v.get("faction"))})
-                r["vendors"] = vl
+                # Names and places come from the QuestieDB addon in the game (QuestieLive.lua).
+                r["vendors"] = [{"npc": v["npc"], "side": {"Alliance": "A", "Horde": "H"}.get(v.get("faction"))}
+                                for v in as_list(e.get("vendors")) if v.get("npc")]
             elif "quest" in srcs:
                 r["how"] = "quest"
-                ql = []
-                for q in as_list(e.get("quests")):
-                    qd = quests.get(q.get("id"))
-                    if not qd:
-                        continue
-                    starter = as_list(as_list(field(qd, 2))[0]) if as_list(field(qd, 2)) else []
-                    n = npcs.get(starter[0]) if starter else None
-                    place = n and npc_place(n, maps)
-                    entry = {"id": q["id"], "name": field(qd, 1), "level": q.get("level") or field(qd, 4),
-                             "side": {"Alliance": "A", "Horde": "H"}.get(q.get("faction"))}
-                    if place:
-                        entry.update({"npc": starter[0], "by": field(n, 1), "map": place[0], "x": place[1], "y": place[2]})
-                    ql.append(entry)
-                r["quests"] = ql
+                # Quest names, givers and places come from the QuestieDB addon in the game (QuestieLive.lua).
+                r["quests"] = [{"id": q["id"], "level": q.get("level"),
+                                "side": {"Alliance": "A", "Horde": "H"}.get(q.get("faction"))}
+                               for q in as_list(e.get("quests")) if q.get("id")]
             rl.append(r)
         ranks[prof] = sorted(rl, key=lambda r: r["skill"] or 0)
 
@@ -243,69 +164,6 @@ def build_recipes(args, maps, npcs, quests):
         if rows:
             out[prof] = rows
     return out, vendors, ranks, report
-
-
-def build_trainers(npcs, maps):
-    out = collections.defaultdict(list)
-    for nid, n in npcs.items():
-        title = field(n, 14)
-        flags = field(n, 15) or 0
-        if not isinstance(title, str) or not (flags & TRAINER_FLAG) or NOT_TRAINER.search(title):
-            continue
-        for prof, pat in TRAINER_TITLE.items():
-            if re.search(pat, title):
-                place = npc_place(n, maps)
-                if not place:
-                    break
-                cap = 300
-                if title.startswith("Journeyman"):
-                    cap = 150
-                elif title.startswith("Expert"):
-                    cap = 225
-                side = field(n, 13)
-                out[prof].append({"npc": nid, "name": field(n, 1), "title": title, "map": place[0], "x": place[1],
-                                  "y": place[2], "side": side if side in ("A", "H") else None, "cap": cap})
-                break
-    for prof in out:
-        out[prof].sort(key=lambda t: (t["map"], t["npc"]))
-    return dict(out)
-
-
-def build_zones(npcs, maps):
-    """Per outdoor map: hostile mob levels (for fishing tiers) and skinnable beasts' levels."""
-    mobs, beasts = collections.defaultdict(list), collections.defaultdict(collections.Counter)
-    for nid, n in npcs.items():
-        if field(n, 13) or field(n, 14):  # friendly to a side, or has a title: not a wild mob
-            continue
-        if (field(n, 6) or 0) not in (0, 1):
-            continue
-        lo, hi = field(n, 4), field(n, 5)
-        spawns = field(n, 7)
-        if not (isinstance(lo, int) and isinstance(hi, int) and isinstance(spawns, dict)) or hi > 63:
-            continue
-        name = field(n, 1) or ""
-        for zone, coords in spawns.items():
-            m = maps.get(zone)
-            if not m or not outdoor(m):
-                continue
-            k = len(as_list(coords))
-            mobs[m].extend([(lo + hi) // 2] * max(1, k))
-            if BEAST.search(name):
-                beasts[m][(lo + hi) // 2] += max(1, k)
-    zones = {}
-    for m, levels in mobs.items():
-        if len(levels) < 20:
-            continue
-        levels.sort()
-        lo = levels[int(len(levels) * 0.15)]
-        hi = levels[int(len(levels) * 0.85)]
-        b = beasts.get(m)
-        bl = []
-        if b:
-            for lvl, cnt in sorted(b.items()):
-                bl += [lvl, cnt]
-        zones[m] = {"lo": lo, "hi": hi, "beasts": bl or None}
-    return zones
 
 
 # GatherLite ---------------------------------------------------------------------------------------------------
@@ -359,7 +217,8 @@ def vendor_prices(skillup):
 HEADER = """-- Encore-Professions data. Generated by tools/professions/build.py: do not edit by hand.
 -- Recipes, skill colours, reagents, trainer fees and recipe vendors: Encore-DB (Data from ForeverDB.net,
 -- https://foreverdb.net, checked against Wowhead Forever). Ranks: What's Training? by Fusionpit (MIT).
--- Trainers, quests and zones: QuestieDB (GPL-3.0). Gathering nodes and fish: GatherLite by Wuild (MIT).
+-- Trainers, rank quests and zone levels: read in the game from the QuestieDB addon (QuestieLive.lua), not bundled.
+-- Gathering nodes and fish: GatherLite by Wuild (MIT).
 -- Vendor reagent prices: SkillUp Forever by cjber (GPL-3.0-or-later; client buy prices, LibPeriodicTable item list).
 -- Licence: GPL-3.0; see NOTICE.txt in this addon.
 local _, ns = ...
@@ -369,17 +228,11 @@ local _, ns = ...
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--wt", required=True, help="What's Training? addon folder")
-    ap.add_argument("--questie", required=True, help="QuestieDB checkout")
     ap.add_argument("--gatherlite", required=True, help="GatherLite addon folder")
     ap.add_argument("--skillup", required=True, help="SkillUp Forever addon folder")
     args = ap.parse_args()
 
-    maps = zone_maps(args.questie)
-    npcs = questie_block(os.path.join(args.questie, "data", "Forever", "foreverNpcDB.lua"))
-    quests = questie_block(os.path.join(args.questie, "data", "Forever", "foreverQuestDB.lua"))
-    recipes, vendors, ranks, report = build_recipes(args, maps, npcs, quests)
-    trainers = build_trainers(npcs, maps)
-    zones = build_zones(npcs, maps)
+    recipes, vendors, ranks, report = build_recipes(args)
     nodes, catches = build_nodes(args.gatherlite)
     prices = vendor_prices(args.skillup)
 
@@ -403,33 +256,23 @@ def main():
     with open(os.path.join(OUT, "Recipes.lua"), "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(lines))
 
-    lines = [HEADER, "-- [profession] = { { npc, name, title, map (uiMap), x, y, side, cap (highest skill it trains to) } }",
-             "ns.Trainers = {"]
-    for prof, tl in sorted(trainers.items()):
-        lines.append("  [%s] = {" % lua_str(prof))
-        lines += ["    " + lua(t) + "," for t in tl]
-        lines.append("  },")
-    lines += ["}", "-- Gathering nodes: { name, levels { orange, yellow, green, grey } (or just the first), zones { map, nodes, ... } }",
+    # Trainers (ns.Trainers) and each zone's mob and beast levels come from the QuestieDB addon (QuestieLive.lua).
+    lines = [HEADER, "-- Gathering nodes: { name, levels { orange, yellow, green, grey } (or just the first), zones { map, nodes, ... } }",
               "ns.Nodes = {"]
     for prof, nl in nodes.items():
         lines.append("  [%s] = {" % lua_str(prof))
         lines += ["    " + lua(n) + "," for n in nl]
         lines.append("  },")
-    lines += ["}", "-- [map] = { lo, hi (most wild mobs' levels), beasts { level, spawns, ... }, fish { item, ... } }", "ns.Zones = {"]
-    for m in sorted(set(zones) | set(catches)):
-        z = dict(zones.get(m) or {})
-        if catches.get(m):
-            z["fish"] = sorted(set(catches[m]))
-        if z:
-            lines.append("  [%d] = %s," % (m, lua(z)))
+    lines += ["}", "-- [map] = { fish { item, ... } } (QuestieLive.lua adds lo, hi and beasts from the QuestieDB addon)", "ns.Zones = {"]
+    for m in sorted(catches):
+        lines.append("  [%d] = %s," % (m, lua({"fish": sorted(set(catches[m]))})))
     lines += ["}", ""]
     with open(os.path.join(OUT, "World.lua"), "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(lines))
 
     for k, v in sorted(report.items()):
         print("%-40s %d" % (k, v))
-    print("professions", len(recipes), "vendor recipes", len(vendors), "trainers",
-          sum(len(v) for v in trainers.values()), "zones", len(zones), "nodes", sum(len(v) for v in nodes.values()))
+    print("professions", len(recipes), "vendor recipes", len(vendors), "nodes", sum(len(v) for v in nodes.values()))
 
 
 if __name__ == "__main__":

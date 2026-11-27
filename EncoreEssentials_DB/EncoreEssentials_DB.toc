@@ -6,6 +6,7 @@
 ## Version: @project-version@
 ## IconTexture: Interface\AddOns\EncoreEssentials\Media\encore-icon
 ## Dependencies: EncoreEssentials
+## OptionalDeps: QuestieDB
 ## LoadOnDemand: 1
 
 Data\Loot.lua
@@ -13,12 +14,12 @@ Data\Recipes.lua
 Data\Extras.lua
 Data\Portraits.lua
 Data\Wings.lua
-Data\Quests-questie.lua
 Data\Quests-fillin.lua
 DB.lua
 LootData.lua
 Tooltip.lua
 QuestData.lua
+QuestieLive.lua
 Templates.xml
 Window.lua
 QuestView.lua

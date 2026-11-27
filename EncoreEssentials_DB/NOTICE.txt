@@ -25,13 +25,17 @@ the repository).
    its unconfirmed client clues and the recipes it marks as speculation are
    left out.
 
-2. Quests: QuestieDB
-   Data/Quests-questie.lua is built from QuestieDB
-   (https://github.com/Questie/QuestieDB) by the Questie team, licensed under
-   GPL-3.0: its WoW Forever database, which is Questie's Classic quest data
-   converted to Forever's maps plus Forever corrections, QuestieTrace
-   recordings and hand-written fixes. Questie's Classic data was
-   originally built from CMaNGOS. Thank you to the Questie team.
+2. Quests and boss levels: the QuestieDB addon
+   Encore-DB reads its dungeon quests (titles, levels, objectives, quest
+   givers, chains, reward items, reputation and XP) and its boss levels in
+   the game from the QuestieDB addon (https://github.com/Questie/QuestieDB)
+   by the Questie team, GPL-3.0, through its public API (QuestieLive.lua).
+   None of QuestieDB's data is bundled with Encore-DB: install QuestieDB
+   (a required dependency on CurseForge) and you get its updates directly.
+   QuestieDB's WoW Forever database is Questie's Classic data (originally
+   built from CMaNGOS) converted to Forever's maps, plus Forever
+   corrections, QuestieTrace recordings and hand-written fixes. Thank you
+   to the Questie team.
 
 3. Fill-in sources
    foreverchanges.pro (https://foreverchanges.pro) adds bosses, items and
@@ -56,9 +60,9 @@ the repository).
    (tools/loot/atlasloot-extras.mjs); an item is listed only when Wowhead
    Forever shows a source for it in WoW Forever. None of AtlasLoot's data is
    included.
-   Boss levels come from QuestieDB (https://github.com/Questie/QuestieDB,
-   GPL-3.0), its WoW Forever NPC data: Questie's Classic data (built from
-   CMaNGOS) with Forever corrections, QuestieTrace and hand-written fixes (tools/loot/questie-levels.mjs). Only the levels and
+   Boss levels in Data/Loot.lua come from Wowhead Forever's NPC pages; in
+   the game the QuestieDB addon's Forever NPC levels replace them where it
+   knows the boss (section 2). Only the levels and
    boss rank are used.
 
 4. Boss portraits: Dungeon Journal

@@ -17,6 +17,10 @@ import { fileURLToPath } from 'node:url';
 
 export const id = 'questie';
 export const priority = 10; // first: the chosen quest source
+// Not bundled (QuestieDB's authors, 2026-11-27: depend on the QuestieDB addon and use its API instead of shipping a
+// snapshot). The addon reads the same data live (EncoreEssentials_DB/QuestieLive.lua); here it only lists the quest
+// IDs for the Wowhead Forever fill-in. `build-quests.mjs --bundle questie` still writes Data/Quests-questie.lua.
+export const bundled = false;
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..');

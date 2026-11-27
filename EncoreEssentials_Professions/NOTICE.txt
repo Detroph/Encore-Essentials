@@ -27,8 +27,9 @@ Data
   ForeverDB.net's attribution term (see EncoreEssentials_DB/NOTICE.txt), checked against
   Wowhead Forever (https://www.wowhead.com/forever).
   Profession trainers and their places, the NPCs and quests behind the rank books and
-  quests, zone maps, beasts and mob levels per zone: QuestieDB
-  (https://github.com/Questie/QuestieDB, GPL-3.0), its WoW Forever data.
+  quests, recipe vendors' places, beasts and mob levels per zone: read in the game from
+  the QuestieDB addon (https://github.com/Questie/QuestieDB, GPL-3.0), its WoW Forever
+  data, through its public API (QuestieLive.lua). None of it is bundled.
   tools/professions/build.py builds both data files; nothing is copied by hand.
   Waylaid Crates (the bundles that fill each crate) and Craftsman's Writs (the item each
   writ asks for, its NPC and zone, and the Coin Pouch averages from Wowhead's looter data)

@@ -6,13 +6,14 @@
 ## Version: @project-version@
 ## IconTexture: Interface\AddOns\EncoreEssentials\Media\encore-professions-icon
 ## Dependencies: EncoreEssentials
-## OptionalDeps: Auctionator, GatherLite, TomTom, EncoreEssentials_Stonks, EncoreEssentials_QoL
+## OptionalDeps: QuestieDB, Auctionator, GatherLite, TomTom, EncoreEssentials_Stonks, EncoreEssentials_QoL
 ## SavedVariables: EncoreProfessionsDB
 
 Data\Recipes.lua
 Data\World.lua
 Data\Selling.lua
 Core.lua
+QuestieLive.lua
 Prices.lua
 Planner.lua
 RecipeList.lua

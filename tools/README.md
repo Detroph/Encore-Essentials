@@ -8,9 +8,9 @@ Python 3 scripts that build Encore-DB's profession data. Downloaded data is not 
 
 | Data | Sources, in order |
 | --- | --- |
-| Quests | QuestieDB, then Wowhead Forever for blanks |
+| Quests | The QuestieDB addon in the game (nothing bundled), then Wowhead Forever for blanks (`Data/Quests-fillin.lua`) |
 | Loot and drops | ForeverDB, foreverchanges.pro, Wowhead Forever. The Dungeon Journal and AtlasLoot Continued addons are only compared, never copied: `tools/out/dj-check.json` and `tools/out/atlasloot-check.json` list their drops we don't have yet, and AtlasLoot's are kept only when Wowhead Forever confirms them |
-| Boss levels | QuestieDB's Forever NPC data, then Wowhead Forever for blanks (`tools/loot/questie-levels.mjs`) |
+| Boss levels | The QuestieDB addon's Forever NPC levels in the game, then Wowhead Forever's (bundled in `Loot.lua`) for blanks |
 | Professions | ForeverDB, then every recipe checked against Wowhead Forever (`tools/out/recipes-check.json`) |
 
 Setup, once: copy `tools/refresh.config.example.json` to `tools/refresh.config.json` (not in the repository) and set `dungeonJournal` to your `AddOns\ForeverDungeonJournal` folder and `atlasLoot` to your `AddOns` folder. `lootSources` picks the loot sources: `dungeon-journal-check`, `atlasloot` (or `atlasloot-check`), `foreverdb`, `foreverchanges`, `wowhead`, and optionally `wowtbc`.
@@ -62,8 +62,6 @@ node tools/loot/fc-dungeons.mjs                       # foreverchanges.pro: boss
 node tools/loot/wowtbc.mjs                            # wowtbc.gg: Forever loot tables (optional fill-in, only with "wowtbc" in lootSources)
 node tools/loot/wowhead-items.mjs --missing           # Wowhead Forever tooltips for the items in the lists above not fetched yet
 node tools/loot/wowhead-drops.mjs                     # Wowhead Forever pages: boss drops, reputation rewards, world drops (slow, see below)
-git clone --depth 1 https://github.com/Questie/QuestieDB tools/cache/questiedb   # once; refresh.mjs --download pulls it
-node tools/loot/questie-levels.mjs                    # QuestieDB's Forever NPC levels -> tools/out/npc-levels.json
 node tools/loot/build-loot.mjs                        # -> EncoreEssentials_DB/Data/Loot.lua
 node tools/loot/build-recipes.mjs                     # -> EncoreEssentials_DB/Data/Recipes.lua (lists recipe items with no source)
 node tools/loot/fc-items.mjs                          # foreverchanges.pro: sources for those recipe items (fill-in)
@@ -102,10 +100,10 @@ Rules the builders apply:
 ## 4. Dungeon quests (Node 18+)
 
 ```
-node tools/quests/build-quests.mjs                    # QuestieDB, then Wowhead Forever -> EncoreEssentials_DB/Data/Quests-*.lua
+node tools/quests/build-quests.mjs                    # quest IDs from a QuestieDB checkout, Wowhead Forever fill-ins -> Data/Quests-fillin.lua
 ```
 
-Quests come from QuestieDB with Wowhead Forever filling blanks, through a swappable source layer. See `tools/quests/README.md` for the QuestieDB checkout and the Wowhead step.
+Quests come from the QuestieDB addon in the game (EncoreEssentials_DB/QuestieLive.lua) with Wowhead Forever filling blanks, through a swappable source layer. See `tools/quests/README.md` for the QuestieDB checkout and the Wowhead step.
 
 ## Checks
 
@@ -116,13 +114,12 @@ Quests come from QuestieDB with Wowhead Forever filling blanks, through a swappa
 `tools/professions/build.py` writes `EncoreEssentials_Professions/Data/Recipes.lua` and `Data/World.lua`. It reads every input as text and never runs it:
 
 ```
-git clone --depth 1 https://github.com/Questie/QuestieDB tools/cache/questiedb   # once, like the loot step
-python3 tools/professions/build.py --wt <AddOns>/WhatsTraining --questie tools/cache/questiedb \
+python3 tools/professions/build.py --wt <AddOns>/WhatsTraining \
     --gatherlite <AddOns>/GatherLite --skillup <AddOns>/SkillUpForever
 python3 tools/professions/test_planner.py        # plans every profession outside the game (needs: pip install lupa)
 ```
 
 - Recipes, colours, reagents, trainer fees and pattern vendors: Encore-DB's `Data/Recipes.lua` (ForeverDB). Only trainer recipes and vendor patterns sold for gold without a stock limit are kept. Reputation, Merchant's Favor, recipes not in the client, transmutes and Mooncloth (cooldowns) are left out.
 - Ranks (Journeyman, Expert, Artisan with their book or quest) and a few learn skills ForeverDB lacks: What's Training?'s `Crafting/Recipes/Camelot` (MIT).
-- Trainers (by title, with the trainer flag), the rank books' vendors and the rank quests' NPCs, zone maps, and each zone's mob levels and skinnable beasts (by name): QuestieDB's Forever data.
+- Not built here: trainers (by title, with the trainer flag), the rank books' vendors' and rank quests' givers' names and places, recipe vendors' places, and each zone's mob levels and skinnable beasts (by name). `EncoreEssentials_Professions/QuestieLive.lua` reads them in the game from the QuestieDB addon (its Forever data) and keeps the trainers and zones in `EncoreProfessionsDB` until QuestieDB updates.
 - Herb and ore skill levels, node places and fish caught per zone: GatherLite (MIT). Vendor reagent prices: SkillUp Forever's `Data/Vendor.lua` (client buy prices).
