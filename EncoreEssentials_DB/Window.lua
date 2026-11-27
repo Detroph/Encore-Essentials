@@ -876,10 +876,16 @@ local function sectionRows()
         rows[#rows + 1] = { kind = "head", title = inst.name, meta = table.concat(meta, "  ·  ") }
         -- The instance's quests and quest chains (QuestView.lua), above the bosses.
         local quests = DB.Quests and DB.Quests:ForInstance(inst)
-        if quests and quests.count > 0 then
+        -- Quests come from the QuestieDB addon (QuestieLive.lua): while it is missing or still being read, the row
+        -- says so and its page explains.
+        local live = DB.QuestieLive
+        local waiting = live and live.state ~= "ready" and (quests == nil or quests.count == 0)
+        if (quests and quests.count > 0) or waiting then
             rows[#rows + 1] = {
                 kind = "sec", text = "Quests",
-                sub = quests.count .. (quests.count == 1 and " quest" or " quests")
+                sub = waiting and (({ loading = "Reading QuestieDB...", old = "Update QuestieDB", failed = "QuestieDB could not be read" })[live.state]
+                    or "Needs the QuestieDB addon")
+                    or quests.count .. (quests.count == 1 and " quest" or " quests")
                     .. (quests.chains > 0 and ("  ·  %d %s"):format(quests.chains, quests.chains == 1 and "chain" or "chains") or ""),
                 npc = false, badge = "Interface\\GossipFrame\\AvailableQuestIcon", selected = state.boss == "quests",
                 onClick = function() state.boss = "quests"; clearSearch(); renderAll() end,

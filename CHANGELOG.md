@@ -2,6 +2,7 @@
 
 ## Next (not released yet)
 
+- Encore-DB reads its dungeon quests and boss levels from the QuestieDB addon instead of a copy bundled with Encore, as QuestieDB's authors ask. You get QuestieDB's updates (new Forever quests, fixed quest givers and reputation) without an Encore update, and quests now show their XP. QuestieDB is a required dependency on CurseForge, so the CurseForge app installs it. Without it, Encore-DB's loot, recipes and vendors still work and the Quests rows say to install QuestieDB.
 - Prices show as gold, silver and copper with the game's coin icons everywhere: Encore-Professions, Encore-Alts, Encore-DB's AH and Profit columns and wishlist alerts showed raw copper ("4499700c") because WoW Forever has no GetCoinTextureString.
 - Encore-Professions: the levelling guide sits further right so it no longer covers the profession tabs on the side of the profession window, and is a little wider so costs fit.
 - Encore-Professions: where to farm, fish or skin never suggests the other faction's zones, and your own side's zones (where nobody can attack you) come first at the same level. Where to fish lists your side's starting zones as one "Starting zones" entry and your capital cities as one "Cities" entry; hover them for the zones.

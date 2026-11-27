@@ -1,8 +1,9 @@
 // Refreshes Encore-DB's data from its sources, in the project's source order, so an update needs no Claude session:
-//   quests       QuestieDB first, Wowhead Forever fills in blanks          (tools/quests/build-quests.mjs)
+//   quests       Wowhead Forever fill-ins for the quests the QuestieDB addon gives in the game (tools/quests/build-quests.mjs;
+//                a QuestieDB checkout only lists the quest IDs to collect, nothing from it is bundled)
 //   loot         ForeverDB, foreverchanges.pro, Wowhead Forever; the Dungeon Journal only as a cross-check
 //                of gaps (tools/out/dj-check.json)                          (tools/loot/build-loot.mjs)
-//                Boss levels: QuestieDB first, Wowhead Forever fills blanks (tools/loot/questie-levels.mjs)
+//                Boss levels: Wowhead Forever (in the game the QuestieDB addon's levels replace them)
 //   professions  ForeverDB first, then everything checked against Wowhead Forever
 //                                                                           (build-recipes.mjs, check-recipes.mjs)
 //   extras       PvP and reputation rewards, collections, item sets, rogue poisons: Wowhead Forever data for the
@@ -46,8 +47,9 @@ function run(script, ...args) {
   return true;
 }
 
-// QuestieDB checkout for boss levels: cloned or updated with --download, then read by questie-levels.mjs.
-function levels() {
+// QuestieDB checkout, cloned or updated with --download: build-quests.mjs reads it only for the dungeon quest IDs
+// to collect from Wowhead Forever. The addon reads QuestieDB's data in the game from the QuestieDB addon.
+function questieCheckout() {
   const checkout = path.resolve(env.QUESTIEDB || cfg.questieDB || path.join(DIR, 'cache', 'questiedb'));
   if (download) {
     const git = fs.existsSync(path.join(checkout, '.git'))
@@ -56,16 +58,12 @@ function levels() {
     console.log(`\n> git ${git.join(' ')}`);
     spawnSync('git', git, { stdio: 'inherit' });
   }
-  if (!fs.existsSync(path.join(checkout, 'data', 'Forever', 'foreverNpcDB.lua'))) {
-    console.log(`\nNo QuestieDB checkout at ${checkout}: building without boss levels. Run with --download to fetch it.`);
-    return;
-  }
   env.QUESTIEDB = checkout;
-  run('loot/questie-levels.mjs');
 }
 
 const steps = {
   quests() {
+    questieCheckout();
     run('quests/build-quests.mjs');
   },
   loot() {
@@ -76,7 +74,6 @@ const steps = {
       if (src.has('wowtbc')) run('loot/wowtbc.mjs');
       run('loot/wowhead-items.mjs', '--missing');
     }
-    levels();
     if (!fs.existsSync(path.join(DIR, 'out', 'wowhead-drops.json')))
       console.log('\nNo tools/out/wowhead-drops.json yet: building without Wowhead boss pages. Run "node tools/refresh.mjs wowhead-script" for them.');
     run('loot/build-loot.mjs');

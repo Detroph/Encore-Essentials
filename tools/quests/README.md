@@ -6,15 +6,23 @@ one file per source. They are built here and read in the game only through the q
 
 ## Refreshing (project rule, 2026-11-19: QuestieDB first, Wowhead Forever fills the blanks)
 
+Since 2026-11-27 QuestieDB's data is not bundled: QuestieDB's authors ask addons to depend on the QuestieDB addon and
+use its API. In the game `EncoreEssentials_DB/QuestieLive.lua` reads the quests (and boss levels) from the QuestieDB
+addon through `LibQuestieDB` and hands them to the data layer as the `questie` source, priority 10. Players get
+QuestieDB's updates without an Encore release.
+
+What is still built here is the Wowhead Forever fill-in:
+
 ```
 git clone --depth 1 https://github.com/Questie/QuestieDB tools/cache/questiedb   # or: git -C tools/cache/questiedb pull
-node tools/quests/build-quests.mjs          # QuestieDB -> Data/Quests-questie.lua, and tools/out/quest-ids.json
+node tools/quests/build-quests.mjs          # QuestieDB checkout -> tools/out/quest-ids.json (the quest IDs only)
 #   then collect the Wowhead Forever quest pages for those IDs (the Wowhead step of tools/refresh.mjs,
 #   a browser script) into tools/out/wowhead-drops.json, and run build-quests again:
-node tools/quests/build-quests.mjs          # -> Data/Quests-questie.lua and Data/Quests-fillin.lua
+node tools/quests/build-quests.mjs          # -> Data/Quests-fillin.lua
 ```
 
-`node tools/refresh.mjs quests` runs the same steps. Commit the changed `Data/Quests-*.lua`; nothing else changes.
+`node tools/refresh.mjs quests [--download]` runs the same steps. `--bundle questie` writes the old snapshot
+(`Data/Quests-questie.lua`, then list it in the .toc) should a QuestieDB-free build ever be wanted.
 
 The QuestieDB step runs `tools/quests/sources/questie-extract.lua` with Lua 5.1: `lua` on PATH, or set
 `QUESTIE_LUA` (QuestieDB ships a Lua in `tools/lua-binary/`). `QUESTIE_JSON=<file>` uses an extract made earlier.
@@ -26,7 +34,9 @@ below. `build-quests.mjs --source a,b` runs them in order (default `questie,fill
 `Data/Quests-<id>.lua`, which must be listed in `EncoreEssentials_DB.toc`. In the game, the higher `priority`
 wins field by field, so a lower one only fills blanks. `ctx.questIds` holds the quest IDs earlier sources found.
 
-- `questie.mjs` (priority 10): QuestieDB's WoW Forever database. That is Questie's Classic data (built from
+- `questie.mjs` (priority 10, not bundled: `bundled = false`, the game reads the QuestieDB addon instead):
+  QuestieDB's WoW Forever database, here only for the quest IDs. In the game `QuestieLive.lua` places quests the
+  same way and also takes XP from QuestieDB's quest XP table. That is Questie's Classic data (built from
   CMaNGOS) converted to Forever's maps, plus Forever layers from Wowhead Forever, QuestieTrace recordings made in
   Forever and hand-written Forever fixes. Quests go to an instance by their QuestieDB category (the instance's
   area); quests new in Forever with no category go by the instance name in their title or objective (listed in the

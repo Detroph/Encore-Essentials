@@ -54,8 +54,6 @@ let wh = {}; // item tooltips (tools/out/wowhead-items.json, made by the separat
 try { wh = readJson('out/wowhead-items.json'); } catch { /* not collected: build without them */ }
 let whd = null; // Wowhead Forever pages (optional)
 try { whd = readJson('out/wowhead-drops.json'); } catch { /* not collected yet: build without it */ }
-let npcLevels = null; // QuestieDB's NPC levels (tools/loot/questie-levels.mjs, optional)
-try { npcLevels = readJson('out/npc-levels.json'); } catch { /* not extracted yet: no levels */ }
 const WH_MIN_KILLS = 50; // fewer looted kills on Wowhead: not used
 const WH_NONE_KILLS = 1000; // no drop in this many kills contradicts a fill-in site's boss tie
 const WH_ALSO_PCT = 1; // Wowhead drops added to a boss from this rate (random drops below WH_OWN_PCT)
@@ -572,15 +570,14 @@ for (const I of order) for (const B of I.bosses) {
   const jb = (djOrder.get(I.key) || []).find((j) => (j.npc && j.npc === B.npc) || norm(j.name) === norm(B.name));
   if (jb?.rare) B.rare = true;
 }
-// Levels for the boss portraits: QuestieDB's Forever database first, Wowhead Forever's NPC page
-// where QuestieDB has none. A boss-rank NPC (QuestieDB rank 3, or "??" on Wowhead) shows a skull instead.
+// Levels for the boss portraits from Wowhead Forever's NPC pages. In the game, QuestieDB's Forever NPC levels (read
+// live from the QuestieDB addon, EncoreEssentials_DB/QuestieLive.lua) replace these; they stay for bosses QuestieDB
+// does not know. A boss-rank NPC ("??" on Wowhead) shows a skull instead.
 let levelsFound = 0;
 for (const I of order) for (const B of I.bosses) {
   if (B.trash || !B.npc) continue;
-  const qd = npcLevels?.npcs?.[B.npc];
   const wl = whd?.npcs?.[B.npc]?.level;
-  if (qd) { B.level = qd[2] === 3 ? -1 : qd[1]; B.levelMin = qd[0]; }
-  else if (wl === -1) B.level = -1;
+  if (wl === -1) B.level = -1;
   else if (Array.isArray(wl)) { B.level = wl[wl.length - 1]; B.levelMin = wl[0]; }
   if (B.level != null) levelsFound++;
 }
@@ -596,8 +593,7 @@ const fills = [fc.length && 'foreverchanges.pro', tbc.length && 'wowtbc.gg'].fil
 L.push(`-- ${fills.length ? `Filled in from ${fills.join(' and ')}. ` : ''}${Object.keys(wh).length ? 'Item details from Wowhead Forever (https://www.wowhead.com/forever) and the game client.' : 'Item details from the game client.'}`);
 if (whd) L.push('-- Boss drops, drop chances, reputation rewards and world drops filled in from Wowhead Forever (https://www.wowhead.com/forever).');
 if (al) L.push(AL_PRIMARY ? '-- Boss tables follow AtlasLoot Continued\'s lists where it has the boss, each drop confirmed on Wowhead Forever; none of AtlasLoot\'s data is included.' : '-- AtlasLoot Continued was used as a checklist of drops to look up on Wowhead Forever; none of its data is included.');
-if (npcLevels) L.push(`-- Boss levels from QuestieDB (https://github.com/Questie/QuestieDB, GPL-3.0), ${npcLevels.source}: its WoW Forever NPC data, which is Questie's Classic data with Forever corrections. No other Classic or emulator data.`);
-else L.push('-- No Classic or emulator data.');
+L.push('-- Boss levels from Wowhead Forever; in the game the QuestieDB addon\'s levels replace them where it has the boss. No Classic or emulator data.');
 L.push("-- Licence: GPL-3.0 with ForeverDB.net's attribution term; see NOTICE.txt in this addon.");
 L.push(`-- Built ${new Date().toISOString().slice(0, 10)}.`);
 L.push('local _, ns = ...');
