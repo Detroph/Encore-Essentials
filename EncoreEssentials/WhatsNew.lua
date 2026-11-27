@@ -10,6 +10,7 @@ local NOTES = {
     { version = "0.2.6.2", lines = {
         "Encore-Professions: a Selling guide tab: what you can craft for a profit at the auction house or a vendor, and what you can craft that players buy for their Waylaid Crates and Craftsman's Writs.",
         "Encore-Professions: the guide is wider, with item icons in its lists and a pane on the right for what to make now or a row's breakdown.",
+        "Encore-Professions: the levelling route counts what crafted items sell back for, and each step says whether to vendor them or sell them on the auction house.",
     } },
     { version = "0.2.6.1", lines = {
         "New module Encore-PvP: battleground timers and history.",

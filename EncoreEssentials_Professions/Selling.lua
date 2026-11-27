@@ -6,13 +6,15 @@
 --   Waylaid Crates: items you can craft that other players buy to fill their Waylaid Crates, sold on the
 --     auction house: crafting cost against the price after the 5% cut.
 --   Craftsman's Writs: items you can craft that other players buy for their Craftsman's Writs, the same way.
--- Each section folds (remembered), sorts on every column, and opens a breakdown under a row on click.
+-- Along the top, the best profit of each section (click one to open its section on that row). Each section folds
+-- (remembered), sorts on every column, and shows the clicked row's breakdown in the pane on the right.
 local _, ns = ...
 local P = ns.P
 local Encore = _G.EncoreEssentials
 
 local CUT = 0.95 -- what the auction house leaves you of a sale
 local ROW, HEAD, COLHEAD, GAP, BAR = 18, 21, 18, 4, 22
+local TILES = 40 -- the row of totals along the top
 local SECTIONS = {
     { key = "ah", title = "Auction house", empty = "No recipe you know sells on the auction house for more than its materials." },
     { key = "ven", title = "Vendor", empty = "No recipe you know sells to a vendor for more than its materials." },
@@ -426,6 +428,18 @@ local function makeRow(parent)
         local d = self.data
         if not d then return false end
         tt:SetItemByID(d.item)
+        if d.kind == "crate" or d.kind == "writ" then
+            tt:AddLine(" ")
+            tt:AddLine(d.kind == "crate" and "Players buy it to fill a Waylaid Crate:" or "Players buy it to hand in a Craftsman's Writ:", 1, 0.82, 0)
+            for _, u in ipairs(d.uses) do
+                if u.crate then
+                    tt:AddLine(("%d for a %s crate"):format(u.k, crateName(u.crate)), 1, 1, 1)
+                else
+                    tt:AddLine(("%s writ, %s"):format(ns.SellRanks[u.writ[7]] or "", (u.writ[5] and (u.writ[5] .. ", ") or "") .. u.writ[6]), 1, 1, 1)
+                end
+            end
+        end
+        if d.net then tt:AddDoubleLine((d.kind == "crate" or d.kind == "writ") and "Profit each" or "Profit", signed(d.net), 0.64, 0.57, 0.47, unpack(netColour(d.net))) end
         tt:AddLine("Click for the breakdown on the right.", 0.64, 0.57, 0.47)
     end)
     return r
@@ -462,6 +476,12 @@ local function fillLines(f, lines, width)
         y = y - math.max(13, (left:GetStringHeight() or 12) + 3)
     end
     for i = #lines + 1, #f.left do f.left[i]:Hide(); f.right[i]:Hide() end
+end
+
+local function bestOf(rows)
+    local best
+    for _, r in ipairs(rows) do if r.net and (not best or r.net > best.net) then best = r end end
+    return best
 end
 
 local function summary(rows)
@@ -546,7 +566,7 @@ layout = function()
     local child = v.child
     local y = 0
     local nHead, nCol, nRow, nMsg = 0, 0, 0, 0
-    local selRow, firstRow
+    local selRow, firstRow, jumpY
     for _, sec in ipairs(SECTIONS) do
         local rows = v.data[sec.key]
         nHead = nHead + 1
@@ -603,6 +623,7 @@ layout = function()
                 for idx, d in ipairs(rows) do
                     firstRow = firstRow or d
                     if state.sel == d.id then selRow = d end
+                    if state.jump == d.id then jumpY = y end
                     nRow = nRow + 1
                     local r = pool(v.rows, nRow, function() return makeRow(child) end)
                     r.data = d
@@ -639,6 +660,11 @@ layout = function()
     for i = nRow + 1, #v.rows do v.rows[i]:Hide(); v.rows[i].data = nil end
     for i = nMsg + 1, #v.msgs do v.msgs[i]:Hide() end
     child:SetHeight(math.max(10, -y))
+    if jumpY then
+        state.jump = nil
+        local max = math.max(0, -y - (v.scroll:GetHeight() or 0))
+        v.scroll:SetVerticalScroll(math.min(max, math.max(0, -jumpY - 2 * ROW)))
+    end
     -- The pane shows the clicked row, or the first row on show until one is clicked.
     if not selRow and firstRow then
         state.sel = firstRow.id
@@ -658,8 +684,52 @@ function P.BuildSellingView(parent, inner, pad, right)
     P.sellingView = v
     local listW = inner - right - 8
     v.width = listW - BAR
+    -- The row of totals: the best of each section
+    v.tiles = {}
+    local tileW = (inner - 3 * 4) / 4
+    for i, sec in ipairs(SECTIONS) do
+        local t = CreateFrame("Button", nil, v)
+        t:SetSize(tileW, TILES - 4)
+        t:SetPoint("TOPLEFT", (i - 1) * (tileW + 4), 0)
+        t.well = UI().Well(t)
+        t.well:SetAllPoints()
+        t.key = sec.key
+        t.label = UI().Text(t, "GameFontHighlightSmall", sec.key == "ah" and "Best at the auction house"
+            or sec.key == "ven" and "Best at a vendor" or "Best for " .. sec.title, UI().DIM)
+        t.label:SetPoint("TOPLEFT", 6, -4)
+        t.label:SetWidth(tileW - 12)
+        t.label:SetWordWrap(false)
+        t.icon = t:CreateTexture(nil, "ARTWORK")
+        t.icon:SetSize(14, 14)
+        t.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+        t.value = UI().Text(t, "GameFontNormalSmall", "")
+        t.value:SetPoint("BOTTOMLEFT", 6, 5)
+        t.value:SetWordWrap(false)
+        t.name = UI().Text(t, "GameFontNormalSmall", "", UI().INK)
+        t.icon:SetPoint("LEFT", t.value, "RIGHT", 4, 0)
+        t.name:SetPoint("LEFT", t.icon, "RIGHT", 3, 0)
+        t.name:SetPoint("RIGHT", -6, 0)
+        t.name:SetWordWrap(false)
+        t:SetScript("OnClick", function(self)
+            if not self.row then return end
+            sdb().open[self.key] = true
+            state.sel, state.jump = self.row.id, self.row.id
+            layout()
+        end)
+        tip(t, function(self, tt)
+            tt:SetText(self.label:GetText(), 1, 0.82, 0)
+            if self.row then
+                tt:AddDoubleLine(cellText(self.row, "name"), signed(self.row.net), 1, 1, 1, unpack(netColour(self.row.net)))
+                tt:AddLine("Click to open the section on this row.", 0.64, 0.57, 0.47, true)
+            else
+                tt:AddLine("Nothing in this section yet.", 1, 1, 1, true)
+            end
+        end)
+        v.tiles[i] = t
+    end
+
     v.sub = UI().Text(v, "GameFontHighlightSmall", "Recipes you know, with materials bought", UI().DIM)
-    v.sub:SetPoint("TOPLEFT", 0, 0)
+    v.sub:SetPoint("TOPLEFT", 0, -TILES)
     v.sub:SetWidth(listW)
     v.subHit = CreateFrame("Frame", nil, v)
     v.subHit:SetPoint("TOPLEFT", v.sub)
@@ -670,10 +740,10 @@ function P.BuildSellingView(parent, inner, pad, right)
         tt:AddLine("Auction house and Vendor show only what makes a profit. Waylaid Crates and Craftsman's Writs show every item you can make that other players buy for their crates and writs, profit or loss, priced as an auction house sale.", 1, 1, 1, true)
     end)
     v.none = UI().Text(v, "GameFontHighlightSmall", "", UI().DIM)
-    v.none:SetPoint("TOPLEFT", 0, -22)
+    v.none:SetPoint("TOPLEFT", 0, -TILES - 22)
     v.none:SetWidth(listW)
     v.scroll = CreateFrame("ScrollFrame", nil, v, "UIPanelScrollFrameTemplate")
-    v.scroll:SetPoint("TOPLEFT", 0, -18)
+    v.scroll:SetPoint("TOPLEFT", 0, -TILES - 18)
     v.scroll:SetPoint("BOTTOMRIGHT", v, "BOTTOMLEFT", listW - BAR, 18)
     v.child = CreateFrame("Frame", nil, v.scroll)
     v.child:SetSize(v.width, 10)
@@ -688,7 +758,7 @@ function P.BuildSellingView(parent, inner, pad, right)
     -- The breakdown pane
     local pane = UI().Well(v)
     v.pane = pane
-    pane:SetPoint("TOPLEFT", listW + 8, 0)
+    pane:SetPoint("TOPLEFT", listW + 8, -TILES)
     pane:SetPoint("BOTTOMRIGHT", 0, 0)
     pane.width = right - 16
     pane.icon = pane:CreateTexture(nil, "ARTWORK")
@@ -750,6 +820,22 @@ function P.ShowSelling(o)
         v.none:SetText(("%s has no recipes you know that make an item."):format(o.shown or o.name))
     end
     v.sub:SetText(("%s recipes you know, with materials bought"):format(o.shown or o.name))
+    for _, t in ipairs(v.tiles) do
+        local row = any and bestOf(v.data[t.key]) or nil
+        t.row = row
+        if row then
+            t.value:SetText(signed(row.net))
+            UI().Color(t.value, netColour(row.net))
+            t.icon:SetTexture(itemIcon(row.item))
+            t.icon:Show()
+            t.name:SetText(cellText(row, "name"))
+        else
+            t.value:SetText("none")
+            UI().Color(t.value, UI().DIM)
+            t.icon:Hide()
+            t.name:SetText("")
+        end
+    end
     if P.HasAuctionator() then
         v.foot:SetText(s.basis == "avg" and "Prices: Encore-Stonks 7-day average" or "Prices: last Auctionator scan")
     else

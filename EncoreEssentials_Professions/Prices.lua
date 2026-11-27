@@ -82,6 +82,48 @@ function P.ScanAge(item)
     return age
 end
 
+-- Whether an item sells steadily on the auction house: Encore-Stonks has seen it on at least STEADY_DAYS days,
+-- and the newest Auctionator scan that listed it is at most 3 days old. Without Stonks, the scan age alone.
+local STEADY_DAYS = 4
+function P.Steady(item)
+    local _, age = auctionator(item)
+    if age and age > 3 then return false end
+    local s = Encore and Encore.modules and Encore.modules.Stonks
+    if s and s.ItemStats then
+        local ok, st = pcall(s.ItemStats, s, tostring(item))
+        if ok and type(st) == "table" and (st.days or 0) >= STEADY_DAYS then return true end
+        if ok then return false end
+    end
+    return age ~= nil
+end
+
+-- Items other players buy to fill Waylaid Crates (any bundle of any crate).
+local crateItems
+function P.CrateItem(item)
+    if not crateItems then
+        crateItems = {}
+        for _, c in ipairs(ns.Crates or {}) do
+            for i = 1, #c[4], 2 do crateItems[c[4][i]] = true end
+        end
+    end
+    return crateItems[item] == true
+end
+
+-- What you get back for one crafted item on a levelling route: what a vendor pays, or the auction price after
+-- the 5% cut when players buy it for Waylaid Crates and it sells steadily, whichever is more. Other auction
+-- prices are not counted, because those items might not sell. copper, "vendor" or "ah"; nil when neither.
+function P.SellBack(item)
+    local ven = P.SellPrice(item)
+    ven = ven and ven > 0 and ven or nil
+    local ah
+    if P.CrateItem(item) and P.Steady(item) then
+        local p = P.MarketPrice(item, "last")
+        ah = p and math.floor(p * 0.95)
+    end
+    if ah and ah > (ven or 0) then return ah, "ah" end
+    if ven then return ven, "vendor" end
+end
+
 -- What a vendor pays for one of the item (the client's sell price), or nil while the item isn't loaded.
 function P.SellPrice(item)
     local sell = GetItemInfo and select(11, GetItemInfo(item))

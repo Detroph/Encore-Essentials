@@ -172,7 +172,7 @@ local function buildCraft(p)
     -- The step to do now
     local now = card(v)
     now:SetPoint("TOPLEFT", x0, -76)
-    now:SetSize(RIGHT, 140)
+    now:SetSize(RIGHT, 156)
     v.now = now
     now.head = UI().Text(now, "GameFontNormalSmall", "", UI().DIM)
     now.head:SetPoint("TOPLEFT", 8, -6)
@@ -209,6 +209,14 @@ local function buildCraft(p)
         tip(r, function(self, tt) return self.item and P.ReagentTooltip(tt, self.item) end)
         now.reag[i] = r
     end
+    -- What to do with the crafted items: vendor them, or sell them on the auction house
+    now.back = UI().Text(now, "GameFontHighlightSmall", "")
+    now.back:SetWidth(RIGHT - 16)
+    now.back:SetWordWrap(false)
+    now.backHit = CreateFrame("Frame", nil, now)
+    now.backHit:SetPoint("TOPLEFT", now.back)
+    now.backHit:SetPoint("BOTTOMRIGHT", now.back)
+    tip(now.backHit, function(_, tt) return v.nowStep and P.ThenTooltip(tt, v.nowStep) end)
     now.select = smallButton(now, "Select recipe", 110, function()
         local st = v.nowStep
         local box = ProfessionsFrame and ProfessionsFrame.CraftingPage and ProfessionsFrame.CraftingPage.RecipeList
@@ -240,11 +248,13 @@ local function buildCraft(p)
 
     -- Every step, sortable
     v.table = UI().Table(v, {
-        { key = "skill", head = "Skill", w = 50 },
-        { key = "name", head = "Recipe", w = LEFTW - 24 - 50 - 38 - 112 - 70 - 4 * 6, icon = true },
-        { key = "crafts", head = "Crafts", w = 38, right = true },
-        { key = "reag", head = "Reagents each", w = 112 },
-        { key = "cost", head = "Cost", w = 70, right = true },
+        { key = "skill", head = "Skill", w = 46 },
+        { key = "name", head = "Recipe", w = LEFTW - 24 - 46 - 34 - 80 - 56 - 40 - 56 - 6 * 6, icon = true },
+        { key = "crafts", head = "Crafts", w = 34, right = true },
+        { key = "reag", head = "Reagents each", w = 80 },
+        { key = "cost", head = "Cost", w = 56, right = true },
+        { key = "then", head = "Then", w = 40 },
+        { key = "net", head = "Net", w = 56, right = true },
     }, {
         sort = { key = "skill", desc = false },
         tooltip = function(st, tt) return P.StepTooltip(tt, st) end,
@@ -449,6 +459,30 @@ function P.LearnedWhere(st)
     return "Any " .. (o and o.name or "") .. " trainer"
 end
 
+-- What to do with a step's crafted items, for the Then column and the Now card.
+local THEN = { vendor = "Vendor", ah = "AH" }
+function P.ThenTooltip(tt, st)
+    if not st.sellTo then
+        tt:SetText("Nothing to sell back", 1, 0.82, 0)
+        tt:AddLine("No vendor price is known for this item, and players don't buy it for Waylaid Crates. Reagents only.", 1, 1, 1, true)
+        return
+    end
+    if st.sellTo == "ah" then
+        tt:SetText("Sell on the auction house", 1, 0.82, 0)
+        tt:AddLine("Players buy this to fill Waylaid Crates and it shows up in your recent scans, so it should sell. Counted at its auction price after the 5% cut, which beats a vendor.", 1, 1, 1, true)
+    else
+        tt:SetText("Vendor it", 1, 0.82, 0)
+        tt:AddLine("A vendor pays the most you can count on. Auction prices of items nobody needs for Waylaid Crates are not counted, because they might not sell.", 1, 1, 1, true)
+    end
+    tt:AddDoubleLine("Back for each craft", P.Coins(st.back or 0), 0.64, 0.57, 0.47, 1, 1, 1)
+    tt:AddDoubleLine("Back for the step", P.Coins(st.backTotal or 0), 0.64, 0.57, 0.47, 1, 1, 1)
+    tt:AddLine("The route picks recipes on what they cost after this comes back.", 0.64, 0.57, 0.47, true)
+end
+
+local function stepNet(st)
+    return (st.total or 0) + (st.learn or 0) - (st.backTotal or 0)
+end
+
 function P.StepTooltip(tt, st)
     if st.kind == "craft" then
         if tt.SetSpellByID then tt:SetSpellByID(st.spell) else tt:SetText(st.name) end
@@ -457,6 +491,9 @@ function P.StepTooltip(tt, st)
         tt:AddDoubleLine("Colour at the start", COLOUR_NAME[st.colour] or "?", 0.64, 0.57, 0.47, unpack(COLOUR[st.colour] or COLOUR.x))
         tt:AddDoubleLine("About", st.crafts .. " crafts", 0.64, 0.57, 0.47, 1, 1, 1)
         tt:AddDoubleLine("Reagents", P.Coins(st.total), 0.64, 0.57, 0.47, 1, 1, 1)
+        if st.backTotal then
+            tt:AddDoubleLine(st.sellTo == "ah" and "Sell on the auction house" or "Vendor the items", "+" .. P.Coins(st.backTotal), 0.64, 0.57, 0.47, 0.5, 0.88, 0.42)
+        end
         if (st.learn or 0) > 0 then
             tt:AddDoubleLine(type(st.how) == "number" and "Recipe from a vendor" or "Learn at a trainer", P.Coins(st.learn), 0.64, 0.57, 0.47, 1, 1, 1)
         end
@@ -500,6 +537,15 @@ local function stepText(st, key)
         if st.kind == "gap" then return "" end
         if st.kind == "rank" then return P.Coins(st.cost or 0) end
         return P.Coins(st.total + (st.learn or 0)), st.unknown and { 1, 0.5, 0.25 } or nil
+    elseif key == "then" then
+        if st.kind ~= "craft" or not st.sellTo then return "" end
+        return THEN[st.sellTo], st.sellTo == "ah" and { 1, 0.82, 0 } or { 0.07, 0.78, 0.78 }
+    elseif key == "net" then
+        if st.kind == "gap" then return "" end
+        if st.kind == "rank" then return P.Coins(st.cost or 0) end
+        local n = stepNet(st)
+        if n < 0 then return "+" .. P.Coins(-n), { 0.5, 0.88, 0.42 } end
+        return P.Coins(n), st.unknown and { 1, 0.5, 0.25 } or nil
     end
 end
 
@@ -509,6 +555,8 @@ local function stepValue(st, key)
     if key == "crafts" then return st.crafts or 0 end
     if key == "reag" then return st.reag and st.reag[1] and itemName(st.reag[1]) or "" end
     if key == "cost" then return st.kind == "rank" and (st.cost or 0) or ((st.total or 0) + (st.learn or 0)) end
+    if key == "then" then return st.sellTo or "" end
+    if key == "net" then return st.kind == "rank" and (st.cost or 0) or stepNet(st) end
 end
 
 local function showCraft(o)
@@ -533,7 +581,7 @@ local function showCraft(o)
 
     -- Now
     local now, st = v.now, route.steps[idx]
-    local y = -76 - 140 - 6
+    local y = -76 - 156 - 6
     if st and st.kind == "craft" then
         v.nowStep = st
         now:Show()
@@ -558,6 +606,17 @@ local function showCraft(o)
             r:Show()
         end
         for k = n + 1, #now.reag do now.reag[k]:Hide(); now.reag[k].item = nil end
+        now.back:ClearAllPoints()
+        now.back:SetPoint("TOPLEFT", 8, -60 - n * 14)
+        if st.sellTo and st.back then
+            local back = st.back * left
+            local cost = st.mat * left
+            now.back:SetText(("Then %s the %d: +%s back, so %s"):format(st.sellTo == "ah" and "sell on the AH" or "vendor",
+                left * math.max(1, st.count or 1), P.Coins(back),
+                back >= cost and ("a profit of " .. P.Coins(back - cost)) or ("it costs " .. P.Coins(cost - back))))
+        else
+            now.back:SetText("|cffa39178Nothing to sell back from this step.|r")
+        end
     else
         v.nowStep = nil
         now:Hide()
@@ -603,12 +662,13 @@ local function showCraft(o)
         v.shopText:SetText("Auctionator shopping list")
     end
 
-    local cost, crafts = 0, 0
+    local cost, crafts, back = 0, 0, 0
     for i = idx, #route.steps do
         local s = route.steps[i]
         if s.kind == "craft" then
             local left = P.CraftsLeft(s, o.base)
             crafts = crafts + left
+            back = back + (s.back or 0) * left
             cost = cost + s.mat * left + ((s.learn or 0) > 0 and not P.Knows(s.spell) and s.learn or 0)
         elseif s.kind == "rank" then
             cost = cost + (s.cost or 0)
@@ -616,8 +676,8 @@ local function showCraft(o)
     end
     local last = route.steps[#route.steps]
     local goal = last and (last.kind == "gap" and last.from or last.to or last.at) or route.top
-    v.foot:SetText(("To %d: %d crafts"):format(goal, crafts))
-    v.footRight:SetText(P.Coins(cost))
+    v.foot:SetText(("To %d: %d crafts · %s, %s back"):format(goal, crafts, P.Coins(cost), P.Coins(back)))
+    v.footRight:SetText("Net " .. P.Coins(cost - back))
 end
 
 ---------------------------------------------------------------------------
@@ -731,18 +791,28 @@ end
 ---------------------------------------------------------------------------
 -- Route storage
 ---------------------------------------------------------------------------
+local replanned = {}
 function P:Route(o)
     local routes = self:Char().routes
     local r = routes[o.name]
-    if not r or r.version ~= 1 then
+    if not r or r.version ~= 2 then
         r = self:MakeRoute(o)
+    end
+    -- Vendor prices of items the client hasn't loaded yet are missing from a fresh route: the client loads them
+    -- on request, so plan once more a moment later (once a session for each profession).
+    if (r.sellMissing or 0) > 0 and not replanned[o.name] and C_Timer and time() - (r.made or 0) < 60 then
+        replanned[o.name] = true
+        C_Timer.After(3, function()
+            local cur = P:Open()
+            if cur and cur.name == o.name then P:MakeRoute(cur); P:Refresh() end
+        end)
     end
     return r
 end
 
 function P:MakeRoute(o)
     local r = P.Plan(o.name, o.base, { mode = self:DB().mode, bonus = self:Bonus(), cap = o.max })
-    r.version = 1
+    r.version = 2 -- 2: steps carry what their items sell back for
     self:Char().routes[o.name] = r
     return r
 end

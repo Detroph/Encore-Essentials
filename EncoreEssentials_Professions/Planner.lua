@@ -1,7 +1,9 @@
 -- Encore-Professions: the levelling route of a crafting profession. Recipes come only from trainers and from
 -- vendors that sell them for gold (no drops, quests, reputation or Merchant's Favor), as What's Training? lists
--- them. For every skill point the planner takes the recipe with the lowest expected cost: reagents divided by the
--- skill-up chance, plus a third of the price of learning it. Fewest crafts takes the highest chance first.
+-- them. For every skill point the planner takes the recipe with the lowest expected cost: reagents less what the
+-- crafted items sell back for (P.SellBack: vendor, or the auction house for Waylaid Crate items that sell steadily),
+-- divided by the skill-up chance, plus a third of the price of learning it. Fewest crafts takes the highest chance
+-- first.
 -- Skill-up chance: orange 100%; yellow and green (grey - skill) / (grey - yellow), plus Working Overtime.
 local _, ns = ...
 local P = ns.P
@@ -77,11 +79,18 @@ function P.Plan(prof, start, o)
     local top = 75
     for _, r in ipairs(ranks) do top = math.max(top, r.cap) end
 
-    local madeBy, cache = {}, {}
+    local madeBy, cache, sellMissing = {}, {}, 0
     for _, r in ipairs(recipes) do if r[7] and not madeBy[r[7]] then madeBy[r[7]] = r end end
-    local cost, unknown, learnCost, isKnown = {}, {}, {}, {}
+    local cost, unknown, learnCost, isKnown, back, backHow = {}, {}, {}, {}, {}, {}
     for _, r in ipairs(recipes) do
         cost[r], unknown[r] = reagentCost(r, madeBy, cache)
+        local b, how
+        if r[7] and P.SellBack then
+            b, how = P.SellBack(r[7])
+            if not b and not P.SellPrice(r[7]) then sellMissing = sellMissing + 1 end
+        end
+        back[r] = b and b * math.max(1, r[8] or 1) or 0
+        backHow[r] = b and how or nil
         isKnown[r] = r[10] == "a" or known(r[1])
         learnCost[r] = isKnown[r] and 0 or (r[11] or 0)
     end
@@ -104,7 +113,7 @@ function P.Plan(prof, start, o)
                 local c = chance(r, s, bonus)
                 if c > 0 then
                     local learn = (isKnown[r] or planned[r]) and 0 or learnCost[r] / 3
-                    local exp = cost[r] / c + learn
+                    local exp = (cost[r] - back[r]) / c + learn
                     local key, key2 = exp, 0
                     if mode == "fast" then key, key2 = 1 / c, exp end
                     if not best or key < bestKey or (key == bestKey and key2 < bestKey2) then
@@ -121,6 +130,7 @@ function P.Plan(prof, start, o)
         if not (last and last.kind == "craft" and last.spell == best[1]) then
             last = { kind = "craft", spell = best[1], name = best[2], from = s, to = s, expect = 0, mat = cost[best],
                 unknown = unknown[best] or nil, reag = best[9], makes = best[7], how = best[10],
+                back = back[best] > 0 and back[best] or nil, sellTo = backHow[best], count = best[8],
                 learn = planned[best] and 0 or learnCost[best], learnAt = s, colours = {} }
             steps[#steps + 1] = last
             planned[best] = true
@@ -132,11 +142,13 @@ function P.Plan(prof, start, o)
         s = s + 1
     end
 
-    local total, crafts, prices = 0, 0, {}
+    local total, crafts, prices, returned = 0, 0, {}, 0
     for _, st in ipairs(steps) do
         if st.kind == "craft" then
             st.crafts = math.max(1, math.ceil(st.expect - 0.05))
             st.total = st.crafts * st.mat
+            st.backTotal = st.back and st.crafts * st.back or nil
+            returned = returned + (st.backTotal or 0)
             local most, n = "o", -1
             for c, k in pairs(st.colours) do if k > n then most, n = c, k end end
             st.colour, st.colours, st.expect = most, nil, nil
@@ -151,7 +163,7 @@ function P.Plan(prof, start, o)
         end
     end
     return { made = time(), prof = prof, mode = mode, bonus = bonus, start = start, top = top, steps = steps,
-        total = total, crafts = crafts, prices = prices }
+        total = total, crafts = crafts, prices = prices, back = returned, sellMissing = sellMissing }
 end
 
 -- Where the player is on a route: the index of the first step not done yet.
