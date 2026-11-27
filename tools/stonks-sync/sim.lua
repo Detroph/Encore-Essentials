@@ -473,6 +473,23 @@ do
     good.online, newbie.online = false, false
 end
 
+print("== A whisper partner who logged off")
+do
+    local c = clients[41] or clients[40]
+    local C = c.Stonks.SyncComm
+    for i = 1, 30 do C.Send("1Y" .. i, "WHISPER", "Berya Ebonlocke") end
+    C.Send("1Y" .. "other", "WHISPER", "Someone Else")
+    local line = "No player named 'Berya Ebonlocke' is currently playing."
+    C.PlayerNotFound(line); C.PlayerNotFound(line)
+    check(C.QueueLength() >= 31 - 2 and not C.IsGone("Berya Ebonlocke"), "two \"No player named\" lines don't stop sending yet")
+    C.PlayerNotFound(line)
+    check(C.IsGone("Berya Ebonlocke-PvP"), "the third line stops sending to that player (with or without a realm)")
+    check(C.QueueLength() == 1, "everything still queued for them is dropped, other whispers stay (" .. C.QueueLength() .. " left)")
+    C.Send("1Ynew", "WHISPER", "Berya Ebonlocke")
+    check(C.QueueLength() == 1, "nothing new is queued for them")
+    C.Cancel(function() return true end)
+end
+
 table.sort(frameSamples)
 local p99 = frameSamples[math.max(1, math.floor(#frameSamples * 0.99))] or 0
 local p999 = frameSamples[math.max(1, math.floor(#frameSamples * 0.999))] or 0

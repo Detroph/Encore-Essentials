@@ -627,6 +627,11 @@ local function serve(asker, since, resume)
     end, "serve")
 end
 
+-- The asker went offline (three "No player named ..." lines): stop serving them.
+Comm.OnGone(function(name)
+    if serving and Comm.IsGone(serving.asker) then serving = nil end
+end)
+
 Comm.On("A", function(body, sender, channel)
     if channel ~= "GUILD" then return end
     acceptAt = Comm.now()
