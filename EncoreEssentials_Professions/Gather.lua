@@ -1,6 +1,6 @@
 -- Encore-Professions: where to farm. Mining and Herbalism rank zones by their nodes that still give skill-ups
 -- (node places and skill levels from GatherLite by Wuild, MIT), Skinning by the beasts you can skin there and
--- their levels (QuestieDB), Fishing by the zone's level and what is caught there (GatherLite's catch reports).
+-- their levels (read from the QuestieDB addon), Fishing by the zone's level and what is caught there (GatherLite's catch reports).
 -- Show nodes turns on GatherLite's minimap and world map markers for that kind of node.
 local _, ns = ...
 local P = ns.P

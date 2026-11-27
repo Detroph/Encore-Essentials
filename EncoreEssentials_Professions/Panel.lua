@@ -71,7 +71,9 @@ local function trip(prof, st)
                 place = t,
             }
         elseif r.how == "book" then
+            -- Vendor names and places come from the QuestieDB addon (QuestieLive.lua); without it, only the item.
             local v = P.Nearest(r.vendors)
+            if v and not (v.name and v.map) then v = nil end
             return {
                 text = ("At |cffffffff%d|r: buy and read |cffffffff%s|r"):format(st.at, itemName(r.item)),
                 sub = v and (v.name .. ", " .. P.PlaceText(v)) or "From a vendor",
@@ -82,7 +84,7 @@ local function trip(prof, st)
             return {
                 text = ("At |cffffffff%d|r: quest |cffffffff%s|r (level %d) for %s"):format(st.at, q and q.name or "?", q and q.level or r.level, r.name),
                 sub = q and q.by and (q.by .. ", " .. P.PlaceText(q)) or "",
-                place = q,
+                place = q and q.map and q or nil,
             }
         end
     elseif st.kind == "craft" and (st.learn or 0) > 0 and not P.Knows(st.spell) then
@@ -675,7 +677,7 @@ local function showGather(o)
                 end
             else
                 c.sub:SetText(("About %d nodes · %s%s"):format(info.nodes, table.concat(info.names, ", "),
-                    z and (" · level " .. z.lo .. "-" .. z.hi) or ""))
+                    z and z.lo and z.hi and (" · level " .. z.lo .. "-" .. z.hi) or ""))
             end
             c.kind = showNodes and kind or nil
             c.nodes:SetShown(showNodes)
