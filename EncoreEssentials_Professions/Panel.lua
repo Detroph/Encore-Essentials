@@ -874,7 +874,7 @@ end
 
 P.Attach = attach
 
-local bagsPending
+local bagsPending, rowsPending
 local events = CreateFrame("Frame")
 events:RegisterEvent("ADDON_LOADED")
 events:RegisterEvent("PLAYER_LOGIN")
@@ -887,12 +887,14 @@ events:SetScript("OnEvent", function(_, event, name)
         P:DB()
         attach()
     elseif event == "BAG_UPDATE_DELAYED" or event == "TRADE_SKILL_LIST_UPDATE" then
+        -- A recipe list update that arrives while a bag update is waiting still redraws the recipe rows.
+        if event == "TRADE_SKILL_LIST_UPDATE" then rowsPending = true end
         if panel and ProfessionsFrame:IsShown() and not bagsPending then
             bagsPending = true
             C_Timer.After(1, function()
                 bagsPending = false
                 if panel:IsShown() then protectedRefresh() end
-                if event == "TRADE_SKILL_LIST_UPDATE" then P.RefreshRecipeRows() end
+                if rowsPending then rowsPending = false; P.RefreshRecipeRows() end
             end)
         end
     end

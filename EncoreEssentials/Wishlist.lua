@@ -23,7 +23,8 @@ function Encore:Wishlist() return list() end
 
 local function itemName(id)
     local get = (C_Item and C_Item.GetItemInfo) or _G.GetItemInfo
-    local name, link = get and get(id)
+    local name, link
+    if get then name, link = get(id) end -- not `get and get(id)`: that keeps only the first value
     return link or name or ("item " .. id)
 end
 

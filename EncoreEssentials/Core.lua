@@ -97,6 +97,18 @@ function Encore:ForgetQuestRewards()
     if self.QuestRewards then self.QuestRewards.version = self.QuestRewards.version + 1 end
 end
 
+-- A unit's whole name. On WoW Forever UnitName gives the first name and the surname apart, while chat and addon
+-- messages carry them joined ("Berya Ebonlocke"); elsewhere the second value is the realm and is left off.
+function Encore.FullName(unit)
+    local name, second = UnitName(unit or "player")
+    if not name then return nil end
+    if second and second ~= "" and RegionalUniqueNamesEnabled and RegionalUniqueNamesEnabled() then
+        local consts = Constants and Constants.CharacterNameSeparatorConsts
+        return name .. (consts and consts.CHARACTERNAME_SURNAME_SEPARATOR or " ") .. second
+    end
+    return name
+end
+
 ---------------------------------------------------------------------------
 -- Modules
 ---------------------------------------------------------------------------
