@@ -45,11 +45,15 @@ local state = { selected = nil, notes = nil, showNotes = false, localOnly = fals
 
 local function playerName() return (UnitName("player")) end
 
--- Enabled for this character, either just for it or for all characters.
+-- Enabled for this character, either just for it or for all characters. A module that is loaded right now is on.
+-- WoW Forever names have a surname: the game may know the character by the whole name, so both are asked.
 local function isEnabled(folder)
-    local ok, s = pcall(C_AddOns.GetAddOnEnableState, folder, playerName())
-    if ok and type(s) == "number" then return s > 0 end
-    return C_AddOns.IsAddOnLoaded(folder) and true or false
+    if C_AddOns.IsAddOnLoaded(folder) then return true end
+    for _, who in ipairs({ Encore.FullName and Encore.FullName("player") or playerName(), playerName() }) do
+        local ok, s = pcall(C_AddOns.GetAddOnEnableState, folder, who)
+        if ok and type(s) == "number" and s > 0 then return true end
+    end
+    return false
 end
 
 -- What the player has picked, after dependencies: a module whose required module is off is off too.
