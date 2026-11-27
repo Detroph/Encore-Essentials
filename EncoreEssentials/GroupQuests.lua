@@ -63,7 +63,8 @@ local function short(name) return Ambiguate and Ambiguate(name or "", "short") o
 local function onMessage(prefix, msg, _, sender)
     if prefix ~= PREFIX or type(msg) ~= "string" then return end
     local who = short(sender)
-    if who == short(UnitName("player")) then return end
+    -- Our own messages come back with the whole name on WoW Forever ("Berya Ebonlocke"), not UnitName's first name.
+    if who == short(Encore.FullName("player")) or who == short(UnitName("player")) then return end
     if msg == "?" then sendSoon(1 + math.random() * 2) return end
     local kind, last, body = msg:match("^([L%+])(%.?)(.*)$")
     if not kind then return end

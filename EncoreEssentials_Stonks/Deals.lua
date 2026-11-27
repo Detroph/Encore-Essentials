@@ -267,9 +267,15 @@ end
 -- The full scan's listings, read straight from the game when the auction house sends them (the same list
 -- Auctionator reads), so Deals fills even if Auctionator's own events don't reach Stonks.
 ---------------------------------------------------------------------------
+-- One table reused for every listing: addListing copies what it keeps, so a scan of 100,000 listings no longer
+-- leaves 200,000 throwaway tables for the garbage collector.
+local entry = { replicateInfo = {}, index = 0 }
 local function replicateEntry(i)
-    local info = { C_AuctionHouse.GetReplicateItemInfo(i - 1) }
-    return { replicateInfo = info, index = i - 1 }
+    local t = entry.replicateInfo
+    t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10], t[11], t[12], t[13], t[14], t[15], t[16], t[17], t[18] =
+        C_AuctionHouse.GetReplicateItemInfo(i - 1)
+    entry.index = i - 1
+    return entry
 end
 
 local function readReplicate()
@@ -1033,8 +1039,18 @@ function Deals.SetEnabled(on)
     end
 end
 
+-- The deals kept for a /reload are only good for 15 minutes; drop older ones so they aren't loaded at every login
+-- (before, they stayed in the saved data until the Deals tab was opened again).
+local function dropStaleLast()
+    local s = Stonks:Settings()
+    local last = type(s.deals) == "table" and s.deals.last
+    if last ~= nil and not (type(last) == "table" and type(last.at) == "number" and time() - last.at < FRESH_SECONDS) then
+        s.deals.last = nil
+    end
+end
+
 local events = CreateFrame("Frame")
-for _, e in ipairs({ "AUCTION_HOUSE_SHOW", "AUCTION_HOUSE_CLOSED", "ADDON_LOADED", "PLAYER_LOGIN" }) do
+for _, e in ipairs({ "AUCTION_HOUSE_SHOW", "AUCTION_HOUSE_CLOSED", "ADDON_LOADED", "PLAYER_LOGIN", "PLAYER_LOGOUT" }) do
     pcall(events.RegisterEvent, events, e)
 end
 events:SetScript("OnEvent", safe(function(_, event, arg1)
@@ -1044,7 +1060,10 @@ events:SetScript("OnEvent", safe(function(_, event, arg1)
         C_Timer.After(0.2, safe(addTab))
     elseif event == "AUCTION_HOUSE_CLOSED" then
         if Deals.CloseBuy then Deals.CloseBuy() end
+    elseif event == "PLAYER_LOGOUT" then
+        dropStaleLast()
     elseif (event == "ADDON_LOADED" and arg1 == "Auctionator") or event == "PLAYER_LOGIN" then
+        if event == "PLAYER_LOGIN" then dropStaleLast() end
         listen()
     end
 end))

@@ -2067,13 +2067,6 @@ local ROW_KINDS = {
 ---------------------------------------------------------------------------
 -- Recipe popup: opens beside a clicked recipe instead of a separate page
 ---------------------------------------------------------------------------
-local POPUP_BACKDROP = {
-    bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-    tile = true, tileSize = 16, edgeSize = 16,
-    insets = { left = 4, right = 4, top = 4, bottom = 4 },
-}
-
 local function popupLine(i)
     local l = popup.lines[i]
     if l then return l end
@@ -2150,14 +2143,12 @@ local function layoutPopup(entries)
 end
 
 local function createPopup()
-    popup = CreateFrame("Frame", "EncoreDBRecipePopup", frame, "BackdropTemplate")
+    popup = CreateFrame("Frame", "EncoreDBRecipePopup", frame)
     popup:SetWidth(POPUP_W)
     popup:SetFrameStrata("DIALOG")
     popup:SetClampedToScreen(true)
     popup:EnableMouse(true)
-    popup:SetBackdrop(POPUP_BACKDROP)
-    popup:SetBackdropColor(0.07, 0.05, 0.03, 0.97)
-    popup:SetBackdropBorderColor(COPPER[1], COPPER[2], COPPER[3], 1)
+    _G.EncoreEssentials.UI.Panel(popup, 0.97) -- the shared Encore dark pane with the copper edge
     popup.lines = {}
     popup:Hide()
     local close = CreateFrame("Button", nil, popup, "UIPanelCloseButtonNoScripts")
