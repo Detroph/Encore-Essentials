@@ -218,7 +218,7 @@ local function process(data, count, get)
                 end
             end
             if vendorDeal or marketDeal then
-                g.name = g.name or (U.itemName(g.key))
+                if not g.name or g.name == "" then g.name = nil end
                 rows[#rows + 1] = g
             end
         end
@@ -227,7 +227,7 @@ local function process(data, count, get)
         scan.scanTime = nil
         -- Kept in the saved settings so a /reload within the 15 minutes shows the same deals (only the deals,
         -- never the whole scan; cleared once they are too old).
-        S().last = { at = scan.at, listings = n, rows = rows }
+        S().last = { at = scan.at, listings = n, packed = Deals.Pack(rows) }
         scan.busy, scan.progress = false, 1
         if Deals.Refresh then Deals.Refresh() end
     end
@@ -288,14 +288,61 @@ local function readReplicate()
     return true
 end
 
+-- The deals kept for a /reload are saved as ONE string (a line per row, tab-separated fields). Saved as tables,
+-- 20,000 rows put half a million constants into the saved file and the game refused to load it ("constant table
+-- overflow"), which loses all of Stonks' saved data.
+local PACK_FIELDS = { "key", "itemID", "link", "name", "icon", "quality", "classID", "unit", "qty", "auctions", "vendor", "days" }
+local PACK_NUMBER = { itemID = true, icon = true, quality = true, classID = true, unit = true, qty = true, auctions = true, vendor = true, days = true }
+local AVG_DAYS = { 3, 7, 14 }
+
+function Deals.Pack(rows)
+    local out, parts = {}, {}
+    for r = 1, #rows do
+        local row = rows[r]
+        local n = 0
+        for _, f in ipairs(PACK_FIELDS) do
+            local v = row[f]
+            n = n + 1
+            parts[n] = v == nil and "" or (tostring(v):gsub("[\t\n]", " "))
+        end
+        for _, d in ipairs(AVG_DAYS) do
+            local a = type(row.avg) == "table" and row.avg[d]
+            n = n + 1
+            parts[n] = a and tostring(a) or ""
+        end
+        out[r] = table.concat(parts, "\t", 1, n)
+    end
+    return table.concat(out, "\n")
+end
+
+function Deals.Unpack(packed)
+    local rows = {}
+    for line in packed:gmatch("[^\n]+") do
+        local row, i, avg = {}, 0, nil
+        for v in (line .. "\t"):gmatch("([^\t]*)\t") do
+            i = i + 1
+            local f = PACK_FIELDS[i]
+            if f then
+                if v ~= "" then row[f] = PACK_NUMBER[f] and tonumber(v) or v end
+            else
+                local d = AVG_DAYS[i - #PACK_FIELDS]
+                if d and v ~= "" then avg = avg or {}; avg[d] = tonumber(v) end
+            end
+        end
+        row.avg = avg
+        if row.key and row.itemID then rows[#rows + 1] = row end
+    end
+    return rows
+end
+
 -- After a /reload (or reopening the auction house) the game still holds the last full scan's listings. If
 -- Auctionator's last full scan is under 15 minutes old, Deals uses it instead of asking for a new one.
 function Deals.Restore()
     if scan.at or scan.busy or scan.scanning then return end
     local saved = S().last
     if type(saved) == "table" then
-        if type(saved.at) == "number" and time() - saved.at < FRESH_SECONDS and type(saved.rows) == "table" then
-            scan.rows, scan.at, scan.listings = saved.rows, saved.at, saved.listings or 0
+        if type(saved.at) == "number" and time() - saved.at < FRESH_SECONDS and type(saved.packed) == "string" then
+            scan.rows, scan.at, scan.listings = Deals.Unpack(saved.packed), saved.at, saved.listings or 0
             return
         end
         S().last = nil
@@ -427,7 +474,7 @@ end
 
 local function value(row, id)
     local s = S()
-    if id == "name" then return row.name end
+    if id == "name" then return row.name or "" end
     if id == "qty" then return row.qty end
     if id == "unit" then return row.unit end
     if id == "vendor" then return row.vendor end
@@ -524,6 +571,38 @@ local function initRow(btn)
     U.tooltip(btn, rowTooltip)
 end
 
+-- The scan often names only the items the game already had loaded; the rest arrive empty. Their names are asked
+-- for here and the list redraws once (coalesced) when the game sends them.
+local nameWait = CreateFrame("Frame")
+local namePending
+nameWait:SetScript("OnEvent", function()
+    if namePending then return end
+    namePending = true
+    C_Timer.After(0.3, function()
+        namePending = false
+        if Deals.Refresh then Deals.Refresh() end
+    end)
+end)
+
+function Deals.RowName(row)
+    if row.name and row.name ~= "" then return row.name end
+    local name = row.itemID and GetItemInfo(row.itemID)
+    if name then
+        local suffix = tostring(row.key or ""):match("^gr:%d+:(.+)$")
+        row.name = suffix and (name .. " " .. suffix) or name
+        if row.quality == nil or row.quality < 0 then
+            row.quality = C_Item and C_Item.GetItemQualityByID and C_Item.GetItemQualityByID(row.itemID) or row.quality
+        end
+        if row.icon == nil and C_Item and C_Item.GetItemIconByID then row.icon = C_Item.GetItemIconByID(row.itemID) end
+        return row.name
+    end
+    if row.itemID then
+        if C_Item and C_Item.RequestLoadItemDataByID then pcall(C_Item.RequestLoadItemDataByID, row.itemID) end
+        nameWait:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+    end
+    return "|cff808080Loading...|r"
+end
+
 local function fillRow(btn, row)
     initRow(btn)
     btn.row = row
@@ -531,7 +610,7 @@ local function fillRow(btn, row)
     local cols = COLS[mode]
     btn.stripe:SetShown(row.index % 2 == 0)
     btn.icon:SetTexture(row.icon or U.itemIcon(row.key))
-    btn.name:SetText(row.name or "")
+    btn.name:SetText(Deals.RowName(row))
     local r, g, b = 1, 1, 1
     local q = row.quality
     if type(q) == "number" and q >= 0 and C_Item and C_Item.GetItemQualityColor then
@@ -1044,7 +1123,8 @@ end
 local function dropStaleLast()
     local s = Stonks:Settings()
     local last = type(s.deals) == "table" and s.deals.last
-    if last ~= nil and not (type(last) == "table" and type(last.at) == "number" and time() - last.at < FRESH_SECONDS) then
+    if last ~= nil and not (type(last) == "table" and type(last.packed) == "string" and type(last.at) == "number"
+        and time() - last.at < FRESH_SECONDS) then
         s.deals.last = nil
     end
 end
