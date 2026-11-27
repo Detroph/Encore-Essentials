@@ -1,7 +1,22 @@
 # Encore Essentials
 
-## Next (not released yet)
+## 0.2.6
 
+Full release of everything in the 0.2.6.1 beta and the changes since, listed below. In short:
+
+- New module Encore-Professions: a levelling guide (cheapest or fewest-crafts route from trainer and vendor recipes, money back for crafted items, trainers, farm zones) and a selling guide (auction house and vendor profits, items other players buy for Waylaid Crates and Craftsman's Writs) beside the profession window.
+- New module Encore-PvP: battleground timers, frames, enemy bars and the resurrection timer, plus battleground history.
+- Encore-DB reads quests and boss levels live from QuestieDB (a CurseForge required dependency). AH and Profit columns, optional drop-source tooltips, wishlist.
+- Encore-Stonks: Deals tab in the auction house.
+- Encore-QoL: errands (open all mail, restock, ready check buffs) and more UI scaling.
+- Setup window, What's new window, settings sharing, key bindings, one look for every window, coin icons for every price.
+
+### Since 0.2.6.1
+
+- Encore-Professions: the round Encore button sits in the profession window's title bar, beside the close button, above the window's own art, so it shows on every tab (the professions overview too). Before, the skill bar's art could cover it.
+- Encore-Professions: the levelling guide's Net column and footer show what a step leaves you with: minus (red) while it costs money, plus (green) when the sales pay it back and more. The Cost and Net columns are wider so amounts fit.
+- Encore-Stonks Deals: the deals kept for a /reload are saved as one packed line. Saved as a table per row, a large scan (20,000 deals) made the Encore-Stonks saved file too big for the game to load ("constant table overflow"), and all Stonks data failed to load.
+- Encore-Stonks Deals: items whose name the scan didn't carry show "Loading..." and fill in when the game sends the name, instead of a blank row.
 - Encore-DB reads its dungeon quests and boss levels from the QuestieDB addon instead of a copy bundled with Encore, as QuestieDB's authors ask. You get QuestieDB's updates (new Forever quests, fixed quest givers and reputation) without an Encore update, and quests now show their XP. QuestieDB is a required dependency on CurseForge, so the CurseForge app installs it. Without it, Encore-DB's loot, recipes and vendors still work and the Quests rows say to install QuestieDB.
 - Encore-Professions reads its trainers, the rank books' vendors and rank quests' givers, recipe vendors' places and each zone's mob and beast levels from the QuestieDB addon too (worked out once a few seconds after login, then kept until QuestieDB updates). Without QuestieDB the guide still plans routes but shows no trainer places and no skinning or fishing zones.
 - Prices show as gold, silver and copper with the game's coin icons everywhere: Encore-Professions, Encore-Alts, Encore-DB's AH and Profit columns and wishlist alerts showed raw copper ("4499700c") because WoW Forever has no GetCoinTextureString.

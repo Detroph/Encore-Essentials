@@ -7,10 +7,18 @@ local L = ns.L
 -- Newest first. A version here is the tag without the leading v ("0.2.6.1-beta" is written "0.2.6.1").
 -- A full release (three numbers) sums up its betas: players updating to it see only that entry.
 local NOTES = {
-    { version = "0.2.6.2", lines = {
-        "Encore-Professions: a Selling guide tab: what you can craft for a profit at the auction house or a vendor, and what you can craft that players buy for their Waylaid Crates and Craftsman's Writs.",
-        "Encore-Professions: the guide is wider, with item icons in its lists and a pane on the right for what to make now or a row's breakdown.",
-        "Encore-Professions: the levelling route counts what crafted items sell back for, and each step says whether to vendor them or sell them on the auction house.",
+    { version = "0.2.6", lines = {
+        "New module Encore-Professions: a levelling guide and a selling guide beside the profession window. The round Encore button in the window's title bar turns it on or off.",
+        "The levelling guide plans the cheapest route from trainer and vendor recipes, counts what you can sell the crafted items back for, and shows where to train and where to farm.",
+        "The selling guide shows what you can craft for a profit at the auction house or a vendor, and what other players buy for their Waylaid Crates and Craftsman's Writs.",
+        "New module Encore-PvP: battleground timers, frames and enemy bars move out of Encore-QoL, plus a battleground history (/epvp history).",
+        "Encore-DB reads quests and boss levels live from QuestieDB, which the CurseForge app installs with Encore. Quests now show their XP.",
+        "Encore-Stonks: a Stonks tab in the auction house lists items under vendor price or under the market average, with a buy prompt.",
+        "Wishlist: Alt-click an item in Encore-DB and Encore tells you when it drops, is rolled for or is at the auction house.",
+        "Encore-DB: AH price and crafting profit columns; tooltips can show where an item drops (option).",
+        "Encore-QoL: open all mail, restock at vendors, ready check buffs, and more UI scaling options.",
+        "Every Encore window shares one look, and every price shows gold, silver and copper coins.",
+        "Share your settings with /encore export and /encore import, and set key bindings for every window. /encore setup chooses which modules load.",
     } },
     { version = "0.2.6.1", lines = {
         "New module Encore-PvP: battleground timers and history.",
