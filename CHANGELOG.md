@@ -1,6 +1,6 @@
 # Encore Essentials
 
-## Next (not released yet)
+## 0.2.8
 
 - Encore-Professions' description in the setup window, the Encore window and the addon list says it shows levelling routes and your most profitable crafts.
 

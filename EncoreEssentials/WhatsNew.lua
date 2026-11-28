@@ -7,6 +7,9 @@ local L = ns.L
 -- Newest first. A version here is the tag without the leading v ("0.2.6.1-beta" is written "0.2.6.1").
 -- A full release (three numbers) sums up its betas: players updating to it see only that entry.
 local NOTES = {
+    { version = "0.2.8", lines = {
+        "Encore-Professions' description now says what it does: levelling routes and your most profitable crafts.",
+    } },
     { version = "0.2.7", lines = {
         "Fixed a Lua error from wishlist chat alerts (\"a secret string value\"): chat text the game hides from addons is now skipped.",
     } },
