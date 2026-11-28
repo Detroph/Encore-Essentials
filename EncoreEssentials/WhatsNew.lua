@@ -7,6 +7,9 @@ local L = ns.L
 -- Newest first. A version here is the tag without the leading v ("0.2.6.1-beta" is written "0.2.6.1").
 -- A full release (three numbers) sums up its betas: players updating to it see only that entry.
 local NOTES = {
+    { version = "0.2.7", lines = {
+        "Fixed a Lua error from wishlist chat alerts (\"a secret string value\"): chat text the game hides from addons is now skipped.",
+    } },
     { version = "0.2.6", lines = {
         "New module Encore-Professions: a levelling guide and a selling guide beside the profession window. The round Encore button in the window's title bar turns it on or off.",
         "The levelling guide plans the cheapest route from trainer and vendor recipes, counts what you can sell the crafted items back for, and shows where to train and where to farm.",
