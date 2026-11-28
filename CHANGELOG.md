@@ -2,6 +2,7 @@
 
 ## Next (not released yet)
 
+- Encore-Stonks: the 3, 7 and 14-day averages are now the plain average of the daily low prices over the last 3, 7 and 14 days (an item with no price in that time has no average for it). Before, they were running averages that still carried every older day. The same rule draws the average line on the graph, and works for the tooltip, the browser, Deals, and the prices Encore-DB and Encore-Professions read from Stonks. Saved summaries are worked out again each day so the windows move with the date.
 - Encore-Professions: the round Encore button that turns the guide on or off is larger (36 px) and sits just under the profession window's close button.
 
 ## 0.2.8

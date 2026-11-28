@@ -343,18 +343,46 @@ local function leanDailyLows(self, key)
     return #lowDays
 end
 
+-- Plain averages of the daily lows over the last 3, 7 and 14 calendar days (Det, 2026-11-28): the 3-day average is
+-- the mean of the days with a price among the last 3 days, and so on. A window with no price in it has no average.
+-- The window ends today, or the day before beforeDay. days: sorted day numbers; price(d): that day's low.
+local WINDOWS = { 3, 7, 14 }
+local function windowAverages(days, price, lastDay)
+    local out = {}
+    for _, n in ipairs(WINDOWS) do
+        local sum, cnt = 0, 0
+        for i = #days, 1, -1 do
+            local d = days[i]
+            if d <= lastDay then
+                if d <= lastDay - n then break end
+                sum, cnt = sum + price(d), cnt + 1
+            end
+        end
+        out[n] = cnt > 0 and sum / cnt or nil
+    end
+    return out
+end
+Stonks.WindowAverages = windowAverages
+
 -- beforeDay (a Stonks.DayNumber) leaves out that day and later ones: the Deals tab compares a scan's listings with
 -- the averages of the days before it, so the scan's own low prices don't pull the average down.
 function Stonks:ItemStats(key, points, beforeDay)
     key = tostring(key)
     local r = self.realmData
     local st = Stonks.ParseStat(r and r.stat[key]) -- a fresh table every call, safe to change
-    local last
+    local last, win
+    local lastDay = beforeDay and beforeDay - 1 or Stonks.DayNumber(time())
     if points then
-        for _, d in ipairs(Stonks.DailyLows(points)) do
-            Stonks.StatAdd(st, d.day, d.p)
-            last = d.p
+        local lows, dayList, byDay = Stonks.DailyLows(points), {}, {}
+        for _, d in ipairs(lows) do
+            if not (beforeDay and d.day >= beforeDay) then
+                Stonks.StatAdd(st, d.day, d.p)
+                last = d.p
+                dayList[#dayList + 1] = d.day
+                byDay[d.day] = d.p
+            end
         end
+        win = windowAverages(dayList, function(d) return byDay[d] end, lastDay)
     else
         for i = 1, leanDailyLows(self, key) do
             local d = lowDays[i]
@@ -362,6 +390,7 @@ function Stonks:ItemStats(key, points, beforeDay)
             Stonks.StatAdd(st, d, lowPrice[d])
             last = lowPrice[d]
         end
+        win = windowAverages(lowDays, function(d) return lowPrice[d] end, lastDay)
     end
     if st.n == 0 then return nil end
     wipe(histBins)
@@ -369,7 +398,7 @@ function Stonks:ItemStats(key, points, beforeDay)
     for k, c in pairs(st.hist) do histBins[#histBins + 1] = k; total = total + c end
     table.sort(histBins)
     return {
-        avg3 = st.e3, avg7 = st.e7, avg14 = st.e14,
+        avg3 = win[3], avg7 = win[7], avg14 = win[14],
         mean = st.m, sd = math.sqrt(math.max(0, st.v)),
         median = histPercentile(st.hist, histBins, total, 0.5), q25 = histPercentile(st.hist, histBins, total, 0.25),
         q75 = histPercentile(st.hist, histBins, total, 0.75),
@@ -692,13 +721,18 @@ function Stonks:BuildMarket(callback, progress)
     end)
 end
 
--- Moving average (exponential, one step per day seen) over the daily lows: { { t, value }, ... }.
+-- Trailing average over the daily lows: at each day with a price, the plain mean of the days with a price among the
+-- last `days` calendar days up to it (same rule as ItemStats' 3/7/14-day averages). { { t, value }, ... }.
 function Stonks.MovingAverage(points, days)
-    local out, e = {}, nil
-    local alpha = 2 / (days + 1)
-    for _, d in ipairs(Stonks.DailyLows(points)) do
-        e = e and (e + alpha * (d.p - e)) or d.p
-        out[#out + 1] = { t = d.t, v = e }
+    local out, lows = {}, Stonks.DailyLows(points)
+    local first, sum = 1, 0
+    for i, d in ipairs(lows) do
+        sum = sum + d.p
+        while lows[first].day <= d.day - days do
+            sum = sum - lows[first].p
+            first = first + 1
+        end
+        out[#out + 1] = { t = d.t, v = sum / (i - first + 1) }
     end
     return out
 end
