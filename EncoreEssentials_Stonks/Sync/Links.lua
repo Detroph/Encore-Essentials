@@ -172,7 +172,11 @@ end
 ---------------------------------------------------------------------------
 local PATTERN = "%[Stonks: ([^%]#|]-) #([is])([0-9A-Za-z*=]+)%]"
 
+-- WoW Forever hides some event values as "secret" (chat text during encounters, for example): addon code may not
+-- read them, and indexing one is a Lua error. Such events are skipped.
+local issecret = _G.issecretvalue or function() return false end
 local function filter(_, _, msg, author, ...)
+    if issecret(msg) or issecret(author) then return false end
     if type(msg) ~= "string" or not msg:find("[Stonks: ", 1, true) then return false end
     local sender = Codec.cleanName(Comm.Ambiguate(author))
     if not sender then return false end

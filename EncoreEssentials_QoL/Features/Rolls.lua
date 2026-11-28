@@ -567,6 +567,7 @@ feature = Q:Feature{
             end
         end)
         f:On("CHAT_MSG_LOOT", function(_, msg)
+            if _G.issecretvalue and _G.issecretvalue(msg) then return end -- secret chat values can't be read
             local m = msg and parse(msg)
             if msg and msg:find("|Hitem:", 1, true) then
                 recent[#recent + 1] = { msg = msg, ok = m and m.kind or false }

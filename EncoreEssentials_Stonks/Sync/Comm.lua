@@ -295,6 +295,7 @@ local goneHandlers = {}
 function Comm.OnGone(fn) goneHandlers[#goneHandlers + 1] = fn end
 
 function Comm.PlayerNotFound(text)
+    if _G.issecretvalue and _G.issecretvalue(text) then return end -- secret chat values can't be read
     local name = type(text) == "string" and text:match(notFoundPattern)
     if not name then return end
     local key = nameKey(name)

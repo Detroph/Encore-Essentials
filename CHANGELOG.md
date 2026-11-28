@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## Next (not released yet)
+
+- No more Lua error "attempt to index ... (a secret string value)" from the wishlist chat alerts: WoW Forever hides chat text from addons at times (in encounters, for example). The wishlist, Encore-Stonks chat links and the "No player named" check, Encore-QoL's invite keyword and Who rolled what, and Encore-PvP's battleground messages now skip those lines instead of reading them.
+
 ## 0.2.6
 
 Full release of everything in the 0.2.6.1 beta and the changes since, listed below. In short:
