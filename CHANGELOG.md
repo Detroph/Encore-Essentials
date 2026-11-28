@@ -1,5 +1,9 @@
 # Encore Essentials
 
+## Next (not released yet)
+
+- Encore-Professions: the round Encore button that turns the guide on or off is larger (36 px) and sits just under the profession window's close button.
+
 ## 0.2.8
 
 - Encore-Professions' description in the setup window, the Encore window and the addon list says it shows levelling routes and your most profitable crafts.
