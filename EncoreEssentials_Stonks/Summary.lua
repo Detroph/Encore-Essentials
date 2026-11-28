@@ -74,7 +74,10 @@ local function savedFresh(key)
     local str = r and r.sum and r.sum[key]
     if type(str) ~= "string" then return false end
     local sig = signature(key)
-    return str:find(sig, 1, true) == 1 and str:byte(#sig + 1) == 124 -- "|"
+    if not (str:find(sig, 1, true) == 1 and str:byte(#sig + 1) == 124) then return false end -- "|"
+    -- The averages cover the last 3/7/14 days, so a summary from an earlier day is out of date even with no new price.
+    local day = str:sub(#sig + 2):match("^([^|]*)")
+    return tonumber(day or "", 36) == today()
 end
 
 -- Works out and saves an item's summary. Returns it as a table only when asked (want) or when something is showing
@@ -98,7 +101,7 @@ end
 -- Up to date when the data it came from is unchanged (the signature covers everything ItemStats reads, so the
 -- summaries of items without new prices are not worked out again every day).
 local function fresh(key, e)
-    return e and e.sig == signature(key)
+    return e and e.sig == signature(key) and e.day == today()
 end
 
 local function finish()

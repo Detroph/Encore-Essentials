@@ -198,11 +198,14 @@ function Sync.BuildSummary(key)
     if not id or id < 1 or id > Codec.MAX_ITEM_ID or floor(id) ~= id then return nil end
     local st = origItemStats(Stonks, key)
     if not st or not st.median or not st.days or st.days < 1 then return nil end
-    -- A missing average would stop the whole summary job with an error (and leave us "serving" all session).
-    if not st.avg3 or not st.avg7 or not st.avg14 then return nil end
+    -- The averages are plain means over the last 3/7/14 days, so an item without a recent price has none: the
+    -- record (whose format needs all three) then carries the longer window's average, or the median.
+    local a14 = st.avg14 or st.median
+    local a7 = st.avg7 or a14
+    local a3 = st.avg3 or a7
     local rec = { id = id, days = st.days }
     rec.med, rec.q25, rec.q75 = floor(st.median + 0.5), floor((st.q25 or st.median) + 0.5), floor((st.q75 or st.median) + 0.5)
-    rec.a3, rec.a7, rec.a14 = floor(st.avg3 + 0.5), floor(st.avg7 + 0.5), floor(st.avg14 + 0.5)
+    rec.a3, rec.a7, rec.a14 = floor(a3 + 0.5), floor(a7 + 0.5), floor(a14 + 0.5)
     if rec.q25 > rec.med then rec.q25 = rec.med end
     if rec.q75 < rec.med then rec.q75 = rec.med end
     for _, f in ipairs(Codec.SUMMARY_FIELDS) do if rec[f] < 1 then return nil end end
@@ -263,8 +266,8 @@ local function installViews()
         return points
     end
 
-    function Stonks:ItemStats(key, points)
-        local own = origItemStats(self, key, points)
+    function Stonks:ItemStats(key, points, beforeDay)
+        local own = origItemStats(self, key, points, beforeDay)
         local days = own and own.days or 0
         if days >= BASELINE_FULL_DAYS then return own end -- checked first: no need to decode the baseline then
         local r = self.realmData
