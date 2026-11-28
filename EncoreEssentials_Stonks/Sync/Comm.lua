@@ -89,8 +89,20 @@ end
 ---------------------------------------------------------------------------
 -- Sending
 ---------------------------------------------------------------------------
+-- Whisper partners who went offline: gone[key] = time() until which nothing more is sent to them.
+local gone = {}
+local GONE_FOR = 600 -- seconds
+local function nameKey(name)
+    if not name then return nil end
+    return (tostring(name):gsub("%-[^%-]*$", "")):lower()
+end
+
 function Comm.Send(msg, channel, target, onSent)
     if #msg > 255 then error("Encore-Stonks: message too long") end
+    if channel == "WHISPER" then
+        local until_ = gone[nameKey(target)]
+        if until_ and time() < until_ then return end
+    end
     outbox[#outbox + 1] = { msg, channel, target, onSent }
 end
 
@@ -263,9 +275,51 @@ end
 local frame = CreateFrame("Frame")
 Comm.frame = frame
 frame:SetScript("OnUpdate", function() Comm.Step() end)
+---------------------------------------------------------------------------
+-- A whisper partner who logged off: the server answers every whisper with "No player named '<name>' is currently
+-- playing." After the third such line for the same name within a minute, sending to them stops: whatever is still
+-- queued for them is dropped, nothing new is sent to them for 10 minutes, and the sync code is told (Comm.OnGone)
+-- so a login summary we were serving them ends.
+---------------------------------------------------------------------------
+local notFoundPattern
+do
+    local fmt = _G.ERR_CHAT_PLAYER_NOT_FOUND_S or "No player named '%s' is currently playing."
+    local parts = {}
+    for piece in (fmt .. "%s"):gmatch("(.-)%%s") do parts[#parts + 1] = (piece:gsub("[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0")) end
+    -- parts: text before %s, text after %s ("%s" appended above closes the last piece)
+    notFoundPattern = "^" .. (parts[1] or "") .. "(.+)" .. (parts[2] or "") .. "$"
+end
+
+local notFound = {} -- notFound[key] = { count, first }
+local goneHandlers = {}
+function Comm.OnGone(fn) goneHandlers[#goneHandlers + 1] = fn end
+
+function Comm.PlayerNotFound(text)
+    local name = type(text) == "string" and text:match(notFoundPattern)
+    if not name then return end
+    local key = nameKey(name)
+    local t = time()
+    local n = notFound[key]
+    if not n or t - n.first > 60 then n = { count = 0, first = t }; notFound[key] = n end
+    n.count = n.count + 1
+    if n.count < 3 then return end
+    notFound[key] = nil
+    gone[key] = t + GONE_FOR
+    Comm.Cancel(function(_, channel, target) return channel == "WHISPER" and nameKey(target) == key end)
+    for _, fn in ipairs(goneHandlers) do pcall(fn, name) end
+end
+
+-- True when name is a whisper partner we stopped sending to (see above).
+function Comm.IsGone(name)
+    local until_ = gone[nameKey(name)]
+    return until_ ~= nil and time() < until_
+end
+
 frame:SetScript("OnEvent", function(_, event, ...)
-    if event == "CHAT_MSG_ADDON" then Comm.Receive(...) end
+    if event == "CHAT_MSG_ADDON" then Comm.Receive(...)
+    elseif event == "CHAT_MSG_SYSTEM" then Comm.PlayerNotFound(...) end
 end)
 frame:RegisterEvent("CHAT_MSG_ADDON")
+frame:RegisterEvent("CHAT_MSG_SYSTEM")
 if C_ChatInfo and C_ChatInfo.RegisterAddonMessagePrefix then C_ChatInfo.RegisterAddonMessagePrefix(Comm.PREFIX) end
 perf.since = time()
