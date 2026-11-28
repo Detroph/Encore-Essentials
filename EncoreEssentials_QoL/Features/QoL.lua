@@ -481,6 +481,7 @@ Q:Feature{
             end
         end)
         f:On("CHAT_MSG_WHISPER", function(_, text, sender)
+            if _G.issecretvalue and (_G.issecretvalue(text) or _G.issecretvalue(sender)) then return end -- secret chat values can't be read
             local key = strtrim(tostring(f:Get("keyword") or "")):lower()
             if key == "" or strtrim(text or ""):lower() ~= key then return end
             if IsInGroup() and not (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then return end

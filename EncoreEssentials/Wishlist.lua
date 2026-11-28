@@ -68,11 +68,15 @@ end
 
 local function idFromLink(link) return link and tonumber(link:match("item:(%d+)")) end
 
+-- WoW Forever hides some event values as "secret" (chat text during encounters, for example): addon code may not
+-- read them, and indexing one is a Lua error. Such events are skipped.
+local issecret = _G.issecretvalue or function() return false end
 local f = CreateFrame("Frame")
 local CHAT = { "CHAT_MSG_CHANNEL", "CHAT_MSG_GUILD", "CHAT_MSG_PARTY", "CHAT_MSG_PARTY_LEADER", "CHAT_MSG_RAID",
     "CHAT_MSG_RAID_LEADER", "CHAT_MSG_SAY", "CHAT_MSG_YELL", "CHAT_MSG_WHISPER", "CHAT_MSG_INSTANCE_CHAT" }
 
 f:SetScript("OnEvent", function(_, event, a1, a2)
+    if issecret(a1) or issecret(a2) then return end
     local ok, err = pcall(function()
         if event == "START_LOOT_ROLL" then
             local link = GetLootRollItemLink and GetLootRollItemLink(a1)

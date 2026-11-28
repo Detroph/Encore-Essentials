@@ -125,6 +125,7 @@ local function scanUnits()
 end
 
 local function onFlagMessage(_, msg)
+    if _G.issecretvalue and _G.issecretvalue(msg) then return end -- secret chat values can't be read
     if type(msg) ~= "string" then return end
     local who = msg:match("[Ff]lag was picked up by (.+)!")
     if who then

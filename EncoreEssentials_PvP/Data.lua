@@ -242,6 +242,7 @@ end
 local lastLine = {} -- [node] = GetTime() of the last line read without English words (the herald repeats them)
 
 local function onSystem(event, text)
+    if _G.issecretvalue and _G.issecretvalue(text) then return end -- secret chat values can't be read
     if not BG.kind or not text then return end
     local name = nodeIn(text)
     if not name then return end
