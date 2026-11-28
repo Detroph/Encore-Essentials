@@ -1,4 +1,4 @@
--- Encore-Professions: the guide panel beside the profession window, and the round Encore button in its title bar
+-- Encore-Professions: the guide panel beside the profession window, and the round Encore button at its top right
 -- that turns it on or off (remembered for the account). While it is on, the panel opens with the profession window:
 -- "Select a profession" until one is shown, then that profession's route or where to farm.
 local _, ns = ...
@@ -385,7 +385,7 @@ local function build()
     panel.well = UI().Well(panel)
     panel.well:SetPoint("TOPLEFT", EDGE, -56)
     panel.well:SetPoint("BOTTOMRIGHT", -EDGE, EDGE)
-    -- Closing the guide turns it off, as the Encore button in the title bar does.
+    -- Closing the guide turns it off, as the round Encore button does.
     if panel.CloseButton then panel.CloseButton:SetScript("OnClick", function() P:SetOn(false) end) end
     panel.modes = {}
     local prev
@@ -889,18 +889,19 @@ local function protectedRefresh()
 end
 
 ---------------------------------------------------------------------------
--- The Encore button in the title bar
+-- The round Encore button at the top right
 ---------------------------------------------------------------------------
 local function buildButton()
     button = CreateFrame("Button", "EncoreProfessionsButton", ProfessionsFrame)
-    -- In the title bar beside the close button, so it shows on every tab of the window (the overview too), and on
+    -- Top right, just under the close button, so it shows on every tab of the window (the overview too), and on
     -- a frame level above everything the window's pages draw (their bars and art sit hundreds of levels up).
-    button:SetSize(24, 24)
+    button:SetSize(36, 36)
     local close = ProfessionsFrame.CloseButton or _G.ProfessionsFrameCloseButton
     if close then
-        button:SetPoint("RIGHT", close, "LEFT", -6, 0)
+        -- Under the title bar, below and just left of the close button.
+        button:SetPoint("CENTER", close, "CENTER", -22, -38)
     else
-        button:SetPoint("TOPRIGHT", ProfessionsFrame, "TOPRIGHT", -34, -2)
+        button:SetPoint("TOPRIGHT", ProfessionsFrame, "TOPRIGHT", -24, -32)
     end
     local function raise()
         button:SetFrameStrata(ProfessionsFrame:GetFrameStrata())
@@ -917,11 +918,11 @@ local function buildButton()
     button.icon:AddMaskTexture(mask)
     local ring = button:CreateTexture(nil, "OVERLAY")
     ring:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-    ring:SetSize(41, 41)
-    ring:SetPoint("TOPLEFT", -3, 3)
+    ring:SetSize(62, 62)
+    ring:SetPoint("TOPLEFT", -4, 4)
     button.glow = button:CreateTexture(nil, "BACKGROUND")
     button.glow:SetPoint("CENTER")
-    button.glow:SetSize(34, 34)
+    button.glow:SetSize(52, 52)
     button.glow:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
     button.glow:SetBlendMode("ADD")
     button.glow:SetVertexColor(0.07, 0.78, 0.78)
@@ -955,7 +956,7 @@ local attached
 local function attach()
     if attached or not ProfessionsFrame then return end
     attached = true
-    -- The button first, on its own: it stays in the title bar even if the guide can't be built.
+    -- The button first, on its own: it stays even if the guide can't be built.
     local okButton, errButton = pcall(buildButton)
     if not okButton then report(errButton) end
     local ok, err = pcall(build)
