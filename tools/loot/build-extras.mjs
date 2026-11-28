@@ -239,10 +239,10 @@ for (const c of collections) {
   L.push('  } },');
 }
 L.push('}');
-L.push('-- Item sets: { text, sets = { { id, name, class, side, quality, level, pieces = { itemID, ... } } } }.');
+L.push('-- Item sets: { text, tab ("pvp": shown in the PvP tab, else Collections), sets = { { id, name, class, side, quality, level, pieces = { itemID, ... } } } }.');
 L.push('ns.ItemSets = {');
 for (const g of sets) {
-  L.push(`  { text = ${q(g.text)}, sets = {`);
+  L.push(`  { text = ${q(g.text)}${g.text.startsWith('PvP') ? ', tab = "pvp"' : ''}, sets = {`);
   for (const s of g.sets) L.push(`    { id = ${s.id}, name = ${q(s.name)}${s.cls ? `, class = ${q(s.cls)}` : ''}${s.side ? `, side = ${q(s.side)}` : ''}, quality = ${n(s.quality)}, level = ${n(s.level)}, pieces = { ${s.pieces.join(', ')} } },`);
   L.push('  } },');
 }

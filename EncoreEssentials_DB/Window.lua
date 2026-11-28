@@ -547,7 +547,7 @@ local function goTo(w)
         state.inst, state.boss = w.inst, w.boss
     elseif w.tab == "world" then
         state.band, state.worldQuality = World.bandOf(w.world), World.catOf(w.world) or 4
-    elseif w.tab == "collections" then
+    elseif w.tab == "collections" or w.sets then
         if ns.CollectionsView then ns.CollectionsView.goTo(w) end
     else
         state.vendor[w.tab] = w.vendor
@@ -835,6 +835,9 @@ local function treeRows()
             end
             group(tab.vendorKind .. tostring(s.key), s.text, entries)
         end
+        -- Item sets kept in this tab (PvP sets), from CollectionsView.lua
+        local sets = ns.CollectionsView and ns.CollectionsView.setTree(state.tab, pick)
+        if sets then group(sets.key, sets.text, sets.entries) end
     elseif state.tab == "collections" and ns.CollectionsView then
         for _, g in ipairs(ns.CollectionsView.tree(pick)) do group(g.key, g.text, g.entries) end
     elseif state.tab == "wishlist" and ns.WishlistView then
@@ -945,6 +948,10 @@ local function sectionRows()
         ns.ProfessionView.sections(rows)
     elseif tab and tab.vendorKind then
         local v = state.vendor[state.tab]
+        if ns.CollectionsView and ns.CollectionsView.isSetKey(state.tab, v) then
+            ns.CollectionsView.setSections(rows, state.tab)
+            return rows
+        end
         local vendor = v and Loot.vendors[v]
         if not vendor then return rows end
         local side = vendor.side == "A" and "Alliance" or vendor.side == "H" and "Horde" or "Both factions"
@@ -1151,6 +1158,7 @@ local function lootBlocks()
         return ns.ProfessionView.blocks()
     elseif tab.vendorKind then
         local v = state.vendor[state.tab]
+        if ns.CollectionsView and ns.CollectionsView.isSetKey(state.tab, v) then return ns.CollectionsView.setBlocks(state.tab) end
         local vendor = v and Loot.vendors[v]
         if not vendor then return { emptyLine("No vendors players have seen in WoW Forever yet.") }, "" end
         blocks[#blocks + 1] = heading(vendor.name .. (state.standing ~= nil and (": " .. standingText(state.standing)) or ""))
@@ -2318,7 +2326,8 @@ function renderAll()
     end
     if state.tab == "professions" and not (state.prof and Recipes[state.prof]) then state.prof, state.bracket = firstProfession(), 1 end
     local tab = TAB_BY_KEY[state.tab]
-    if tab and tab.vendorKind and not (state.vendor[state.tab] and Loot.vendors[state.vendor[state.tab]]) then
+    local v = tab and tab.vendorKind and state.vendor[state.tab]
+    if tab and tab.vendorKind and not (v and (Loot.vendors[v] or (ns.CollectionsView and ns.CollectionsView.isSetKey(state.tab, v)))) then
         state.vendor[state.tab] = firstVendor(tab.vendorKind)
     end
     updateTabs()
